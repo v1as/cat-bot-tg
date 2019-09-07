@@ -1,8 +1,6 @@
 package ru.v1as.tg.cat;
 
 import static java.util.stream.Collectors.counting;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.summarizingInt;
 import static ru.v1as.tg.cat.CatRequestVote.CAT1;
 import static ru.v1as.tg.cat.CatRequestVote.CAT2;
 import static ru.v1as.tg.cat.CatRequestVote.CAT3;
@@ -15,8 +13,6 @@ import static ru.v1as.tg.cat.EmojiConst.THIRD_PLACE_MEDAL;
 import static ru.v1as.tg.cat.KeyboardUtils.inlineKeyboardMarkup;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.IntSummaryStatistics;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -33,7 +29,6 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import ru.v1as.tg.cat.ScoreData.ScoreLine;
 
 @Slf4j
 class CatBot extends AbstractGameBot {
@@ -50,29 +45,12 @@ class CatBot extends AbstractGameBot {
     @Override
     protected void onUpdateCommand(String datum, String[] arguments, Chat chat, User user) {
         if ("/score".equals(datum)) {
-            Stream<String> winners = getWinnersStream(chat.getId(), null);
+            Stream<String> winners = scoreData.getWinnersStream(chat.getId(), null);
             String text = winners.collect(Collectors.joining("\n"));
             execute(new SendMessage().setChatId(chat.getId()).setText(text));
         } else if ("/winners".equals(datum)) {
             sendDayWinners();
         }
-    }
-
-    private Stream<String> getWinnersStream(Long chatId, LocalDateTime after) {
-        Stream<ScoreLine> scoreStream = scoreData.getScore(chatId).stream();
-        if (after != null) {
-            scoreStream =
-                    scoreStream
-                            .filter(line -> line.getDate() != null)
-                            .filter(scoreLine -> after.isBefore(scoreLine.getDate()));
-        }
-
-        Map<String, IntSummaryStatistics> grouped =
-                scoreStream.collect(
-                        groupingBy(ScoreLine::getUserString, summarizingInt(ScoreLine::getAmount)));
-        return grouped.entrySet().stream()
-                .sorted(Comparator.comparingLong(e -> -1 * e.getValue().getSum()))
-                .map(e -> String.format("%s       %d %s", e.getKey(), e.getValue().getSum(), CAT));
     }
 
     @Override
@@ -174,13 +152,10 @@ class CatBot extends AbstractGameBot {
         return "";
     }
 
-    void check() {
+    void checkCatRequests() {
         log.debug("Tick");
         checkRequests();
-        sendStatistic();
     }
-
-    private void sendStatistic() {}
 
     private void checkRequests() {
         for (CatRequest request : data.getNotFinishedCatRequests()) {
@@ -209,7 +184,7 @@ class CatBot extends AbstractGameBot {
             try {
                 StringBuilder text = new StringBuilder();
                 String[] winners =
-                        getWinnersStream(chat.getChatId(), yesterday)
+                        scoreData.getWinnersStream(chat.getChatId(), yesterday)
                                 .limit(medals.length)
                                 .toArray(String[]::new);
                 if (winners.length == 0) {

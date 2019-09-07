@@ -1,5 +1,6 @@
 package ru.v1as.tg.cat;
 
+import static java.util.Optional.ofNullable;
 import static lombok.AccessLevel.PRIVATE;
 
 import java.util.Objects;
@@ -25,7 +26,11 @@ class UserData {
     }
 
     void update(User user) {
-        this.fullName = String.format("%s %s", user.getFirstName(), user.getLastName());
+        this.fullName =
+                String.format(
+                        "%s %s",
+                        ofNullable(user.getFirstName()).orElse(""),
+                        ofNullable(user.getLastName()).orElse(""));
         this.userName = user.getUserName();
     }
 

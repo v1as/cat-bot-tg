@@ -1,8 +1,11 @@
 package ru.v1as.tg.cat;
 
 import static java.lang.System.lineSeparator;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.summarizingInt;
 import static lombok.AccessLevel.PRIVATE;
 import static org.apache.http.util.TextUtils.isEmpty;
+import static ru.v1as.tg.cat.EmojiConst.CAT;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -11,7 +14,10 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.IntSummaryStatistics;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -81,6 +87,23 @@ public class ScoreData {
         return this.lines.stream()
                 .filter(l -> Objects.equals(chatId, l.chatId))
                 .collect(Collectors.toList());
+    }
+
+    Stream<String> getWinnersStream(Long chatId, LocalDateTime after) {
+        Stream<ScoreLine> scoreStream = getScore(chatId).stream();
+        if (after != null) {
+            scoreStream =
+                    scoreStream
+                            .filter(line -> line.getDate() != null)
+                            .filter(scoreLine -> after.isBefore(scoreLine.getDate()));
+        }
+
+        Map<String, IntSummaryStatistics> grouped =
+                scoreStream.collect(
+                        groupingBy(ScoreLine::getUserString, summarizingInt(ScoreLine::getAmount)));
+        return grouped.entrySet().stream()
+                .sorted(Comparator.comparingLong(e -> -1 * e.getValue().getSum()))
+                .map(e -> String.format("%s       %d %s", e.getKey(), e.getValue().getSum(), CAT));
     }
 
     @FieldDefaults(level = PRIVATE, makeFinal = true)
