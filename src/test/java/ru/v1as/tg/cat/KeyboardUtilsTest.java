@@ -1,15 +1,20 @@
 package ru.v1as.tg.cat;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static ru.v1as.tg.cat.KeyboardUtils.inlineKeyboardMarkup;
 
 import java.util.List;
-import org.apache.http.util.Asserts;
 import org.junit.Test;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 public class KeyboardUtilsTest {
+
+    @Test
+    public void should_create_empty_keyboard() {
+        InlineKeyboardMarkup keyboard = inlineKeyboardMarkup();
+        assertEquals(0, keyboard.getKeyboard().size());
+    }
 
     @Test
     public void should_create_keyboard_with_one_button() {

@@ -43,10 +43,11 @@ public class Main {
 
     private static long getInitialDelay() {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime tenHours = now.withHour(10);
+        LocalDateTime tenHours = now.withHour(10).withMinute(0).withSecond(0);
         if (tenHours.isBefore(now)) {
             tenHours = tenHours.plusDays(1);
         }
+        log.info("Next time for winners calculation: {}", tenHours);
         return Duration.between(now, tenHours).getSeconds();
     }
 }

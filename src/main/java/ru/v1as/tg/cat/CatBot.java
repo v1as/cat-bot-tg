@@ -1,6 +1,7 @@
 package ru.v1as.tg.cat;
 
 import static java.util.stream.Collectors.counting;
+import static ru.v1as.tg.cat.CatRequestAnswerResult.CANCELED;
 import static ru.v1as.tg.cat.CatRequestVote.CAT1;
 import static ru.v1as.tg.cat.CatRequestVote.CAT2;
 import static ru.v1as.tg.cat.CatRequestVote.CAT3;
@@ -60,15 +61,17 @@ class CatBot extends AbstractGameBot {
 
     @Override
     protected void onUpdateCallbackQuery(CallbackQuery callbackQuery, Chat chat, User user) {
-        CatRequestVote parse = CatRequestVote.parse(callbackQuery.getData());
+        CatRequestVote vote = CatRequestVote.parse(callbackQuery.getData());
         CatRequest catRequest = data.getCatRequest(chat, callbackQuery);
         UserData userData = data.getUserData(user);
-        if (catRequest == null || parse == null) {
+        Integer messageId = callbackQuery.getMessage().getMessageId();
+        if (catRequest == null || vote == null) {
+            execute(getUpdateButtonsMsg(chat, messageId, inlineKeyboardMarkup()));
             return;
         }
-        CatRequestAnswerResult voted = catRequest.vote(userData, parse);
+        CatRequestAnswerResult voted = catRequest.vote(userData, vote);
         execute(getVoteAnswerMsg(callbackQuery, voted));
-        if (voted.equals(CatRequestAnswerResult.CANCELED)) {
+        if (CANCELED.equals(voted)) {
             catRequest.cancel();
             scoreData.save(catRequest);
             execute(deleteMsg(chat, catRequest));
@@ -76,7 +79,7 @@ class CatBot extends AbstractGameBot {
             InlineKeyboardMarkup pollButtons = getCatePollButtons(catRequest);
             if (!catRequest.getPollButtons().equals(pollButtons)) {
                 catRequest.setPollButtons(pollButtons);
-                execute(getUpdateButtonsMsg(chat, catRequest, pollButtons));
+                execute(getUpdateButtonsMsg(chat, messageId, pollButtons));
             }
         }
     }
@@ -89,10 +92,10 @@ class CatBot extends AbstractGameBot {
     }
 
     private EditMessageReplyMarkup getUpdateButtonsMsg(
-            Chat chat, CatRequest catRequest, InlineKeyboardMarkup pollButtons) {
+            Chat chat, Integer messageId, InlineKeyboardMarkup pollButtons) {
         return new EditMessageReplyMarkup()
                 .setChatId(chat.getId())
-                .setMessageId(catRequest.getVoteMessage().getMessageId())
+                .setMessageId(messageId)
                 .setReplyMarkup(pollButtons);
     }
 
@@ -184,7 +187,8 @@ class CatBot extends AbstractGameBot {
             try {
                 StringBuilder text = new StringBuilder();
                 String[] winners =
-                        scoreData.getWinnersStream(chat.getChatId(), yesterday)
+                        scoreData
+                                .getWinnersStream(chat.getChatId(), yesterday)
                                 .limit(medals.length)
                                 .toArray(String[]::new);
                 if (winners.length == 0) {

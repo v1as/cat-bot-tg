@@ -2,6 +2,7 @@ package ru.v1as.tg.cat;
 
 import static lombok.AccessLevel.PRIVATE;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +37,10 @@ class CatRequest {
                 "Cat poll registered for user '{}' with message {}",
                 owner,
                 sourceMessage.getMessageId());
+    }
+
+    Duration getAge() {
+        return Duration.between(created, LocalDateTime.now());
     }
 
     CatRequestAnswerResult vote(UserData user, CatRequestVote vote) {

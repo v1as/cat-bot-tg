@@ -24,23 +24,27 @@ public abstract class AbstractGameBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        Chat chat = getChat(update);
-        User user = getUser(update);
-        before(update);
-        if (!chat.isGroupChat() && !chat.isSuperGroupChat()) {
-            return;
-        }
-        if (update.hasMessage() && update.getMessage().isCommand()) {
-            String text = update.getMessage().getText();
-            String[] data = text.split(" ");
-            String[] arguments = Arrays.copyOfRange(data, 1, data.length);
-            onUpdateCommand(data[0], arguments, chat, user);
-        } else if (update.hasMessage()) {
-            onUpdateMessage(update.getMessage(), chat, user);
-        } else if (update.hasCallbackQuery()) {
-            onUpdateCallbackQuery(update.getCallbackQuery(), chat, user);
-        } else {
-            log.debug("Unsupported update type: " + update);
+        try {
+            Chat chat = getChat(update);
+            User user = getUser(update);
+            before(update);
+            if (!chat.isGroupChat() && !chat.isSuperGroupChat()) {
+                return;
+            }
+            if (update.hasMessage() && update.getMessage().isCommand()) {
+                String text = update.getMessage().getText();
+                String[] data = text.split(" ");
+                String[] arguments = Arrays.copyOfRange(data, 1, data.length);
+                onUpdateCommand(data[0], arguments, chat, user);
+            } else if (update.hasMessage()) {
+                onUpdateMessage(update.getMessage(), chat, user);
+            } else if (update.hasCallbackQuery()) {
+                onUpdateCallbackQuery(update.getCallbackQuery(), chat, user);
+            } else {
+                log.debug("Unsupported update type: " + update);
+            }
+        } catch (Exception e) {
+            log.error("Something gone wrong ", e);
         }
     }
 
