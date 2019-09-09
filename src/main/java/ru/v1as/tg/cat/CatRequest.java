@@ -11,11 +11,12 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import ru.v1as.tg.cat.callback.is_cat.CatRequestVote;
 
 @Data
 @FieldDefaults(level = PRIVATE)
 @Slf4j
-class CatRequest {
+public class CatRequest {
 
     final Message sourceMessage;
     final UserData owner;
@@ -43,7 +44,7 @@ class CatRequest {
         return Duration.between(created, LocalDateTime.now());
     }
 
-    CatRequestAnswerResult vote(UserData user, CatRequestVote vote) {
+    public CatRequestAnswerResult vote(UserData user, CatRequestVote vote) {
         Integer userId = user.getId();
         if (finished) {
             throw new IllegalArgumentException("This request is finished");
@@ -68,12 +69,12 @@ class CatRequest {
         this.voteMessage = voteMessage;
     }
 
-    String getVotesButtonPrefix(CatRequestVote cat1) {
+    public String getVotesButtonPrefix(CatRequestVote cat1) {
         long count = votes.values().stream().filter(cat1::equals).count();
         return count == 0L ? "" : "(" + count + ")";
     }
 
-    void cancel() {
+    public void cancel() {
         if (finished) {
             throw new IllegalStateException("This request is already closed");
         }

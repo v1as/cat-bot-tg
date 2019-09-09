@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Chat;
@@ -16,11 +17,13 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 
+@RequiredArgsConstructor
 @FieldDefaults(level = PRIVATE, makeFinal = true)
-class DbData {
+public class DbData {
 
     Map<Long, ChatData> chats = new HashMap<>();
     Map<Integer, UserData> users = new HashMap<>();
+    private final ScoreData scoreData;
 
     void register(Update update) {
         Chat chat = getChat(update);
@@ -36,7 +39,7 @@ class DbData {
         userData.update(user);
     }
 
-    CatRequest getCatRequest(Chat chat, CallbackQuery callbackQuery) {
+    public CatRequest getCatRequest(Chat chat, CallbackQuery callbackQuery) {
         ChatData chatData = chats.get(chat.getId());
         return chatData.getCatRequest(callbackQuery);
     }
@@ -45,7 +48,7 @@ class DbData {
         return chats.get(chatId);
     }
 
-    UserData getUserData(User user) {
+    public UserData getUserData(User user) {
         return users.get(user.getId());
     }
 
@@ -64,5 +67,9 @@ class DbData {
 
     List<ChatData> getChats() {
         return new ArrayList<>(chats.values());
+    }
+
+    public ScoreData getScoreData() {
+        return scoreData;
     }
 }

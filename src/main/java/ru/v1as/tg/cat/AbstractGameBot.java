@@ -18,7 +18,7 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.updateshandlers.SentCallback;
 
 @Slf4j
-public abstract class AbstractGameBot extends TelegramLongPollingBot {
+public abstract class AbstractGameBot extends TelegramLongPollingBot implements UnsafeAbsSender {
 
     private AbsSender sender = this;
 
@@ -57,20 +57,20 @@ public abstract class AbstractGameBot extends TelegramLongPollingBot {
 
     protected abstract void onUpdateMessage(Message message, Chat chat, User user);
 
-    @Override
     @SneakyThrows
+    @Override
     public <
                     T extends Serializable,
                     Method extends BotApiMethod<T>,
                     Callback extends SentCallback<T>>
-            void executeAsync(Method method, Callback callback) {
-        super.executeAsync(method, callback);
+            void executeAsyncUnsafe(Method method, Callback callback) {
+        sender.executeAsync(method, callback);
     }
 
-    @Override
     @SneakyThrows
-    public <T extends Serializable, Method extends BotApiMethod<T>> T execute(Method method) {
-        return super.execute(method);
+    @Override
+    public <T extends Serializable, Method extends BotApiMethod<T>> T executeUnsafe(Method method) {
+        return sender.execute(method);
     }
 
     public void setSender(AbsSender sender) {

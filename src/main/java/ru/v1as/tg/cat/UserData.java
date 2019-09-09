@@ -12,7 +12,7 @@ import org.telegram.telegrambots.meta.api.objects.User;
 @Data
 @FieldDefaults(level = PRIVATE)
 @Slf4j
-class UserData {
+public class UserData {
     Integer id;
     String fullName;
     String userName;

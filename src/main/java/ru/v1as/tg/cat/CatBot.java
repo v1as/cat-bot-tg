@@ -1,28 +1,20 @@
 package ru.v1as.tg.cat;
 
 import static java.util.stream.Collectors.counting;
-import static ru.v1as.tg.cat.CatRequestAnswerResult.CANCELED;
-import static ru.v1as.tg.cat.CatRequestVote.CAT1;
-import static ru.v1as.tg.cat.CatRequestVote.CAT2;
-import static ru.v1as.tg.cat.CatRequestVote.CAT3;
-import static ru.v1as.tg.cat.CatRequestVote.NOT_CAT;
 import static ru.v1as.tg.cat.EmojiConst.CAT;
 import static ru.v1as.tg.cat.EmojiConst.FIRST_PLACE_MEDAL;
-import static ru.v1as.tg.cat.EmojiConst.HEAVY_MULTIPLY;
 import static ru.v1as.tg.cat.EmojiConst.SECOND_PLACE_MEDAL;
 import static ru.v1as.tg.cat.EmojiConst.THIRD_PLACE_MEDAL;
-import static ru.v1as.tg.cat.KeyboardUtils.inlineKeyboardMarkup;
 
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Chat;
@@ -30,17 +22,29 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import ru.v1as.tg.cat.callback.TgEnumCallbackProcessor;
+import ru.v1as.tg.cat.callback.is_cat.CatRequestVote;
+import ru.v1as.tg.cat.callback.is_cat.CatRequestVoteHandler;
+import ru.v1as.tg.cat.callback.is_cat.CatRequestVoteParser;
 
 @Slf4j
+@Getter
 class CatBot extends AbstractGameBot {
 
     private static final String IS_THAT_CAT = "Это кот?";
     private final ScoreData scoreData;
-    private DbData data = new DbData();
+    private final DbData data;
+
+    private TgEnumCallbackProcessor callbackProcessor;
 
     public CatBot(ScoreData scoreData) {
         super();
         this.scoreData = scoreData;
+        this.data = new DbData(scoreData);
+        this.callbackProcessor =
+                new TgEnumCallbackProcessor()
+                        .register(
+                                new CatRequestVoteParser(), new CatRequestVoteHandler(data, this));
     }
 
     @Override
@@ -48,7 +52,7 @@ class CatBot extends AbstractGameBot {
         if ("/score".equals(datum)) {
             Stream<String> winners = scoreData.getWinnersStream(chat.getId(), null);
             String text = winners.collect(Collectors.joining("\n"));
-            execute(new SendMessage().setChatId(chat.getId()).setText(text));
+            executeUnsafe(new SendMessage().setChatId(chat.getId()).setText(text));
         } else if ("/winners".equals(datum)) {
             sendDayWinners();
         }
@@ -60,47 +64,9 @@ class CatBot extends AbstractGameBot {
     }
 
     @Override
+    @SneakyThrows
     protected void onUpdateCallbackQuery(CallbackQuery callbackQuery, Chat chat, User user) {
-        CatRequestVote vote = CatRequestVote.parse(callbackQuery.getData());
-        CatRequest catRequest = data.getCatRequest(chat, callbackQuery);
-        UserData userData = data.getUserData(user);
-        Integer messageId = callbackQuery.getMessage().getMessageId();
-        if (catRequest == null || vote == null) {
-            execute(getUpdateButtonsMsg(chat, messageId, inlineKeyboardMarkup()));
-            return;
-        }
-        CatRequestAnswerResult voted = catRequest.vote(userData, vote);
-        execute(getVoteAnswerMsg(callbackQuery, voted));
-        if (CANCELED.equals(voted)) {
-            catRequest.cancel();
-            scoreData.save(catRequest);
-            execute(deleteMsg(chat, catRequest));
-        } else {
-            InlineKeyboardMarkup pollButtons = getCatePollButtons(catRequest);
-            if (!catRequest.getPollButtons().equals(pollButtons)) {
-                catRequest.setPollButtons(pollButtons);
-                execute(getUpdateButtonsMsg(chat, messageId, pollButtons));
-            }
-        }
-    }
-
-    private AnswerCallbackQuery getVoteAnswerMsg(
-            CallbackQuery callbackQuery, CatRequestAnswerResult voted) {
-        return new AnswerCallbackQuery()
-                .setCallbackQueryId(callbackQuery.getId())
-                .setText(voted.getText());
-    }
-
-    private EditMessageReplyMarkup getUpdateButtonsMsg(
-            Chat chat, Integer messageId, InlineKeyboardMarkup pollButtons) {
-        return new EditMessageReplyMarkup()
-                .setChatId(chat.getId())
-                .setMessageId(messageId)
-                .setReplyMarkup(pollButtons);
-    }
-
-    private DeleteMessage deleteMsg(Chat chat, CatRequest catRequest) {
-        return new DeleteMessage(chat.getId(), catRequest.getVoteMessage().getMessageId());
+        callbackProcessor.process(callbackQuery, chat, user);
     }
 
     @Override
@@ -111,7 +77,7 @@ class CatBot extends AbstractGameBot {
         UserData userData = data.getUserData(user);
         ChatData chatData = data.getChatData(chat.getId());
         CatRequest catRequest = new CatRequest(message, userData, chatData, LocalDateTime.now());
-        executeAsync(
+        executeAsyncUnsafe(
                 buildIsThatCatMessage(message, chat, catRequest),
                 new CatPollCallback(data, catRequest));
     }
@@ -124,25 +90,13 @@ class CatBot extends AbstractGameBot {
     }
 
     private SendMessage buildIsThatCatMessage(Message message, Chat chat, CatRequest catRequest) {
-        InlineKeyboardMarkup buttons = getCatePollButtons(catRequest);
+        InlineKeyboardMarkup buttons = CatRequestVoteHandler.getCatePollButtons(catRequest);
         catRequest.setPollButtons(buttons);
         return new SendMessage()
                 .setReplyToMessageId(message.getMessageId())
                 .setChatId(chat.getId())
                 .setText(IS_THAT_CAT)
                 .setReplyMarkup(buttons);
-    }
-
-    private InlineKeyboardMarkup getCatePollButtons(CatRequest catRequest) {
-        return inlineKeyboardMarkup(
-                catRequest.getVotesButtonPrefix(CAT1) + CAT,
-                CAT1.getCallback(),
-                catRequest.getVotesButtonPrefix(CAT2) + CAT + "x2",
-                CAT2.getCallback(),
-                catRequest.getVotesButtonPrefix(CAT3) + CAT + "x3",
-                CAT3.getCallback(),
-                catRequest.getVotesButtonPrefix(NOT_CAT) + HEAVY_MULTIPLY,
-                NOT_CAT.getCallback());
     }
 
     @Override
@@ -170,7 +124,7 @@ class CatBot extends AbstractGameBot {
                 request.finish(vote);
                 scoreData.save(request);
                 Message message = request.getVoteMessage();
-                execute(
+                executeUnsafe(
                         new EditMessageText()
                                 .setChatId(message.getChatId())
                                 .setMessageId(message.getMessageId())

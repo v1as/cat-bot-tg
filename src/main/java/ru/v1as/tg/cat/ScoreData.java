@@ -26,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import ru.v1as.tg.cat.callback.is_cat.CatRequestVote;
 
 @Slf4j
 @RequiredArgsConstructor
