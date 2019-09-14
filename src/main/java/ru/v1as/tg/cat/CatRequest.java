@@ -47,14 +47,21 @@ public class CatRequest {
     public CatRequestAnswerResult vote(UserData user, CatRequestVote vote) {
         Integer userId = user.getId();
         if (finished) {
-            throw new IllegalArgumentException("This request is finished");
+            return CatRequestAnswerResult.FINISHED;
         }
-        log.info("User '{}' just voted: {}", user, vote);
         if (userId.equals(owner.getId()) && vote.equals(CatRequestVote.NOT_CAT)) {
             return CatRequestAnswerResult.CANCELED;
         }
+        log.info(
+                "User '{}' just voted: {} for request {}",
+                user,
+                vote,
+                sourceMessage.getMessageId());
+        CatRequestVote prevVote = votes.get(user);
         if (owner.getId().equals(userId)) {
             return CatRequestAnswerResult.FORBIDDEN;
+        } else if (vote.equals(prevVote)) {
+            return CatRequestAnswerResult.SAME;
         } else if (null == votes.put(user, vote)) {
             return CatRequestAnswerResult.VOTED;
         } else {

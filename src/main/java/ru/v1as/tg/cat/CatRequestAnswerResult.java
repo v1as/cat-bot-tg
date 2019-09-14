@@ -7,9 +7,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum CatRequestAnswerResult {
     VOTED("Голос учтён"),
+    SAME("Вы уже так проголосовали"),
     CHANGED("Голос изменён"),
     FORBIDDEN("Вам запрещено голосовать"),
-    CANCELED("Вы закрыли голосование");
+    CANCELED("Вы закрыли голосование"),
+    FINISHED("Заявка закрыта");
 
     private final String text;
 }

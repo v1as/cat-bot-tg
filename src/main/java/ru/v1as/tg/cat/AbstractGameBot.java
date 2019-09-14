@@ -4,7 +4,6 @@ import static ru.v1as.tg.cat.UpdateUtils.getChat;
 import static ru.v1as.tg.cat.UpdateUtils.getUser;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -33,22 +32,22 @@ public abstract class AbstractGameBot extends TelegramLongPollingBot implements 
             }
             if (update.hasMessage() && update.getMessage().isCommand()) {
                 String text = update.getMessage().getText();
-                String[] data = text.split(" ");
-                String[] arguments = Arrays.copyOfRange(data, 1, data.length);
-                onUpdateCommand(data[0], arguments, chat, user);
+                log.info("Command '{}' received.", text);
+                onUpdateCommand(TgCommandRequest.parse(text), chat, user);
             } else if (update.hasMessage()) {
                 onUpdateMessage(update.getMessage(), chat, user);
             } else if (update.hasCallbackQuery()) {
+                log.info("Callback received '{}'", update.getCallbackQuery().getData());
                 onUpdateCallbackQuery(update.getCallbackQuery(), chat, user);
             } else {
                 log.debug("Unsupported update type: " + update);
             }
-        } catch (Exception e) {
+        }catch (Exception e) {
             log.error("Something gone wrong ", e);
         }
     }
 
-    protected abstract void onUpdateCommand(String datum, String[] arguments, Chat chat, User user);
+    protected abstract void onUpdateCommand(TgCommandRequest command, Chat chat, User user);
 
     protected abstract void before(Update update);
 

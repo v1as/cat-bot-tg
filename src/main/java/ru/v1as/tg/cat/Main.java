@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import lombok.extern.slf4j.Slf4j;
+import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -22,6 +23,7 @@ public class Main {
     private static final int REQUEST_CHECK_INTERVAL = 2;
 
     public static void main(String[] args) {
+        log.info("Cat bot is starting...");
         try {
             ScoreData scoreData = new ScoreData("cat_scores.txt");
             scoreData.init();
