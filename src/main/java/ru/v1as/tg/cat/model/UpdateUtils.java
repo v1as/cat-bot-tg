@@ -1,4 +1,4 @@
-package ru.v1as.tg.cat;
+package ru.v1as.tg.cat.model;
 
 import static java.util.Optional.ofNullable;
 
@@ -9,9 +9,9 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 
 @UtilityClass
-class UpdateUtils {
+public class UpdateUtils {
 
-    static Message getMessage(Update update) {
+    public static Message getMessage(Update update) {
         if (update.hasMessage()) {
             return update.getMessage();
         } else if (update.hasCallbackQuery()) {
@@ -20,11 +20,11 @@ class UpdateUtils {
         return null;
     }
 
-    static Chat getChat(Update update) {
+    public static Chat getChat(Update update) {
         return ofNullable(getMessage(update)).map(Message::getChat).orElse(null);
     }
 
-    static User getUser(Update update) {
+    public static User getUser(Update update) {
         if (update.hasCallbackQuery()) {
             return update.getCallbackQuery().getFrom();
         } else if (update.hasMessage()) {

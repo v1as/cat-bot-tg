@@ -9,6 +9,9 @@ import org.junit.Assert;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.updateshandlers.SentCallback;
+import ru.v1as.tg.cat.model.CatRequest;
+import ru.v1as.tg.cat.model.DbData;
+import ru.v1as.tg.cat.model.ScoreData;
 
 @SuppressWarnings("unchecked")
 class AbstractCatBotTest extends AbstractGameBotTest {
@@ -45,7 +48,7 @@ class AbstractCatBotTest extends AbstractGameBotTest {
     }
 
     ScoreData getCatBotScoreData() {
-        return (getCatBot()).getScoreData();
+        return (getCatBot()).getData().getScoreData();
     }
 
     CatRequest getOnlyOneCatRequest() {

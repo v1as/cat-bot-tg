@@ -1,4 +1,4 @@
-package ru.v1as.tg.cat.callback;
+package ru.v1as.tg.cat.callbacks;
 
 public interface TgCallbackEnumParser<T extends Enum> {
 

@@ -1,14 +1,13 @@
-package ru.v1as.tg.cat;
+package ru.v1as.tg.cat.commands;
 
 import static com.google.common.collect.ImmutableList.of;
 import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
-import static ru.v1as.tg.cat.TgCommandRequest.parse;
+import static ru.v1as.tg.cat.commands.TgCommandRequest.parse;
 
 import org.junit.Test;
 
 public class TgCommandRequestTest {
-
     @Test
     public void parseSimpleCommand() {
         assertEquals(new TgCommandRequest("command1", null, emptyList()), parse("/command1"));
@@ -31,5 +30,4 @@ public class TgCommandRequestTest {
         assertEquals(
                 new TgCommandRequest("command", null, of("1", "2", "3")), parse("/command 1 2 3"));
     }
-
 }

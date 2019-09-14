@@ -1,7 +1,7 @@
 package ru.v1as.tg.cat;
 
-import static ru.v1as.tg.cat.UpdateUtils.getChat;
-import static ru.v1as.tg.cat.UpdateUtils.getUser;
+import static ru.v1as.tg.cat.model.UpdateUtils.getChat;
+import static ru.v1as.tg.cat.model.UpdateUtils.getUser;
 
 import java.io.Serializable;
 import lombok.SneakyThrows;
@@ -15,6 +15,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.updateshandlers.SentCallback;
+import ru.v1as.tg.cat.commands.TgCommandRequest;
+import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
 @Slf4j
 public abstract class AbstractGameBot extends TelegramLongPollingBot implements UnsafeAbsSender {
@@ -42,7 +44,7 @@ public abstract class AbstractGameBot extends TelegramLongPollingBot implements 
             } else {
                 log.debug("Unsupported update type: " + update);
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error("Something gone wrong ", e);
         }
     }

@@ -1,4 +1,4 @@
-package ru.v1as.tg.cat.callback;
+package ru.v1as.tg.cat.callbacks;
 
 import java.util.HashMap;
 import java.util.Map;

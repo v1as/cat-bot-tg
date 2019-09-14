@@ -1,4 +1,4 @@
-package ru.v1as.tg.cat;
+package ru.v1as.tg.cat.commands;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Collections.emptyList;
@@ -8,12 +8,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
 @Value
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor
 public class TgCommandRequest {
 
     private static final Pattern PATTERN_WITH_NAME =

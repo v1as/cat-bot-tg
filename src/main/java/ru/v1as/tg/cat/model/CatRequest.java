@@ -1,4 +1,4 @@
-package ru.v1as.tg.cat;
+package ru.v1as.tg.cat.model;
 
 import static lombok.AccessLevel.PRIVATE;
 
@@ -11,7 +11,8 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import ru.v1as.tg.cat.callback.is_cat.CatRequestVote;
+import ru.v1as.tg.cat.callbacks.is_cat.CatRequestAnswerResult;
+import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 
 @Data
 @FieldDefaults(level = PRIVATE)
@@ -29,7 +30,7 @@ public class CatRequest {
     boolean canceled = false;
     CatRequestVote result;
 
-    CatRequest(Message sourceMessage, UserData owner, ChatData chat, LocalDateTime created) {
+    public CatRequest(Message sourceMessage, UserData owner, ChatData chat, LocalDateTime created) {
         this.sourceMessage = sourceMessage;
         this.owner = owner;
         this.chat = chat;
@@ -69,7 +70,7 @@ public class CatRequest {
         }
     }
 
-    void setVoteMessage(Message voteMessage) {
+    public void setVoteMessage(Message voteMessage) {
         if (this.voteMessage != null) {
             throw new IllegalStateException("Vote message is already set");
         }
@@ -91,7 +92,7 @@ public class CatRequest {
         this.result = CatRequestVote.NOT_CAT;
     }
 
-    void finish(CatRequestVote result) {
+    public void finish(CatRequestVote result) {
         if (finished) {
             throw new IllegalStateException("This request is already closed");
         }

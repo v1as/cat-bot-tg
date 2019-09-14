@@ -1,9 +1,9 @@
-package ru.v1as.tg.cat;
+package ru.v1as.tg.cat.model;
 
 import lombok.Value;
 
 @Value
-class LongProperty {
+public class LongProperty {
     String name;
     Long value;
 

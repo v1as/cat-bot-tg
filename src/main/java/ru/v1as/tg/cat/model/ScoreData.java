@@ -1,11 +1,10 @@
-package ru.v1as.tg.cat;
+package ru.v1as.tg.cat.model;
 
 import static java.lang.System.lineSeparator;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.summarizingInt;
 import static lombok.AccessLevel.PRIVATE;
 import static org.apache.http.util.TextUtils.isEmpty;
-import static ru.v1as.tg.cat.EmojiConst.CAT;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import ru.v1as.tg.cat.callback.is_cat.CatRequestVote;
+import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -90,21 +89,15 @@ public class ScoreData {
                 .collect(Collectors.toList());
     }
 
-    Stream<String> getWinnersStream(Long chatId, LocalDateTime after) {
-        Stream<ScoreLine> scoreStream = getScore(chatId).stream();
-        if (after != null) {
-            scoreStream =
-                    scoreStream
-                            .filter(line -> line.getDate() != null)
-                            .filter(scoreLine -> after.isBefore(scoreLine.getDate()));
-        }
-
+    public Stream<LongProperty> getWinnersStream(Long chatId, LocalDateTime after) {
         Map<String, IntSummaryStatistics> grouped =
-                scoreStream.collect(
+                getScore(chatId).stream()
+                        .filter(line -> line.getDate() != null)
+                        .filter(scoreLine -> after == null || after.isBefore(scoreLine.getDate())).collect(
                         groupingBy(ScoreLine::getUserString, summarizingInt(ScoreLine::getAmount)));
         return grouped.entrySet().stream()
                 .sorted(Comparator.comparingLong(e -> -1 * e.getValue().getSum()))
-                .map(e -> String.format("%s       %d %s", e.getKey(), e.getValue().getSum(), CAT));
+                .map(e -> new LongProperty(e.getKey(), e.getValue().getSum()));
     }
 
     @FieldDefaults(level = PRIVATE, makeFinal = true)

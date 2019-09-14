@@ -1,4 +1,4 @@
-package ru.v1as.tg.cat;
+package ru.v1as.tg.cat.tg;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageRe
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import ru.v1as.tg.cat.model.CatRequest;
 
 @UtilityClass
 public class KeyboardUtils {
@@ -25,18 +26,20 @@ public class KeyboardUtils {
                             .setCallbackData(buttonAndData[2 * i + 1]));
         }
         // Set the keyboard to the markup
-        rowsInline.add(rowInline);
+        if (!rowInline.isEmpty()) {
+            rowsInline.add(rowInline);
+        }
         // Add it to the message
         markupInline.setKeyboard(rowsInline);
         return markupInline;
     }
 
     public static EditMessageReplyMarkup getUpdateButtonsMsg(
-        Chat chat, Integer messageId, InlineKeyboardMarkup pollButtons) {
+            Chat chat, Integer messageId, InlineKeyboardMarkup pollButtons) {
         return new EditMessageReplyMarkup()
-            .setChatId(chat.getId())
-            .setMessageId(messageId)
-            .setReplyMarkup(pollButtons);
+                .setChatId(chat.getId())
+                .setMessageId(messageId)
+                .setReplyMarkup(pollButtons);
     }
 
     public static DeleteMessage deleteMsg(Chat chat, CatRequest catRequest) {

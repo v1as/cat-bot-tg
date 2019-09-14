@@ -1,28 +1,27 @@
-package ru.v1as.tg.cat.callback.is_cat;
+package ru.v1as.tg.cat.callbacks.is_cat;
 
-import static ru.v1as.tg.cat.CatRequestAnswerResult.CANCELED;
+import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestAnswerResult.CANCELED;
 import static ru.v1as.tg.cat.EmojiConst.CAT;
 import static ru.v1as.tg.cat.EmojiConst.HEAVY_MULTIPLY;
-import static ru.v1as.tg.cat.KeyboardUtils.deleteMsg;
-import static ru.v1as.tg.cat.KeyboardUtils.getUpdateButtonsMsg;
-import static ru.v1as.tg.cat.KeyboardUtils.inlineKeyboardMarkup;
-import static ru.v1as.tg.cat.callback.is_cat.CatRequestVote.CAT1;
-import static ru.v1as.tg.cat.callback.is_cat.CatRequestVote.CAT2;
-import static ru.v1as.tg.cat.callback.is_cat.CatRequestVote.CAT3;
-import static ru.v1as.tg.cat.callback.is_cat.CatRequestVote.NOT_CAT;
+import static ru.v1as.tg.cat.tg.KeyboardUtils.deleteMsg;
+import static ru.v1as.tg.cat.tg.KeyboardUtils.getUpdateButtonsMsg;
+import static ru.v1as.tg.cat.tg.KeyboardUtils.inlineKeyboardMarkup;
+import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT1;
+import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT2;
+import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT3;
+import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.NOT_CAT;
 
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import ru.v1as.tg.cat.CatRequest;
-import ru.v1as.tg.cat.CatRequestAnswerResult;
-import ru.v1as.tg.cat.DbData;
-import ru.v1as.tg.cat.ScoreData;
-import ru.v1as.tg.cat.UnsafeAbsSender;
-import ru.v1as.tg.cat.UserData;
-import ru.v1as.tg.cat.callback.EnumCallBackHandler;
+import ru.v1as.tg.cat.model.CatRequest;
+import ru.v1as.tg.cat.model.DbData;
+import ru.v1as.tg.cat.model.ScoreData;
+import ru.v1as.tg.cat.tg.UnsafeAbsSender;
+import ru.v1as.tg.cat.model.UserData;
+import ru.v1as.tg.cat.callbacks.EnumCallBackHandler;
 
 public class CatRequestVoteHandler implements EnumCallBackHandler<CatRequestVote> {
 

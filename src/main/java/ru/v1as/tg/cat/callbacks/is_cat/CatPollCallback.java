@@ -1,10 +1,12 @@
-package ru.v1as.tg.cat;
+package ru.v1as.tg.cat.callbacks.is_cat;
 
 import lombok.RequiredArgsConstructor;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import org.telegram.telegrambots.meta.updateshandlers.SentCallback;
+import ru.v1as.tg.cat.model.CatRequest;
+import ru.v1as.tg.cat.model.DbData;
 
 @RequiredArgsConstructor
 public class CatPollCallback implements SentCallback<Message> {

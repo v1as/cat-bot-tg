@@ -8,10 +8,12 @@ import java.time.LocalDateTime;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import lombok.extern.slf4j.Slf4j;
-import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import ru.v1as.tg.cat.model.ScoreData;
+import ru.v1as.tg.cat.tasks.RequestsChecker;
+import ru.v1as.tg.cat.tasks.SendWinners;
 
 @Slf4j
 public class Main {
@@ -32,18 +34,24 @@ public class Main {
             CatBot bot = new CatBot(scoreData);
 
             EXECUTOR_SERVICE.scheduleWithFixedDelay(
-                    bot::checkCatRequests, REQUEST_CHECK_INTERVAL, REQUEST_CHECK_INTERVAL, SECONDS);
+                    new RequestsChecker(bot, bot.getData(), scoreData),
+                    REQUEST_CHECK_INTERVAL,
+                    REQUEST_CHECK_INTERVAL,
+                    SECONDS);
             EXECUTOR_SERVICE.scheduleWithFixedDelay(
                     scoreData::flush, FLUSH_FILE_INTERVAL, FLUSH_FILE_INTERVAL, SECONDS);
             EXECUTOR_SERVICE.scheduleAtFixedRate(
-                    bot::sendDayWinners, getInitialDelay(), DAYS.toSeconds(1), SECONDS);
+                    new SendWinners(bot, bot.getData(), scoreData),
+                    getWinnersSendingInitialDelay(),
+                    DAYS.toSeconds(1),
+                    SECONDS);
             telegramBotsApi.registerBot(bot);
         } catch (TelegramApiException e) {
             log.error("Some telegram exception", e);
         }
     }
 
-    private static long getInitialDelay() {
+    private static long getWinnersSendingInitialDelay() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime tenHours = now.withHour(10).withMinute(0).withSecond(0);
         if (tenHours.isBefore(now)) {

@@ -1,8 +1,8 @@
-package ru.v1as.tg.cat;
+package ru.v1as.tg.cat.model;
 
 import static lombok.AccessLevel.PRIVATE;
-import static ru.v1as.tg.cat.UpdateUtils.getChat;
-import static ru.v1as.tg.cat.UpdateUtils.getUser;
+import static ru.v1as.tg.cat.model.UpdateUtils.getChat;
+import static ru.v1as.tg.cat.model.UpdateUtils.getUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +25,7 @@ public class DbData {
     Map<Integer, UserData> users = new HashMap<>();
     private final ScoreData scoreData;
 
-    void register(Update update) {
+    public void register(Update update) {
         Chat chat = getChat(update);
         User user = getUser(update);
         if (chat == null) {
@@ -44,7 +44,7 @@ public class DbData {
         return chatData.getCatRequest(callbackQuery);
     }
 
-    ChatData getChatData(Long chatId) {
+    public ChatData getChatData(Long chatId) {
         return chats.get(chatId);
     }
 
@@ -52,20 +52,20 @@ public class DbData {
         return users.get(user.getId());
     }
 
-    void register(CatRequest catRequest, Message message) {
+    public void register(CatRequest catRequest, Message message) {
         ChatData chatData = chats.get(message.getChatId());
         Integer messageId = message.getMessageId();
         chatData.getCatRequests().put(messageId, catRequest);
     }
 
-    List<CatRequest> getNotFinishedCatRequests() {
+    public List<CatRequest> getNotFinishedCatRequests() {
         return this.chats.values().stream()
                 .flatMap(chat -> chat.getCatRequests().values().stream())
                 .filter(r -> !r.isFinished())
                 .collect(Collectors.toList());
     }
 
-    List<ChatData> getChats() {
+    public List<ChatData> getChats() {
         return new ArrayList<>(chats.values());
     }
 

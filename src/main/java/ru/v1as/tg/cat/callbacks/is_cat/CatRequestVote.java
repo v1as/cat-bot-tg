@@ -1,4 +1,4 @@
-package ru.v1as.tg.cat.callback.is_cat;
+package ru.v1as.tg.cat.callbacks.is_cat;
 
 import java.util.Arrays;
 import lombok.Getter;

@@ -1,7 +1,7 @@
-package ru.v1as.tg.cat;
+package ru.v1as.tg.cat.tg;
 
 import static org.junit.Assert.assertEquals;
-import static ru.v1as.tg.cat.KeyboardUtils.inlineKeyboardMarkup;
+import static ru.v1as.tg.cat.tg.KeyboardUtils.inlineKeyboardMarkup;
 
 import java.util.List;
 import org.junit.Test;
@@ -42,4 +42,5 @@ public class KeyboardUtilsTest {
         assertEquals("name3", buttons.get(2).getText());
         assertEquals("data3", buttons.get(2).getCallbackData());
     }
+
 }

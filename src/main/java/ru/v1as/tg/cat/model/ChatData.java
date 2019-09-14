@@ -1,4 +1,4 @@
-package ru.v1as.tg.cat;
+package ru.v1as.tg.cat.model;
 
 import static lombok.AccessLevel.PRIVATE;
 
@@ -13,7 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.Chat;
 @Data
 @Log
 @FieldDefaults(level = PRIVATE)
-class ChatData {
+public class ChatData {
 
     final Long chatId;
     final boolean isPrivate;
@@ -21,22 +21,18 @@ class ChatData {
     final Map<Integer, CatRequest> catRequests = new HashMap<>();
     String name;
 
-    ChatData(Chat chat, boolean isPrivate) {
+    public ChatData(Chat chat, boolean isPrivate) {
         this.chatId = chat.getId();
         this.isPrivate = isPrivate;
         log.info("Chat data created: " + this);
     }
 
-    void update(Chat chat) {
+    public void update(Chat chat) {
         this.name = chat.getTitle();
     }
 
-    CatRequest getCatRequest(CallbackQuery callbackQuery) {
+    public CatRequest getCatRequest(CallbackQuery callbackQuery) {
         return catRequests.get(callbackQuery.getMessage().getMessageId());
-    }
-
-    UserData getUserData(Integer id) {
-        return users.get(id);
     }
 
     @Override

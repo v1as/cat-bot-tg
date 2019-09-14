@@ -1,4 +1,4 @@
-package ru.v1as.tg.cat;
+package ru.v1as.tg.cat.tg;
 
 import java.io.Serializable;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;

@@ -1,6 +1,6 @@
-package ru.v1as.tg.cat.callback.is_cat;
+package ru.v1as.tg.cat.callbacks.is_cat;
 
-import ru.v1as.tg.cat.callback.TgCallbackEnumParser;
+import ru.v1as.tg.cat.callbacks.TgCallbackEnumParser;
 
 public class CatRequestVoteParser implements TgCallbackEnumParser<CatRequestVote> {
 

@@ -1,4 +1,4 @@
-package ru.v1as.tg.cat;
+package ru.v1as.tg.cat.callbacks.is_cat;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
