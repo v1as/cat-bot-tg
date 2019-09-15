@@ -3,18 +3,18 @@ package ru.v1as.tg.cat;
 import static org.mockito.Mockito.mock;
 
 import java.io.Serializable;
-import java.util.Map.Entry;
-import java.util.Set;
+import java.util.Collection;
 import org.junit.Assert;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.updateshandlers.SentCallback;
+import ru.v1as.tg.cat.model.CatChatData;
 import ru.v1as.tg.cat.model.CatRequest;
 import ru.v1as.tg.cat.model.DbData;
 import ru.v1as.tg.cat.model.ScoreData;
 
 @SuppressWarnings("unchecked")
-class AbstractCatBotTest extends AbstractGameBotTest {
+public class AbstractCatBotTest extends AbstractGameBotTest {
 
     {
         bot =
@@ -39,22 +39,22 @@ class AbstractCatBotTest extends AbstractGameBotTest {
                 };
     }
 
-    DbData getCatBotData() {
+    public DbData<CatChatData> getCatBotData() {
         return getCatBot().getData();
     }
 
-    CatBot getCatBot() {
+    public CatBot getCatBot() {
         return (CatBot) bot;
     }
 
-    ScoreData getCatBotScoreData() {
+    public ScoreData getCatBotScoreData() {
         return (getCatBot()).getData().getScoreData();
     }
 
-    CatRequest getOnlyOneCatRequest() {
-        Set<Entry<Integer, CatRequest>> entries =
-                getCatBotData().getChatData(getChatId()).getCatRequests().entrySet();
-        Assert.assertEquals(1, entries.size());
-        return entries.iterator().next().getValue();
+    public CatRequest getOnlyOneCatRequest() {
+        Collection<CatRequest> catRequests =
+                getCatBotData().getChatData(getChatId()).getCatRequests();
+        Assert.assertEquals(1, catRequests.size());
+        return catRequests.iterator().next();
     }
 }

@@ -1,8 +1,8 @@
 package ru.v1as.tg.cat.callbacks.is_cat;
 
-import ru.v1as.tg.cat.callbacks.TgCallbackEnumParser;
+import ru.v1as.tg.cat.callbacks.TgCallbackParser;
 
-public class CatRequestVoteParser implements TgCallbackEnumParser<CatRequestVote> {
+public class CatRequestVoteParser implements TgCallbackParser<CatRequestVote> {
 
     @Override
     public String getPrefix() {
@@ -13,5 +13,4 @@ public class CatRequestVoteParser implements TgCallbackEnumParser<CatRequestVote
     public CatRequestVote parse(String value) {
         return CatRequestVote.parse(value);
     }
-
 }

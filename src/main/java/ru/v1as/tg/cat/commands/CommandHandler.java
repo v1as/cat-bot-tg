@@ -8,5 +8,4 @@ public interface CommandHandler {
     String getCommandName();
 
     void handle(TgCommandRequest command, Chat chat, User user);
-
 }

@@ -1,4 +1,4 @@
-package ru.v1as.tg.cat;
+package ru.v1as.tg.cat.commands.impl;
 
 import static java.util.stream.Collectors.joining;
 
@@ -23,7 +23,7 @@ public class ScoreCommandHandler implements CommandHandler {
 
     @Override
     public String getCommandName() {
-        return null;
+        return "score";
     }
 
     @Override

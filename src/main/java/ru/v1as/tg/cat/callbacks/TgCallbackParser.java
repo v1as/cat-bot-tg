@@ -1,9 +1,8 @@
 package ru.v1as.tg.cat.callbacks;
 
-public interface TgCallbackEnumParser<T extends Enum> {
+public interface TgCallbackParser<T> {
 
     String getPrefix();
 
     T parse(String value);
-
 }

@@ -118,6 +118,11 @@ public class AbstractGameBotTest {
     protected User getUser() {
         User user = mock(User.class);
         when(user.getId()).thenReturn(getUserId());
+        String userName = "User" + getUserId();
+        when(user.toString()).thenReturn(userName);
+        when(user.getUserName()).thenReturn(userName);
+        when(user.getFirstName()).thenReturn("User");
+        when(user.getLastName()).thenReturn(getUserId().toString());
         return user;
     }
 
@@ -142,7 +147,8 @@ public class AbstractGameBotTest {
                         .filter(clazz::isInstance)
                         .map(clazz::cast)
                         .findFirst()
-                        .orElseThrow(() -> new AssertionFailedError("Wrong type expected"));
+                        .orElseThrow(
+                                () -> new AssertionFailedError("Wrong type expected: " + clazz));
         assertTrue(methods.remove(pop));
         return pop;
     }
@@ -197,5 +203,4 @@ public class AbstractGameBotTest {
         assertEquals(text, editMessageText.getText());
         return editMessageText;
     }
-
 }

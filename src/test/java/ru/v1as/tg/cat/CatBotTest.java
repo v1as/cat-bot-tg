@@ -3,12 +3,13 @@ package ru.v1as.tg.cat;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
+import static org.mockito.Mockito.mock;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT1;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.NOT_CAT;
 
 import java.io.File;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
 import org.junit.Test;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 import ru.v1as.tg.cat.model.CatRequest;
@@ -16,6 +17,7 @@ import ru.v1as.tg.cat.model.ChatData;
 import ru.v1as.tg.cat.model.ScoreData;
 import ru.v1as.tg.cat.model.ScoreData.ScoreLine;
 import ru.v1as.tg.cat.model.UserData;
+import ru.v1as.tg.cat.tasks.CuriosCatRequestScheduler;
 import ru.v1as.tg.cat.tasks.RequestsChecker;
 
 public class CatBotTest extends AbstractCatBotTest {
@@ -99,7 +101,6 @@ public class CatBotTest extends AbstractCatBotTest {
         return new CatRequest(
                 getMessageUpdate().getMessage(),
                 new UserData(getUser()),
-                new ChatData(getChat(), false),
-                LocalDateTime.now());
+                new ChatData(getChat(), false));
     }
 }

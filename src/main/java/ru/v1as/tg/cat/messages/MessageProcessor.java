@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.User;
 
 public class MessageProcessor {
 
-    List<MessageHandler> handlers = new ArrayList<>();
+    private List<MessageHandler> handlers = new ArrayList<>();
 
     public MessageProcessor register(MessageHandler messageHandler) {
         handlers.add(messageHandler);
@@ -16,7 +16,8 @@ public class MessageProcessor {
     }
 
     public void process(Message message, Chat chat, User user) {
-        handlers.get(0).handle(message, chat, user);
+        for (MessageHandler handler : handlers) {
+            handler.handle(message, chat, user);
+        }
     }
-
 }

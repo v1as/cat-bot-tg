@@ -6,14 +6,12 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 
-public class TgEnumCallbackProcessor {
+public class TgCallbackProcessor {
 
-    private Map<String, TgCallbackEnumParser<? extends Enum>> parsers = new HashMap<>();
-    private Map<String, EnumCallBackHandler<? extends Enum>> handlers = new HashMap<>();
+    private Map<String, TgCallbackParser> parsers = new HashMap<>();
+    private Map<String, TgCallBackHandler> handlers = new HashMap<>();
 
-    public TgEnumCallbackProcessor register(
-            TgCallbackEnumParser<? extends Enum> parser,
-            EnumCallBackHandler<? extends Enum> handler) {
+    public TgCallbackProcessor register(TgCallbackParser parser, TgCallBackHandler handler) {
         String parserPrefix = parser.getPrefix();
         for (String prefix : parsers.keySet()) {
             if (prefix.startsWith(parserPrefix) || parserPrefix.startsWith(prefix)) {
@@ -36,9 +34,8 @@ public class TgEnumCallbackProcessor {
                                 () ->
                                         new IllegalStateException(
                                                 "Callback is not supported: " + data));
-        TgCallbackEnumParser parser = parsers.get(prefix);
-        EnumCallBackHandler<Enum> handler = (EnumCallBackHandler<Enum>) handlers.get(prefix);
-        Enum parse = parser.parse(data);
-        handler.handle(parse, chat, user, callback);
+        TgCallbackParser parser = parsers.get(prefix);
+        TgCallBackHandler handler = handlers.get(prefix);
+        handler.handle(parser.parse(data), chat, user, callback);
     }
 }

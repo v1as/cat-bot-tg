@@ -5,13 +5,13 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum CatRequestAnswerResult {
+public enum RequestAnswerResult {
     VOTED("Голос учтён"),
     SAME("Вы уже так проголосовали"),
     CHANGED("Голос изменён"),
     FORBIDDEN("Вам запрещено голосовать"),
     CANCELED("Вы закрыли голосование"),
-    FINISHED("Заявка закрыта");
+    FINISHED("Голосование закрыто");
 
     private final String text;
 }

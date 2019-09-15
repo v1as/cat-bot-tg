@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import ru.v1as.tg.cat.MedalsListBuilder;
+import ru.v1as.tg.cat.model.CatChatData;
 import ru.v1as.tg.cat.model.ChatData;
 import ru.v1as.tg.cat.model.DbData;
 import ru.v1as.tg.cat.model.LongProperty;
@@ -17,7 +18,7 @@ import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 public class SendWinners implements Runnable {
 
     private final UnsafeAbsSender sender;
-    private final DbData data;
+    private final DbData<CatChatData> data;
     private final ScoreData scoreData;
 
     @Override
@@ -36,13 +37,13 @@ public class SendWinners implements Runnable {
                 if (result.isEmpty()) {
                     continue;
                 }
+                result.forEach(text::append);
                 sender.executeUnsafe(
                         new SendMessage().setChatId(chat.getChatId()).setText(text.toString()));
                 log.info("Winners data '{}' was sent to chat {}", text, chat);
             } catch (Exception ex) {
-                log.error("Error while send winners to the chat " + chat);
+                log.error("Error while send winners to the chat " + chat, ex);
             }
         }
     }
-
 }

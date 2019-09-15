@@ -1,35 +1,36 @@
 package ru.v1as.tg.cat.callbacks.is_cat;
 
-import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestAnswerResult.CANCELED;
 import static ru.v1as.tg.cat.EmojiConst.CAT;
 import static ru.v1as.tg.cat.EmojiConst.HEAVY_MULTIPLY;
-import static ru.v1as.tg.cat.tg.KeyboardUtils.deleteMsg;
-import static ru.v1as.tg.cat.tg.KeyboardUtils.getUpdateButtonsMsg;
-import static ru.v1as.tg.cat.tg.KeyboardUtils.inlineKeyboardMarkup;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT1;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT2;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT3;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.NOT_CAT;
+import static ru.v1as.tg.cat.callbacks.is_cat.RequestAnswerResult.CANCELED;
+import static ru.v1as.tg.cat.tg.KeyboardUtils.deleteMsg;
+import static ru.v1as.tg.cat.tg.KeyboardUtils.getUpdateButtonsMsg;
+import static ru.v1as.tg.cat.tg.KeyboardUtils.inlineKeyboardMarkup;
 
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import ru.v1as.tg.cat.callbacks.TgCallBackHandler;
+import ru.v1as.tg.cat.model.CatChatData;
 import ru.v1as.tg.cat.model.CatRequest;
 import ru.v1as.tg.cat.model.DbData;
 import ru.v1as.tg.cat.model.ScoreData;
-import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 import ru.v1as.tg.cat.model.UserData;
-import ru.v1as.tg.cat.callbacks.EnumCallBackHandler;
+import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
-public class CatRequestVoteHandler implements EnumCallBackHandler<CatRequestVote> {
+public class CatRequestVoteHandler implements TgCallBackHandler<CatRequestVote> {
 
-    private final DbData data;
+    private final DbData<CatChatData> data;
     private final UnsafeAbsSender sender;
     private final ScoreData scoreData;
 
-    public CatRequestVoteHandler(DbData data, UnsafeAbsSender sender) {
+    public CatRequestVoteHandler(DbData<CatChatData> data, UnsafeAbsSender sender) {
         this.data = data;
         this.sender = sender;
         this.scoreData = data.getScoreData();
@@ -49,19 +50,21 @@ public class CatRequestVoteHandler implements EnumCallBackHandler<CatRequestVote
 
     @Override
     public void handle(CatRequestVote vote, Chat chat, User user, CallbackQuery callbackQuery) {
-        CatRequest catRequest = data.getCatRequest(chat, callbackQuery);
+        CatRequest catRequest =
+                data.getChatData(chat.getId())
+                        .getCatRequest(callbackQuery.getMessage().getMessageId());
         UserData userData = data.getUserData(user);
         Integer messageId = callbackQuery.getMessage().getMessageId();
         if (catRequest == null || vote == null) {
             sender.executeUnsafe(getUpdateButtonsMsg(chat, messageId, inlineKeyboardMarkup()));
             return;
         }
-        CatRequestAnswerResult voted = catRequest.vote(userData, vote);
+        RequestAnswerResult voted = catRequest.vote(userData, vote);
         sender.executeUnsafe(getVoteAnswerMsg(callbackQuery, voted));
         if (CANCELED.equals(voted)) {
             catRequest.cancel();
             scoreData.save(catRequest);
-            sender.executeUnsafe(deleteMsg(chat, catRequest));
+            sender.executeUnsafe(deleteMsg(chat.getId(), catRequest.getVoteMessage()));
         } else {
             InlineKeyboardMarkup pollButtons = getCatePollButtons(catRequest);
             if (!catRequest.getPollButtons().equals(pollButtons)) {
@@ -72,7 +75,7 @@ public class CatRequestVoteHandler implements EnumCallBackHandler<CatRequestVote
     }
 
     private AnswerCallbackQuery getVoteAnswerMsg(
-            CallbackQuery callbackQuery, CatRequestAnswerResult voted) {
+            CallbackQuery callbackQuery, RequestAnswerResult voted) {
         return new AnswerCallbackQuery()
                 .setCallbackQueryId(callbackQuery.getId())
                 .setText(voted.getText());

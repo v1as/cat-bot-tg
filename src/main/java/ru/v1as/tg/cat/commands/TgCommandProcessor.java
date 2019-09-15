@@ -24,5 +24,4 @@ public class TgCommandProcessor {
             log.warn("No handlers for this command: {}", command);
         }
     }
-
 }

@@ -8,13 +8,17 @@ import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
-import ru.v1as.tg.cat.callbacks.TgEnumCallbackProcessor;
+import ru.v1as.tg.cat.callbacks.SimpleCallbackParser;
+import ru.v1as.tg.cat.callbacks.TgCallbackProcessor;
+import ru.v1as.tg.cat.callbacks.curios.CuriosCatVoteHandler;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVoteHandler;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVoteParser;
 import ru.v1as.tg.cat.commands.TgCommandProcessor;
 import ru.v1as.tg.cat.commands.TgCommandRequest;
+import ru.v1as.tg.cat.commands.impl.ScoreCommandHandler;
 import ru.v1as.tg.cat.messages.CatRequestMessageCreator;
 import ru.v1as.tg.cat.messages.MessageProcessor;
+import ru.v1as.tg.cat.model.CatChatData;
 import ru.v1as.tg.cat.model.DbData;
 import ru.v1as.tg.cat.model.ScoreData;
 
@@ -22,18 +26,20 @@ import ru.v1as.tg.cat.model.ScoreData;
 @Getter
 class CatBot extends AbstractGameBot {
 
-    private final DbData data;
-    private final TgEnumCallbackProcessor callbackProcessor;
+    private final DbData<CatChatData> data;
+    private final TgCallbackProcessor callbackProcessor;
     private final TgCommandProcessor commandProcessor;
     private final MessageProcessor messageProcessor;
 
     public CatBot(ScoreData scoreData) {
         super();
-        this.data = new DbData(scoreData);
+        this.data = new DbData<>(scoreData, CatChatData::new);
         this.callbackProcessor =
-                new TgEnumCallbackProcessor()
+                new TgCallbackProcessor()
+                        .register(new CatRequestVoteParser(), new CatRequestVoteHandler(data, this))
                         .register(
-                                new CatRequestVoteParser(), new CatRequestVoteHandler(data, this));
+                                new SimpleCallbackParser("curiosCat"),
+                                new CuriosCatVoteHandler(data, scoreData, this));
         this.commandProcessor =
                 new TgCommandProcessor().register(new ScoreCommandHandler(scoreData, this));
         this.messageProcessor =
@@ -70,5 +76,4 @@ class CatBot extends AbstractGameBot {
     public String getBotToken() {
         return "";
     }
-
 }

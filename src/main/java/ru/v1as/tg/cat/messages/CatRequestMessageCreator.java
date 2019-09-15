@@ -1,16 +1,15 @@
 package ru.v1as.tg.cat.messages;
 
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import ru.v1as.tg.cat.callbacks.is_cat.CatPollCallback;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVoteHandler;
+import ru.v1as.tg.cat.callbacks.is_cat.IsCatPollCallback;
+import ru.v1as.tg.cat.model.CatChatData;
 import ru.v1as.tg.cat.model.CatRequest;
-import ru.v1as.tg.cat.model.ChatData;
 import ru.v1as.tg.cat.model.DbData;
 import ru.v1as.tg.cat.model.UserData;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
@@ -18,7 +17,7 @@ import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 @RequiredArgsConstructor
 public class CatRequestMessageCreator implements MessageHandler {
 
-    private final DbData data;
+    private final DbData<CatChatData> data;
     private final UnsafeAbsSender sender;
 
     @Override
@@ -27,11 +26,11 @@ public class CatRequestMessageCreator implements MessageHandler {
             return;
         }
         UserData userData = data.getUserData(user);
-        ChatData chatData = data.getChatData(chat.getId());
-        CatRequest catRequest = new CatRequest(message, userData, chatData, LocalDateTime.now());
+        CatChatData chatData = data.getChatData(chat.getId());
+        CatRequest catRequest = new CatRequest(message, userData, chatData);
         sender.executeAsyncUnsafe(
                 buildIsThatCatMessage(message, chat, catRequest),
-                new CatPollCallback(data, catRequest));
+                new IsCatPollCallback(chatData, catRequest));
     }
 
     private boolean isInvalidIncomeMessage(Message message) {
@@ -50,5 +49,4 @@ public class CatRequestMessageCreator implements MessageHandler {
                 .setText("Это кот?")
                 .setReplyMarkup(buttons);
     }
-
 }

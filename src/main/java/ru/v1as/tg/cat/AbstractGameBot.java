@@ -65,12 +65,14 @@ public abstract class AbstractGameBot extends TelegramLongPollingBot implements 
                     Method extends BotApiMethod<T>,
                     Callback extends SentCallback<T>>
             void executeAsyncUnsafe(Method method, Callback callback) {
+        log.debug(method.toString());
         sender.executeAsync(method, callback);
     }
 
     @SneakyThrows
     @Override
     public <T extends Serializable, Method extends BotApiMethod<T>> T executeUnsafe(Method method) {
+        log.debug(method.toString());
         return sender.execute(method);
     }
 

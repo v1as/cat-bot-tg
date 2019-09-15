@@ -7,9 +7,9 @@ import org.apache.http.util.Asserts;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.objects.Chat;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import ru.v1as.tg.cat.model.CatRequest;
 
 @UtilityClass
 public class KeyboardUtils {
@@ -42,7 +42,7 @@ public class KeyboardUtils {
                 .setReplyMarkup(pollButtons);
     }
 
-    public static DeleteMessage deleteMsg(Chat chat, CatRequest catRequest) {
-        return new DeleteMessage(chat.getId(), catRequest.getVoteMessage().getMessageId());
+    public static DeleteMessage deleteMsg(Long chatId, Message voteMessage) {
+        return new DeleteMessage(chatId, voteMessage.getMessageId());
     }
 }

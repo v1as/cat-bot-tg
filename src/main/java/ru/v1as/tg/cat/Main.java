@@ -12,6 +12,7 @@ import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.v1as.tg.cat.model.ScoreData;
+import ru.v1as.tg.cat.tasks.CuriosCatRequestScheduler;
 import ru.v1as.tg.cat.tasks.RequestsChecker;
 import ru.v1as.tg.cat.tasks.SendWinners;
 
@@ -45,6 +46,7 @@ public class Main {
                     getWinnersSendingInitialDelay(),
                     DAYS.toSeconds(1),
                     SECONDS);
+            new CuriosCatRequestScheduler(EXECUTOR_SERVICE, bot.getData(), bot);
             telegramBotsApi.registerBot(bot);
         } catch (TelegramApiException e) {
             log.error("Some telegram exception", e);

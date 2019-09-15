@@ -93,8 +93,11 @@ public class ScoreData {
         Map<String, IntSummaryStatistics> grouped =
                 getScore(chatId).stream()
                         .filter(line -> line.getDate() != null)
-                        .filter(scoreLine -> after == null || after.isBefore(scoreLine.getDate())).collect(
-                        groupingBy(ScoreLine::getUserString, summarizingInt(ScoreLine::getAmount)));
+                        .filter(scoreLine -> after == null || after.isBefore(scoreLine.getDate()))
+                        .collect(
+                                groupingBy(
+                                        ScoreLine::getUserString,
+                                        summarizingInt(ScoreLine::getAmount)));
         return grouped.entrySet().stream()
                 .sorted(Comparator.comparingLong(e -> -1 * e.getValue().getSum()))
                 .map(e -> new LongProperty(e.getKey(), e.getValue().getSum()));

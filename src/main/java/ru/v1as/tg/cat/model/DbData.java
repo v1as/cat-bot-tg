@@ -4,47 +4,53 @@ import static lombok.AccessLevel.PRIVATE;
 import static ru.v1as.tg.cat.model.UpdateUtils.getChat;
 import static ru.v1as.tg.cat.model.UpdateUtils.getUser;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.meta.api.objects.Chat;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 
+@Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(level = PRIVATE, makeFinal = true)
-public class DbData {
+public class DbData<T extends ChatData> {
 
-    Map<Long, ChatData> chats = new HashMap<>();
+    Map<Long, T> chats = new HashMap<>();
     Map<Integer, UserData> users = new HashMap<>();
-    private final ScoreData scoreData;
+    ScoreData scoreData;
+    Function<Chat, T> chatDataFactory;
 
     public void register(Update update) {
         Chat chat = getChat(update);
         User user = getUser(update);
-        if (chat == null) {
+        if (chat == null || user == null) {
             return;
         }
         ChatData chatData =
-                chats.computeIfAbsent(chat.getId(), id -> new ChatData(chat, chat.isUserChat()));
-        UserData userData = users.computeIfAbsent(user.getId(), (id) -> new UserData(user));
+                chats.computeIfAbsent(
+                        chat.getId(),
+                        (id) -> {
+                            log.info("Chat registered {}", chat);
+                            return chatDataFactory.apply(chat);
+                        });
+        UserData userData =
+                users.computeIfAbsent(
+                        user.getId(),
+                        (id) -> {
+                            log.info("User registered: " + user);
+                            return new UserData(user);
+                        });
 
         chatData.update(chat);
         userData.update(user);
     }
 
-    public CatRequest getCatRequest(Chat chat, CallbackQuery callbackQuery) {
-        ChatData chatData = chats.get(chat.getId());
-        return chatData.getCatRequest(callbackQuery);
-    }
-
-    public ChatData getChatData(Long chatId) {
+    public T getChatData(Long chatId) {
         return chats.get(chatId);
     }
 
@@ -52,21 +58,8 @@ public class DbData {
         return users.get(user.getId());
     }
 
-    public void register(CatRequest catRequest, Message message) {
-        ChatData chatData = chats.get(message.getChatId());
-        Integer messageId = message.getMessageId();
-        chatData.getCatRequests().put(messageId, catRequest);
-    }
-
-    public List<CatRequest> getNotFinishedCatRequests() {
-        return this.chats.values().stream()
-                .flatMap(chat -> chat.getCatRequests().values().stream())
-                .filter(r -> !r.isFinished())
-                .collect(Collectors.toList());
-    }
-
-    public List<ChatData> getChats() {
-        return new ArrayList<>(chats.values());
+    public Collection<T> getChats() {
+        return chats.values();
     }
 
     public ScoreData getScoreData() {
