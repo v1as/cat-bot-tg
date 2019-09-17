@@ -11,4 +11,8 @@ public class LongProperty {
     public String toString() {
         return name + ": " + value;
     }
+
+    public boolean isPositive() {
+        return value != null && value > 0;
+    }
 }

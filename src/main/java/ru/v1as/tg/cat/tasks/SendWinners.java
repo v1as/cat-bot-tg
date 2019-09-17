@@ -31,13 +31,16 @@ public class SendWinners implements Runnable {
                 LongProperty[] topPlayers =
                         scoreData
                                 .getWinnersStream(chat.getChatId(), yesterday)
+                                .filter(LongProperty::isPositive)
                                 .toArray(LongProperty[]::new);
                 List<String> result = new MedalsListBuilder().getPlayersWithMedals(topPlayers);
 
                 if (result.isEmpty()) {
                     continue;
                 }
-                result.forEach(text::append);
+                for (String s : result) {
+                    text.append(s).append('\n');
+                }
                 sender.executeUnsafe(
                         new SendMessage().setChatId(chat.getChatId()).setText(text.toString()));
                 log.info("Winners data '{}' was sent to chat {}", text, chat);
