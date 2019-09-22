@@ -7,6 +7,7 @@ import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT2;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT3;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.NOT_CAT;
 import static ru.v1as.tg.cat.callbacks.is_cat.RequestAnswerResult.CANCELED;
+import static ru.v1as.tg.cat.callbacks.is_cat.RequestAnswerResult.FINISHED;
 import static ru.v1as.tg.cat.tg.KeyboardUtils.deleteMsg;
 import static ru.v1as.tg.cat.tg.KeyboardUtils.getUpdateButtonsMsg;
 import static ru.v1as.tg.cat.tg.KeyboardUtils.inlineKeyboardMarkup;
@@ -61,7 +62,9 @@ public class CatRequestVoteHandler implements TgCallBackHandler<CatRequestVote> 
         }
         RequestAnswerResult voted = catRequest.vote(userData, vote);
         sender.executeUnsafe(getVoteAnswerMsg(callbackQuery, voted));
-        if (CANCELED.equals(voted)) {
+        if (FINISHED.equals(voted)) {
+            sender.executeUnsafe(getUpdateButtonsMsg(chat, messageId, inlineKeyboardMarkup()));
+        } else if (CANCELED.equals(voted)) {
             catRequest.cancel();
             scoreData.save(catRequest);
             sender.executeUnsafe(deleteMsg(chat.getId(), catRequest.getVoteMessage()));

@@ -1,8 +1,10 @@
 package ru.v1as.tg.cat;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import lombok.Getter;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -22,9 +24,10 @@ import ru.v1as.tg.cat.model.CatChatData;
 import ru.v1as.tg.cat.model.DbData;
 import ru.v1as.tg.cat.model.ScoreData;
 
-@Slf4j
 @Getter
 class CatBot extends AbstractGameBot {
+
+    private final Logger log = getLogger(this.getClass());
 
     private final DbData<CatChatData> data;
     private final TgCallbackProcessor callbackProcessor;
