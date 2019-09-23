@@ -7,24 +7,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.EmojiConst;
 import ru.v1as.tg.cat.callbacks.curios.CuriosCatPolLCallback;
 import ru.v1as.tg.cat.model.CatChatData;
 import ru.v1as.tg.cat.model.CuriosCatRequest;
-import ru.v1as.tg.cat.model.DbData;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
 @Slf4j
 @Setter
+@Component
 public class CuriosCatRequestScheduler {
 
     private final Random random = new Random();
-    private final ScheduledExecutorService executorService;
-    private DbData<CatChatData> data;
+    private final ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(1);
+    private CatBotData data;
     private UnsafeAbsSender sender;
     private boolean firstTime = true;
     private int delayRange = 60;
@@ -33,19 +36,15 @@ public class CuriosCatRequestScheduler {
     private int closeDelay = 3;
     private TimeUnit timeUnit = TimeUnit.MINUTES;
 
-    public CuriosCatRequestScheduler(
-            ScheduledExecutorService executorService,
-            DbData<CatChatData> data,
-            UnsafeAbsSender sender) {
-        this.executorService = executorService;
+    public CuriosCatRequestScheduler(CatBotData data, UnsafeAbsSender sender) {
         this.sender = sender;
         this.data = data;
-        schedule();
+        run();
     }
 
-    void schedule() {
+    void run() {
         int minutes = random.nextInt(delayRange) + delayMin;
-        executorService.schedule(this::schedule, minutes, timeUnit);
+        executorService.schedule(this::run, minutes, timeUnit);
         log.info("Next curios cat scheduled in {} {}", minutes, timeUnit);
         if (firstTime) {
             firstTime = false;
@@ -91,4 +90,5 @@ public class CuriosCatRequestScheduler {
     private String getCuriosCatMessage() {
         return "Любопытный кот гуляет рядом";
     }
+
 }

@@ -2,6 +2,7 @@ package ru.v1as.tg.cat.commands.impl;
 
 import static java.util.stream.Collectors.joining;
 
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -11,6 +12,7 @@ import ru.v1as.tg.cat.model.LongProperty;
 import ru.v1as.tg.cat.model.ScoreData;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
+@Component
 public class ScoreCommandHandler implements CommandHandler {
 
     private final ScoreData scoreData;

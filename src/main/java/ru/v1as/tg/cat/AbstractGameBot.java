@@ -28,6 +28,10 @@ public abstract class AbstractGameBot extends TelegramLongPollingBot implements 
         try {
             Chat chat = getChat(update);
             User user = getUser(update);
+            if (chat == null || user == null) {
+                log.warn("Such type updated does not supported '{}'", update);
+                return;
+            }
             before(update);
             if (!chat.isGroupChat() && !chat.isSuperGroupChat()) {
                 return;

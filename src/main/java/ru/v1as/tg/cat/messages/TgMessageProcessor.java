@@ -1,16 +1,19 @@
 package ru.v1as.tg.cat.messages;
 
-import java.util.ArrayList;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.User;
 
-public class MessageProcessor {
+@Component
+@RequiredArgsConstructor
+public class TgMessageProcessor {
 
-    private List<MessageHandler> handlers = new ArrayList<>();
+    private final List<MessageHandler> handlers;
 
-    public MessageProcessor register(MessageHandler messageHandler) {
+    public TgMessageProcessor register(MessageHandler messageHandler) {
         handlers.add(messageHandler);
         return this;
     }

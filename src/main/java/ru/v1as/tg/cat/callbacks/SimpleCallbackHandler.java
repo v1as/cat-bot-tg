@@ -4,16 +4,14 @@ import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class SimpleCallbackParser implements TgCallbackParser<String> {
+public abstract class SimpleCallbackHandler {
 
     private final String data;
 
-    @Override
     public String getPrefix() {
         return data;
     }
 
-    @Override
     public String parse(String value) {
         Preconditions.checkArgument(data.equals(value));
         return data;

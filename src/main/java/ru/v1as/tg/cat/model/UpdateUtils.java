@@ -16,6 +16,8 @@ public class UpdateUtils {
             return update.getMessage();
         } else if (update.hasCallbackQuery()) {
             return update.getCallbackQuery().getMessage();
+        } else if (update.hasEditedMessage()) {
+            return update.getEditedMessage();
         }
         return null;
     }
@@ -25,11 +27,6 @@ public class UpdateUtils {
     }
 
     public static User getUser(Update update) {
-        if (update.hasCallbackQuery()) {
-            return update.getCallbackQuery().getFrom();
-        } else if (update.hasMessage()) {
-            return update.getMessage().getFrom();
-        }
-        return null;
+        return ofNullable(getMessage(update)).map(Message::getFrom).orElse(null);
     }
 }

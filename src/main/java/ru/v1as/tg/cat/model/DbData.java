@@ -1,6 +1,6 @@
 package ru.v1as.tg.cat.model;
 
-import static lombok.AccessLevel.PRIVATE;
+import static org.slf4j.LoggerFactory.getLogger;
 import static ru.v1as.tg.cat.model.UpdateUtils.getChat;
 import static ru.v1as.tg.cat.model.UpdateUtils.getUser;
 
@@ -9,21 +9,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 
-@Slf4j
 @RequiredArgsConstructor
-@FieldDefaults(level = PRIVATE, makeFinal = true)
-public class DbData<T extends ChatData> {
+public abstract class DbData<T extends ChatData> {
 
-    Map<Long, T> chats = new HashMap<>();
-    Map<Integer, UserData> users = new HashMap<>();
-    ScoreData scoreData;
-    Function<Chat, T> chatDataFactory;
+    private final Logger log = getLogger(this.getClass());
+
+    private final Map<Long, T> chats = new HashMap<>();
+    private final Map<Integer, UserData> users = new HashMap<>();
+    private final Function<Chat, T> chatDataFactory;
 
     public void register(Update update) {
         Chat chat = getChat(update);
@@ -60,9 +58,5 @@ public class DbData<T extends ChatData> {
 
     public Collection<T> getChats() {
         return chats.values();
-    }
-
-    public ScoreData getScoreData() {
-        return scoreData;
     }
 }

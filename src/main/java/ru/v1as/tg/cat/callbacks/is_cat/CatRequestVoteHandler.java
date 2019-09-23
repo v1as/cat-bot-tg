@@ -12,26 +12,27 @@ import static ru.v1as.tg.cat.tg.KeyboardUtils.deleteMsg;
 import static ru.v1as.tg.cat.tg.KeyboardUtils.getUpdateButtonsMsg;
 import static ru.v1as.tg.cat.tg.KeyboardUtils.inlineKeyboardMarkup;
 
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.callbacks.TgCallBackHandler;
-import ru.v1as.tg.cat.model.CatChatData;
 import ru.v1as.tg.cat.model.CatRequest;
-import ru.v1as.tg.cat.model.DbData;
 import ru.v1as.tg.cat.model.ScoreData;
 import ru.v1as.tg.cat.model.UserData;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
+@Component
 public class CatRequestVoteHandler implements TgCallBackHandler<CatRequestVote> {
 
-    private final DbData<CatChatData> data;
+    private final CatBotData data;
     private final UnsafeAbsSender sender;
     private final ScoreData scoreData;
 
-    public CatRequestVoteHandler(DbData<CatChatData> data, UnsafeAbsSender sender) {
+    public CatRequestVoteHandler(CatBotData data, UnsafeAbsSender sender) {
         this.data = data;
         this.sender = sender;
         this.scoreData = data.getScoreData();
@@ -47,6 +48,14 @@ public class CatRequestVoteHandler implements TgCallBackHandler<CatRequestVote> 
                 CAT3.getCallback(),
                 catRequest.getVotesButtonPrefix(NOT_CAT) + HEAVY_MULTIPLY,
                 NOT_CAT.getCallback());
+    }
+
+    public String getPrefix() {
+        return CatRequestVote.PREFIX;
+    }
+
+    public CatRequestVote parse(String value) {
+        return CatRequestVote.parse(value);
     }
 
     @Override

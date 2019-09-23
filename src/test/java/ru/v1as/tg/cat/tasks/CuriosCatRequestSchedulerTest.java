@@ -26,7 +26,7 @@ public class CuriosCatRequestSchedulerTest extends AbstractCatBotTest {
                         mock(ScheduledExecutorService.class), getCatBotData(), bot);
         scheduler.setChance(1);
         scheduler.setFirstTime(false);
-        scheduler.schedule();
+        scheduler.run();
 
         popSendMessage("Любопытный кот гуляет рядом");
         sendCallback(lastMsgId, "curiosCat");
@@ -41,7 +41,7 @@ public class CuriosCatRequestSchedulerTest extends AbstractCatBotTest {
         CuriosCatRequestScheduler scheduler =
                 new CuriosCatRequestScheduler(executor, getCatBotData(), bot);
         scheduler.setChance(1);
-        scheduler.schedule();
+        scheduler.run();
 
         ArgumentCaptor<Runnable> closeRequests = ArgumentCaptor.forClass(Runnable.class);
         verify(executor, times(3)).schedule(closeRequests.capture(), anyLong(), any());

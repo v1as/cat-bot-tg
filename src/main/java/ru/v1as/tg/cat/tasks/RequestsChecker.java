@@ -8,27 +8,37 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
-import ru.v1as.tg.cat.model.CatChatData;
 import ru.v1as.tg.cat.model.CatRequest;
-import ru.v1as.tg.cat.model.DbData;
 import ru.v1as.tg.cat.model.ScoreData;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
 @Slf4j
+@Component
 @RequiredArgsConstructor
-public class RequestsChecker implements Runnable {
+public class RequestsChecker {
 
+    private final int RATE = 2_000;
     private final UnsafeAbsSender sender;
-    private final DbData<CatChatData> data;
+    private final CatBotData data;
     private final ScoreData scoreData;
 
-    @Override
+    @PostConstruct
+    public void init() {
+        log.info("Request checked started with rate {}ms", RATE);
+    }
+
+    @Scheduled(fixedRate = RATE)
     public void run() {
+        log.debug("tick");
         CatRequest[] catRequests =
                 data.getChats().stream()
                         .flatMap(c -> c.getNotFinishedCatRequests().stream())

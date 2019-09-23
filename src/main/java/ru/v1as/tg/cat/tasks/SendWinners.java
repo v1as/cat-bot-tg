@@ -2,26 +2,34 @@ package ru.v1as.tg.cat.tasks;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.MedalsListBuilder;
-import ru.v1as.tg.cat.model.CatChatData;
 import ru.v1as.tg.cat.model.ChatData;
-import ru.v1as.tg.cat.model.DbData;
 import ru.v1as.tg.cat.model.LongProperty;
 import ru.v1as.tg.cat.model.ScoreData;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
 @Slf4j
+@Component
 @RequiredArgsConstructor
-public class SendWinners implements Runnable {
+public class SendWinners {
 
     private final UnsafeAbsSender sender;
-    private final DbData<CatChatData> data;
+    private final CatBotData data;
     private final ScoreData scoreData;
 
-    @Override
+    @PostConstruct
+    public void init() {
+        log.info("Winners sender was inited");
+    }
+
+    @Scheduled(cron = "0 0 10 * * *")
     public void run() {
         log.info("Start sending winners data...");
         LocalDateTime yesterday = LocalDateTime.now().minusDays(1);

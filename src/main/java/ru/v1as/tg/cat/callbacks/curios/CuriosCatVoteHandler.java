@@ -2,30 +2,41 @@ package ru.v1as.tg.cat.callbacks.curios;
 
 import static ru.v1as.tg.cat.tg.KeyboardUtils.deleteMsg;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
+import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.EmojiConst;
+import ru.v1as.tg.cat.callbacks.SimpleCallbackHandler;
 import ru.v1as.tg.cat.callbacks.TgCallBackHandler;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 import ru.v1as.tg.cat.model.CatChatData;
 import ru.v1as.tg.cat.model.CatRequest;
 import ru.v1as.tg.cat.model.CuriosCatRequest;
-import ru.v1as.tg.cat.model.DbData;
 import ru.v1as.tg.cat.model.ScoreData;
 import ru.v1as.tg.cat.model.UserData;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
 @Slf4j
-@RequiredArgsConstructor
-public class CuriosCatVoteHandler implements TgCallBackHandler<String> {
+@Component
+public class CuriosCatVoteHandler extends SimpleCallbackHandler
+        implements TgCallBackHandler<String> {
 
-    private final DbData<CatChatData> data;
+    private static final String CURIOS_CAT_CB = "curiosCat";
+
+    private final CatBotData data;
     private final ScoreData scoreData;
     private final UnsafeAbsSender sender;
+
+    public CuriosCatVoteHandler(CatBotData data1, ScoreData scoreData, UnsafeAbsSender sender) {
+        super(CURIOS_CAT_CB);
+        this.data = data1;
+        this.scoreData = scoreData;
+        this.sender = sender;
+    }
 
     @Override
     public void handle(String value, Chat chat, User user, CallbackQuery callbackQuery) {

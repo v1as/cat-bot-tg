@@ -25,17 +25,21 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 
 @Slf4j
+@Component
 @RequiredArgsConstructor
 public class ScoreData {
 
     private static final String SPLIT_CHAR = "%";
-    private final String fileName;
+    private final String fileName = "cat_scores.txt";
     private List<ScoreLine> lines = new ArrayList<>();
     private List<ScoreLine> toSave = new ArrayList<>();
 
+    @Scheduled(fixedDelay = 60_000)
     @SneakyThrows
     public void flush() {
         if (toSave.size() == 0) {

@@ -8,9 +8,7 @@ import org.junit.Assert;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.updateshandlers.SentCallback;
-import ru.v1as.tg.cat.model.CatChatData;
 import ru.v1as.tg.cat.model.CatRequest;
-import ru.v1as.tg.cat.model.DbData;
 import ru.v1as.tg.cat.model.ScoreData;
 
 @SuppressWarnings("unchecked")
@@ -39,7 +37,7 @@ public class AbstractCatBotTest extends AbstractGameBotTest {
                 };
     }
 
-    public DbData<CatChatData> getCatBotData() {
+    public CatBotData getCatBotData() {
         return getCatBot().getData();
     }
 

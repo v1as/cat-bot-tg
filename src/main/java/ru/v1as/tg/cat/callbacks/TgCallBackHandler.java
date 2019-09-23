@@ -7,4 +7,8 @@ import org.telegram.telegrambots.meta.api.objects.User;
 public interface TgCallBackHandler<T> {
 
     void handle(T value, Chat chat, User user, CallbackQuery callbackQuery);
+
+    String getPrefix();
+
+    T parse(String value);
 }

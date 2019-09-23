@@ -5,48 +5,38 @@ import static org.slf4j.LoggerFactory.getLogger;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
-import ru.v1as.tg.cat.callbacks.SimpleCallbackParser;
 import ru.v1as.tg.cat.callbacks.TgCallbackProcessor;
-import ru.v1as.tg.cat.callbacks.curios.CuriosCatVoteHandler;
-import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVoteHandler;
-import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVoteParser;
 import ru.v1as.tg.cat.commands.TgCommandProcessor;
 import ru.v1as.tg.cat.commands.TgCommandRequest;
-import ru.v1as.tg.cat.commands.impl.ScoreCommandHandler;
-import ru.v1as.tg.cat.messages.CatRequestMessageCreator;
-import ru.v1as.tg.cat.messages.MessageProcessor;
-import ru.v1as.tg.cat.model.CatChatData;
-import ru.v1as.tg.cat.model.DbData;
-import ru.v1as.tg.cat.model.ScoreData;
+import ru.v1as.tg.cat.messages.TgMessageProcessor;
 
 @Getter
+@Component
 class CatBot extends AbstractGameBot {
 
     private final Logger log = getLogger(this.getClass());
 
-    private final DbData<CatChatData> data;
+    private final CatBotData data;
     private final TgCallbackProcessor callbackProcessor;
     private final TgCommandProcessor commandProcessor;
-    private final MessageProcessor messageProcessor;
+    private final TgMessageProcessor messageProcessor;
 
-    public CatBot(ScoreData scoreData) {
-        super();
-        this.data = new DbData<>(scoreData, CatChatData::new);
-        this.callbackProcessor =
-                new TgCallbackProcessor()
-                        .register(new CatRequestVoteParser(), new CatRequestVoteHandler(data, this))
-                        .register(
-                                new SimpleCallbackParser("curiosCat"),
-                                new CuriosCatVoteHandler(data, scoreData, this));
-        this.commandProcessor =
-                new TgCommandProcessor().register(new ScoreCommandHandler(scoreData, this));
-        this.messageProcessor =
-                new MessageProcessor().register(new CatRequestMessageCreator(data, this));
+    public CatBot(
+            @Lazy CatBotData data,
+            @Lazy TgCallbackProcessor callbackProcessor,
+            @Lazy TgCommandProcessor commandProcessor,
+            @Lazy TgMessageProcessor messageProcessor) {
+        this.data = data;
+        this.callbackProcessor = callbackProcessor;
+        this.commandProcessor = commandProcessor;
+        this.messageProcessor = messageProcessor;
     }
 
     @Override

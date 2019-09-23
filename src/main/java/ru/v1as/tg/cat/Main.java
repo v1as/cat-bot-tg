@@ -28,25 +28,25 @@ public class Main {
     public static void main(String[] args) {
         log.info("Cat bot is starting...");
         try {
-            ScoreData scoreData = new ScoreData("cat_scores.txt");
+            ScoreData scoreData = new ScoreData();
             scoreData.init();
             ApiContextInitializer.init();
             TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
-            CatBot bot = new CatBot(scoreData);
+            CatBot bot = null;
 
-            EXECUTOR_SERVICE.scheduleWithFixedDelay(
-                    new RequestsChecker(bot, bot.getData(), scoreData),
-                    REQUEST_CHECK_INTERVAL,
-                    REQUEST_CHECK_INTERVAL,
-                    SECONDS);
-            EXECUTOR_SERVICE.scheduleWithFixedDelay(
-                    scoreData::flush, FLUSH_FILE_INTERVAL, FLUSH_FILE_INTERVAL, SECONDS);
-            EXECUTOR_SERVICE.scheduleAtFixedRate(
-                    new SendWinners(bot, bot.getData(), scoreData),
-                    getWinnersSendingInitialDelay(),
-                    DAYS.toSeconds(1),
-                    SECONDS);
-            new CuriosCatRequestScheduler(EXECUTOR_SERVICE, bot.getData(), bot);
+//            EXECUTOR_SERVICE.scheduleWithFixedDelay(
+//                    new RequestsChecker(bot, bot.getData(), scoreData),
+//                    REQUEST_CHECK_INTERVAL,
+//                    REQUEST_CHECK_INTERVAL,
+//                    SECONDS);
+//            EXECUTOR_SERVICE.scheduleWithFixedDelay(
+//                    scoreData::flush, FLUSH_FILE_INTERVAL, FLUSH_FILE_INTERVAL, SECONDS);
+//            EXECUTOR_SERVICE.scheduleAtFixedRate(
+//                    new SendWinners(bot, bot.getData(), scoreData),
+//                    getWinnersSendingInitialDelay(),
+//                    DAYS.toSeconds(1),
+//                    SECONDS);
+            new CuriosCatRequestScheduler(bot.getData(), bot);
             telegramBotsApi.registerBot(bot);
         } catch (TelegramApiException e) {
             log.error("Some telegram exception", e);
