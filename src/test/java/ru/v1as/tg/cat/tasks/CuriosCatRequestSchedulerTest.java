@@ -9,21 +9,35 @@ import static org.mockito.Mockito.verify;
 import java.util.concurrent.ScheduledExecutorService;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 import ru.v1as.tg.cat.AbstractCatBotTest;
+import ru.v1as.tg.cat.CaBotTestConfiguration;
+import ru.v1as.tg.cat.CatBotData;
+import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = CaBotTestConfiguration.class)
 public class CuriosCatRequestSchedulerTest extends AbstractCatBotTest {
+
+    @Autowired CatBotData catBotData;
+    @Autowired UnsafeAbsSender sender;
+    CuriosCatRequestScheduler scheduler;
 
     @Before
     public void init() {
+        scheduler = new CuriosCatRequestScheduler(catBotData, sender);
+        scheduler.setExecutorService(mock(ScheduledExecutorService.class));
+        scheduler.init();
+
         getCatBotData().register(getMessageUpdate());
     }
 
     @Test
     public void curiosCatSuccessTest() {
-        CuriosCatRequestScheduler scheduler =
-                new CuriosCatRequestScheduler(
-                        mock(ScheduledExecutorService.class), getCatBotData(), bot);
         scheduler.setChance(1);
         scheduler.setFirstTime(false);
         scheduler.run();
@@ -37,15 +51,13 @@ public class CuriosCatRequestSchedulerTest extends AbstractCatBotTest {
     @Test
     public void curiosCatGoneTest() {
         ScheduledExecutorService executor = mock(ScheduledExecutorService.class);
-
-        CuriosCatRequestScheduler scheduler =
-                new CuriosCatRequestScheduler(executor, getCatBotData(), bot);
+        scheduler.setExecutorService(executor);
         scheduler.setChance(1);
         scheduler.run();
 
         ArgumentCaptor<Runnable> closeRequests = ArgumentCaptor.forClass(Runnable.class);
-        verify(executor, times(3)).schedule(closeRequests.capture(), anyLong(), any());
-        closeRequests.getAllValues().get(2).run();
+        verify(executor, times(2)).schedule(closeRequests.capture(), anyLong(), any());
+        closeRequests.getAllValues().get(1).run();
 
         popSendMessage("Любопытный кот гуляет рядом");
         popDeleteMessage();

@@ -1,10 +1,7 @@
 package ru.v1as.tg.cat;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.slf4j.Logger;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -20,8 +17,6 @@ import ru.v1as.tg.cat.messages.TgMessageProcessor;
 @Getter
 @Component
 class CatBot extends AbstractGameBot {
-
-    private final Logger log = getLogger(this.getClass());
 
     private final CatBotData data;
     private final TgCallbackProcessor callbackProcessor;

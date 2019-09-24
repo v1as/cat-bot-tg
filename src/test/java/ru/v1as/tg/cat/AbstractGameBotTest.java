@@ -3,14 +3,14 @@ package ru.v1as.tg.cat;
 import static junit.framework.Assert.fail;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.LinkedList;
 import junit.framework.AssertionFailedError;
 import org.junit.After;
 import org.junit.Before;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -26,26 +26,27 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 
 public class AbstractGameBotTest {
 
+    @Autowired protected TestAbsSender sender;
+    @Autowired protected AbstractGameBot bot;
     protected Integer lastMsgId = 0;
     protected Integer lastCallbackQueryId = 0;
 
-    protected AbstractGameBot bot;
-    protected LinkedList<BotApiMethod<?>> methods = new LinkedList<>();
     private int userId = 0;
 
     @Before
     public void before() {
+        sender.setMessageProducer(() -> getMessage(++lastMsgId));
         lastMsgId = 0;
         lastCallbackQueryId = 0;
         AbsSender sender = mock(AbsSender.class);
         bot.setSender(sender);
-        methods.clear();
+        this.sender.clear();
     }
 
     @After
     public void after() {
-        if (0 != methods.size()) {
-            fail("There are unexptected methods" + methods);
+        if (0 != sender.getMethodsAmount()) {
+            fail("There are unexptected methods" + sender.getMethods());
         }
     }
 
@@ -143,13 +144,13 @@ public class AbstractGameBotTest {
 
     private <T extends BotApiMethod> T popMethod(Class<T> clazz) {
         T pop =
-                methods.stream()
+                sender.getMethods().stream()
                         .filter(clazz::isInstance)
                         .map(clazz::cast)
                         .findFirst()
                         .orElseThrow(
                                 () -> new AssertionFailedError("Wrong type expected: " + clazz));
-        assertTrue(methods.remove(pop));
+        assertTrue(sender.getMethods().remove(pop));
         return pop;
     }
 

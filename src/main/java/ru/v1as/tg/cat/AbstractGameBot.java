@@ -1,11 +1,12 @@
 package ru.v1as.tg.cat;
 
+import static org.slf4j.LoggerFactory.getLogger;
 import static ru.v1as.tg.cat.model.UpdateUtils.getChat;
 import static ru.v1as.tg.cat.model.UpdateUtils.getUser;
 
 import java.io.Serializable;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -18,8 +19,9 @@ import org.telegram.telegrambots.meta.updateshandlers.SentCallback;
 import ru.v1as.tg.cat.commands.TgCommandRequest;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
-@Slf4j
 public abstract class AbstractGameBot extends TelegramLongPollingBot implements UnsafeAbsSender {
+
+    private final Logger log = getLogger(this.getClass());
 
     private AbsSender sender = this;
 

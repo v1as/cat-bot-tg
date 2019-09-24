@@ -35,6 +35,8 @@ public class ScoreCommandHandler implements CommandHandler {
                         .getWinnersStream(chat.getId(), null)
                         .map(LongProperty::toString)
                         .collect(joining("\n"));
-        sender.executeUnsafe(new SendMessage().setChatId(chat.getId()).setText(text));
+        if (text.length() > 0) {
+            sender.executeUnsafe(new SendMessage().setChatId(chat.getId()).setText(text));
+        }
     }
 }

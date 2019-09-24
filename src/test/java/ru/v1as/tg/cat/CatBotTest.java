@@ -3,23 +3,25 @@ package ru.v1as.tg.cat;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
-import static org.mockito.Mockito.mock;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT1;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.NOT_CAT;
 
 import java.io.File;
 import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 import ru.v1as.tg.cat.model.CatRequest;
 import ru.v1as.tg.cat.model.ChatData;
 import ru.v1as.tg.cat.model.ScoreData;
 import ru.v1as.tg.cat.model.ScoreData.ScoreLine;
 import ru.v1as.tg.cat.model.UserData;
-import ru.v1as.tg.cat.tasks.CuriosCatRequestScheduler;
 import ru.v1as.tg.cat.tasks.RequestsChecker;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = CaBotTestConfiguration.class)
 public class CatBotTest extends AbstractCatBotTest {
 
     @Test
@@ -71,7 +73,7 @@ public class CatBotTest extends AbstractCatBotTest {
         assertTrue(catRequest.getVotes().values().stream().allMatch(CAT1::equals));
 
         assertFalse(catRequest.isFinished());
-        new RequestsChecker(bot, getCatBotData(), getCatBotScoreData()).run();
+        new RequestsChecker(sender, getCatBotData(), getCatBotScoreData()).run();
         assertTrue(catRequest.isFinished());
         popEditMessageText("1x" + EmojiConst.CAT);
     }
@@ -79,7 +81,8 @@ public class CatBotTest extends AbstractCatBotTest {
     @Test
     public void scoreTest() {
         String tempFile = "tempFile";
-        ScoreData scoreData = new ScoreData(tempFile);
+        ScoreData scoreData = new ScoreData();
+        scoreData.setFileName(tempFile);
         new File(tempFile).delete();
         scoreData.init();
 

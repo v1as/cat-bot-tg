@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +36,7 @@ import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 public class ScoreData {
 
     private static final String SPLIT_CHAR = "%";
-    private final String fileName = "cat_scores.txt";
+    @Getter @Setter private String fileName = "cat_scores.txt";
     private List<ScoreLine> lines = new ArrayList<>();
     private List<ScoreLine> toSave = new ArrayList<>();
 

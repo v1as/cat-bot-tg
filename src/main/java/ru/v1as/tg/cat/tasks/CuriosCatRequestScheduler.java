@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.PostConstruct;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -26,7 +27,7 @@ import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 public class CuriosCatRequestScheduler {
 
     private final Random random = new Random();
-    private final ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(1);
+    private ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(1);
     private CatBotData data;
     private UnsafeAbsSender sender;
     private boolean firstTime = true;
@@ -39,6 +40,10 @@ public class CuriosCatRequestScheduler {
     public CuriosCatRequestScheduler(CatBotData data, UnsafeAbsSender sender) {
         this.sender = sender;
         this.data = data;
+    }
+
+    @PostConstruct
+    public void init() {
         run();
     }
 
@@ -91,4 +96,7 @@ public class CuriosCatRequestScheduler {
         return "Любопытный кот гуляет рядом";
     }
 
+    void setExecutorService(ScheduledExecutorService executorService) {
+        this.executorService = executorService;
+    }
 }
