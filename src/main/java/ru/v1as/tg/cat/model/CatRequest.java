@@ -2,8 +2,8 @@ package ru.v1as.tg.cat.model;
 
 import static lombok.AccessLevel.PRIVATE;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
@@ -21,7 +21,7 @@ public class CatRequest extends TgRequestPoll<CatRequestVote> {
 
     final Message sourceMessage;
     final UserData owner;
-    final Map<UserData, CatRequestVote> votes = new HashMap<>();
+    final Map<UserData, CatRequestVote> votes = new ConcurrentHashMap<>();
     InlineKeyboardMarkup pollButtons;
 
     public CatRequest(Message sourceMessage, UserData owner, ChatData chat) {

@@ -5,6 +5,8 @@ import static ru.v1as.tg.cat.model.UpdateUtils.getChat;
 import static ru.v1as.tg.cat.model.UpdateUtils.getUser;
 
 import java.io.Serializable;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -24,6 +26,7 @@ public abstract class AbstractGameBot extends TelegramLongPollingBot implements 
     private final Logger log = getLogger(this.getClass());
 
     private AbsSender sender = this;
+    private Map<Long, Object> chatToMonitor = new ConcurrentHashMap<>();
 
     @Override
     public void onUpdateReceived(Update update) {
@@ -34,21 +37,23 @@ public abstract class AbstractGameBot extends TelegramLongPollingBot implements 
                 log.warn("Such type updated does not supported '{}'", update);
                 return;
             }
-            before(update);
-            if (!chat.isGroupChat() && !chat.isSuperGroupChat()) {
-                return;
-            }
-            if (update.hasMessage() && update.getMessage().isCommand()) {
-                String text = update.getMessage().getText();
-                log.info("Command '{}' received.", text);
-                onUpdateCommand(TgCommandRequest.parse(text), chat, user);
-            } else if (update.hasMessage()) {
-                onUpdateMessage(update.getMessage(), chat, user);
-            } else if (update.hasCallbackQuery()) {
-                log.info("Callback received '{}'", update.getCallbackQuery().getData());
-                onUpdateCallbackQuery(update.getCallbackQuery(), chat, user);
-            } else {
-                log.debug("Unsupported update type: " + update);
+            synchronized (chatToMonitor.computeIfAbsent(chat.getId(), (id) -> chat.getId())) {
+                before(update);
+                if (!chat.isGroupChat() && !chat.isSuperGroupChat()) {
+                    return;
+                }
+                if (update.hasMessage() && update.getMessage().isCommand()) {
+                    String text = update.getMessage().getText();
+                    log.info("Command '{}' received.", text);
+                    onUpdateCommand(TgCommandRequest.parse(text), chat, user);
+                } else if (update.hasMessage()) {
+                    onUpdateMessage(update.getMessage(), chat, user);
+                } else if (update.hasCallbackQuery()) {
+                    log.info("Callback received '{}'", update.getCallbackQuery().getData());
+                    onUpdateCallbackQuery(update.getCallbackQuery(), chat, user);
+                } else {
+                    log.debug("Unsupported update type: " + update);
+                }
             }
         } catch (Exception e) {
             log.error("Something gone wrong ", e);

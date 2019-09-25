@@ -1,7 +1,5 @@
 package ru.v1as.tg.cat.model;
 
-import java.util.HashMap;
-import java.util.Map;
 import lombok.Data;
 import lombok.extern.java.Log;
 import org.telegram.telegrambots.meta.api.objects.Chat;
@@ -12,7 +10,6 @@ public class ChatData {
 
     protected final Long chatId;
     protected final boolean isPrivate;
-    protected final Map<Integer, UserData> users = new HashMap<>();
     protected String name;
 
     public ChatData(Chat chat, boolean isPrivate) {
