@@ -2,15 +2,19 @@ package ru.v1as.tg.cat.jpa.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Transient;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 
 @Entity
 @Data
 public class Action<T> {
 
-    @Id private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id;
 
     @Column(nullable = false)
     private Long userId;
@@ -24,5 +28,4 @@ public class Action<T> {
     private String jsonData;
 
     @Transient private T data;
-
 }

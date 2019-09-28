@@ -34,7 +34,7 @@ public class CuriosCatRequestScheduler {
     private int delayRange = 60;
     private int delayMin = 30;
     private double chance = 0.125;
-    private int closeDelay = 3;
+    private int closeDelay = 5;
     private TimeUnit timeUnit = TimeUnit.MINUTES;
 
     public CuriosCatRequestScheduler(CatBotData data, UnsafeAbsSender sender) {
@@ -85,6 +85,7 @@ public class CuriosCatRequestScheduler {
         sender.executeAsyncUnsafe(
                 new SendMessage()
                         .setChatId(chat.getChatId())
+                        .disableNotification()
                         .setText(getCuriosCatMessage())
                         .setReplyMarkup(
                                 inlineKeyboardMarkup(EmojiConst.CAT + " Кот!", "curiosCat")),

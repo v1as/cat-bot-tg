@@ -11,7 +11,6 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.EmojiConst;
 import ru.v1as.tg.cat.callbacks.SimpleCallbackHandler;
-import ru.v1as.tg.cat.callbacks.TgCallBackHandler;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 import ru.v1as.tg.cat.model.CatChatData;
 import ru.v1as.tg.cat.model.CatRequest;
@@ -22,8 +21,7 @@ import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
 @Slf4j
 @Component
-public class CuriosCatVoteHandler extends SimpleCallbackHandler
-        implements TgCallBackHandler<String> {
+public class CuriosCatVoteHandler extends SimpleCallbackHandler {
 
     private static final String CURIOS_CAT_CB = "curiosCat";
 
