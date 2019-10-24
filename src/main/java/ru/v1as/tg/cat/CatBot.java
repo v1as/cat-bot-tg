@@ -60,8 +60,4 @@ class CatBot extends AbstractGameBot {
         return "Котобот";
     }
 
-    @Override
-    public String getBotToken() {
-        return "";
-    }
 }

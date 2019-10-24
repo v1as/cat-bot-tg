@@ -7,6 +7,7 @@ import static ru.v1as.tg.cat.callbacks.phase.poll.State.CREATED;
 import static ru.v1as.tg.cat.callbacks.phase.poll.State.ERROR;
 import static ru.v1as.tg.cat.callbacks.phase.poll.State.SENDING;
 import static ru.v1as.tg.cat.callbacks.phase.poll.State.SENT;
+import static ru.v1as.tg.cat.tg.KeyboardUtils.clearButtons;
 import static ru.v1as.tg.cat.tg.KeyboardUtils.deleteMsg;
 import static ru.v1as.tg.cat.tg.KeyboardUtils.editMessageText;
 
@@ -16,9 +17,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -31,12 +35,13 @@ import ru.v1as.tg.cat.callbacks.SimpleCallbackHandler;
 import ru.v1as.tg.cat.callbacks.TgCallBackHandler;
 import ru.v1as.tg.cat.callbacks.TgCallbackProcessor;
 import ru.v1as.tg.cat.callbacks.phase.PollTimeoutConfiguration;
-import ru.v1as.tg.cat.model.UserData;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
 @Slf4j
 @RequiredArgsConstructor
 public abstract class AbstractPoll<T extends AbstractPoll<T>> {
+
+    private static final ScheduledExecutorService EXECUTOR = new ScheduledThreadPoolExecutor(1);
 
     private final UnsafeAbsSender sender;
     private final TgCallbackProcessor callbackProcessor;
@@ -49,7 +54,7 @@ public abstract class AbstractPoll<T extends AbstractPoll<T>> {
     private PollChoice choose;
 
     private Message message;
-    private List<Consumer<Message>> onSendCallbacks;
+    private Consumer<Message> onSend = null;
 
     private PollTimeoutConfiguration timeoutConfiguration;
 
@@ -57,16 +62,14 @@ public abstract class AbstractPoll<T extends AbstractPoll<T>> {
     private boolean closeOnChoose = true;
     private CloseOnTextBuilder closeOnTextBuilder = new DefaultCloseTextBuilder();
 
-    public T choice(String text, Runnable method) {
-        String callBackData = generateCallback();
-        choices.putIfAbsent(
-                callBackData,
-                new PollChoice(callBackData, PollChoiceType.TEXT, text, null, method));
-        return self();
+    public T choice(String text, Consumer<ChooseContext> method) {
+        String callback = generateCallback();
+        return choise(new PollChoice(callback, PollChoiceType.TEXT, text, null, method), method);
     }
 
-    public T choice(String text, Consumer<UserData> method) {
-        return choice(text, () -> method.accept(null));
+    public T choise(PollChoice choice, Consumer<ChooseContext> method) {
+        choices.putIfAbsent(choice.getUuid(), choice);
+        return self();
     }
 
     public T text(String text) {
@@ -74,12 +77,13 @@ public abstract class AbstractPoll<T extends AbstractPoll<T>> {
         return self();
     }
 
-    public T choiceLink(String text, String url, Runnable method) {
-        String callBackData = generateCallback();
-        choices.putIfAbsent(
-                callBackData, new PollChoice(callBackData, PollChoiceType.LINK, text, url, method));
-        return self();
-    }
+    //    public T choiceLink(String text, String url, Runnable method) {
+    //        String callBackData = generateCallback();
+    //        choices.putIfAbsent(
+    //                callBackData, new PollChoice(callBackData, PollChoiceType.LINK, text, url,
+    // method));
+    //        return self();
+    //    }
 
     protected String generateCallback() {
         return UUID.randomUUID().toString();
@@ -90,8 +94,8 @@ public abstract class AbstractPoll<T extends AbstractPoll<T>> {
         throw new RuntimeException("Unsupported operation yet");
     }
 
-    public T addOnSend(Consumer<Message> callback) {
-        this.onSendCallbacks.add(callback);
+    public T onSend(Consumer<Message> callback) {
+        this.onSend = callback;
         return self();
     }
 
@@ -106,7 +110,9 @@ public abstract class AbstractPoll<T extends AbstractPoll<T>> {
         for (PollChoice c : choices.values()) {
             if (c.getType().equals(PollChoiceType.TEXT)) {
                 keyboardLines.add(
-                        singletonList(new InlineKeyboardButton(c.text).setCallbackData(c.uuid)));
+                        singletonList(
+                                new InlineKeyboardButton(c.getText())
+                                        .setCallbackData(c.getUuid())));
             }
         }
         sender.executeAsyncPromise(message, this::pollMessageSent, this::pollMessageFail);
@@ -124,9 +130,30 @@ public abstract class AbstractPoll<T extends AbstractPoll<T>> {
         this.choices
                 .values()
                 .forEach(pollChoice -> callbackProcessor.register(callbackHandler(pollChoice)));
-        for (Consumer<Message> c : this.onSendCallbacks) {
+        processOnSend(sent);
+        timeoutProcess();
+    }
+
+    private void timeoutProcess() {
+        if (timeoutConfiguration != null) {
+            EXECUTOR.schedule(
+                    () -> {
+                        if (state.equals(SENT)) {
+                            this.close(timeoutConfiguration.removeMsg());
+                            if (timeoutConfiguration.onTimeout() != null) {
+                                timeoutConfiguration.onTimeout().run();
+                            }
+                        }
+                    },
+                    timeoutConfiguration.delay().toNanos(),
+                    TimeUnit.NANOSECONDS);
+        }
+    }
+
+    private void processOnSend(Message sent) {
+        if (this.onSend != null) {
             try {
-                c.accept(sent);
+                this.onSend.accept(sent);
             } catch (Exception e) {
                 log.error("Error while onSend callback.");
             }
@@ -141,17 +168,28 @@ public abstract class AbstractPoll<T extends AbstractPoll<T>> {
                 if (closeOnChoose) {
                     close();
                 }
-                pollChoice.getRunnable().run();
+                pollChoice.getCallable().accept(new ChooseContext(chat, user, callbackQuery));
             }
         };
     }
 
     public void close() {
+        close(this.removeOnChoice);
+    }
+
+    private void close(boolean remove) {
         if (state.equals(SENT)) {
             state = CLOSED;
-            String newText = closeOnTextBuilder.build(text, choose.getText());
-            if (!Objects.equals(newText, text)) {
-                sender.executeUnsafe(editMessageText(message, newText));
+            if (remove) {
+                sender.executeUnsafe(deleteMsg(message));
+            } else {
+                String newText =
+                        closeOnTextBuilder.build(text, choose != null ? choose.getText() : null);
+                if (!Objects.equals(newText, text)) {
+                    sender.executeUnsafe(editMessageText(message, newText));
+                } else {
+                    sender.executeUnsafe(clearButtons(message));
+                }
             }
         } else {
             log.error("Can't close poll, illegal state: {}", this);
@@ -171,7 +209,7 @@ public abstract class AbstractPoll<T extends AbstractPoll<T>> {
         return self();
     }
 
-    public T closeTextBuilder(DefaultCloseTextBuilder defaultCloseTextBuilder) {
+    public T closeTextBuilder(@NonNull DefaultCloseTextBuilder defaultCloseTextBuilder) {
         this.closeOnTextBuilder = closeOnTextBuilder;
         return self();
     }
@@ -189,19 +227,5 @@ public abstract class AbstractPoll<T extends AbstractPoll<T>> {
     public T removeOnChoice(boolean value) {
         this.removeOnChoice = value;
         return self();
-    }
-
-    @Value
-    private class PollChoice {
-        private final String uuid;
-        private final PollChoiceType type;
-        private final String text;
-        private final String url;
-        private final Runnable runnable;
-    }
-
-    private enum PollChoiceType {
-        TEXT,
-        LINK
     }
 }

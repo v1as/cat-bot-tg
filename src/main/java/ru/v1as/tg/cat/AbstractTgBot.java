@@ -46,9 +46,6 @@ public abstract class AbstractTgBot extends TelegramLongPollingBot implements Un
             }
             synchronized (chatToMonitor.computeIfAbsent(chat.getId(), (id) -> chat.getId())) {
                 before(update);
-                if (!chat.isGroupChat() && !chat.isSuperGroupChat()) {
-                    return;
-                }
                 if (update.hasMessage() && update.getMessage().isCommand()) {
                     String text = update.getMessage().getText();
                     log.info("Command '{}' received.", text);
