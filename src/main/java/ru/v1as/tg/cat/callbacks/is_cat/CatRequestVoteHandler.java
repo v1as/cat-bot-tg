@@ -8,6 +8,7 @@ import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT3;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.NOT_CAT;
 import static ru.v1as.tg.cat.callbacks.is_cat.RequestAnswerResult.CANCELED;
 import static ru.v1as.tg.cat.callbacks.is_cat.RequestAnswerResult.FINISHED;
+import static ru.v1as.tg.cat.tg.KeyboardUtils.clearButtons;
 import static ru.v1as.tg.cat.tg.KeyboardUtils.deleteMsg;
 import static ru.v1as.tg.cat.tg.KeyboardUtils.getUpdateButtonsMsg;
 import static ru.v1as.tg.cat.tg.KeyboardUtils.inlineKeyboardMarkup;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Chat;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import ru.v1as.tg.cat.CatBotData;
@@ -60,28 +62,26 @@ public class CatRequestVoteHandler implements TgCallBackHandler<CatRequestVote> 
 
     @Override
     public void handle(CatRequestVote vote, Chat chat, User user, CallbackQuery callbackQuery) {
-        CatRequest catRequest =
-                data.getChatData(chat.getId())
-                        .getCatRequest(callbackQuery.getMessage().getMessageId());
+        Message msg = callbackQuery.getMessage();
+        CatRequest catRequest = data.getChatData(chat.getId()).getCatRequest(msg.getMessageId());
         UserData userData = data.getUserData(user);
-        Integer messageId = callbackQuery.getMessage().getMessageId();
         if (catRequest == null || vote == null) {
-            sender.executeUnsafe(getUpdateButtonsMsg(chat, messageId, inlineKeyboardMarkup()));
+            sender.executeUnsafe(clearButtons(msg));
             return;
         }
         RequestAnswerResult voted = catRequest.vote(userData, vote);
         sender.executeUnsafe(getVoteAnswerMsg(callbackQuery, voted));
         if (FINISHED.equals(voted)) {
-            sender.executeUnsafe(getUpdateButtonsMsg(chat, messageId, inlineKeyboardMarkup()));
+            sender.executeUnsafe(clearButtons(msg));
         } else if (CANCELED.equals(voted)) {
             catRequest.cancel();
             scoreData.save(catRequest);
-            sender.executeUnsafe(deleteMsg(chat.getId(), catRequest.getVoteMessage()));
+            sender.executeUnsafe(deleteMsg(catRequest.getVoteMessage()));
         } else {
             InlineKeyboardMarkup pollButtons = getCatePollButtons(catRequest);
             if (!catRequest.getPollButtons().equals(pollButtons)) {
                 catRequest.setPollButtons(pollButtons);
-                sender.executeUnsafe(getUpdateButtonsMsg(chat, messageId, pollButtons));
+                sender.executeUnsafe(getUpdateButtonsMsg(msg, pollButtons));
             }
         }
     }

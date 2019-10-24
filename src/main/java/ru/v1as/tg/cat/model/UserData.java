@@ -15,6 +15,7 @@ public class UserData {
     protected Integer id;
     protected String fullName;
     protected String userName;
+    protected Long chatId;
 
     public UserData(User user) {
         this.id = user.getId();

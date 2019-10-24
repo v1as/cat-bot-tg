@@ -10,13 +10,16 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.EmojiConst;
+import ru.v1as.tg.cat.callbacks.TgCallbackProcessor;
 import ru.v1as.tg.cat.callbacks.curios.CuriosCatPolLCallback;
+import ru.v1as.tg.cat.callbacks.phase.CuriosCatPhase;
 import ru.v1as.tg.cat.model.CatChatData;
 import ru.v1as.tg.cat.model.CuriosCatRequest;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
@@ -24,23 +27,21 @@ import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 @Slf4j
 @Setter
 @Component
+@RequiredArgsConstructor
 public class CuriosCatRequestScheduler {
+
+    private final TgCallbackProcessor callbackProcessor;
+    private final CatBotData data;
+    private final UnsafeAbsSender sender;
 
     private final Random random = new Random();
     private ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(1);
-    private CatBotData data;
-    private UnsafeAbsSender sender;
     private boolean firstTime = true;
     private int delayRange = 60;
     private int delayMin = 30;
-    private double chance = 0.125;
+    private double chance = 0.2;
     private int closeDelay = 5;
     private TimeUnit timeUnit = TimeUnit.MINUTES;
-
-    public CuriosCatRequestScheduler(CatBotData data, UnsafeAbsSender sender) {
-        this.sender = sender;
-        this.data = data;
-    }
 
     @PostConstruct
     public void init() {
@@ -58,7 +59,13 @@ public class CuriosCatRequestScheduler {
         List<CuriosCatRequest> requests = new ArrayList<>();
         for (CatChatData chat : data.getChats()) {
             try {
-                if (random.nextDouble() < chance) {
+                double randomResult = random.nextDouble();
+                log.info(
+                        "Random result for curios cat {} in chat '{}'.",
+                        randomResult,
+                        chat.getName());
+                if (randomResult < chance) {
+                    log.info("Curios cat is sending...");
                     requests.add(sendMessage(chat));
                 }
             } catch (Exception e) {
@@ -75,13 +82,14 @@ public class CuriosCatRequestScheduler {
                 .forEach(
                         r -> {
                             r.cancel();
-                            sender.executeUnsafe(
-                                    deleteMsg(r.getChat().getChatId(), r.getVoteMessage()));
+                            sender.executeUnsafe(deleteMsg(r.getVoteMessage()));
                         });
     }
 
     CuriosCatRequest sendMessage(CatChatData chat) {
         CuriosCatRequest request = new CuriosCatRequest(chat);
+
+        new CuriosCatPhase(sender, callbackProcessor, chat, data.getScoreData()).open();
         sender.executeAsyncUnsafe(
                 new SendMessage()
                         .setChatId(chat.getChatId())

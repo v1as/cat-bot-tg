@@ -5,7 +5,7 @@ import org.junit.Assert;
 import ru.v1as.tg.cat.model.CatRequest;
 import ru.v1as.tg.cat.model.ScoreData;
 
-public class AbstractCatBotTest extends AbstractGameBotTest {
+public class AbstractCatBotTest extends AbstractTgBotTest {
 
     public CatBotData getCatBotData() {
         return getCatBot().getData();

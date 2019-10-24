@@ -19,7 +19,7 @@ public class TgCallbackProcessor {
         handlers.forEach(this::register);
     }
 
-    private void register(TgCallBackHandler handler) {
+    public void register(TgCallBackHandler handler) {
         String parserPrefix = handler.getPrefix();
         for (String prefix : prefixToHandler.keySet()) {
             if (prefix.startsWith(parserPrefix) || parserPrefix.startsWith(prefix)) {
@@ -31,6 +31,10 @@ public class TgCallbackProcessor {
                 "Callback handler '{}' registered with prefix '{}'",
                 handler.getClass().getSimpleName(),
                 handler.getPrefix());
+    }
+
+    public void drop(TgCallBackHandler handler) {
+        prefixToHandler.remove(handler.getPrefix());
     }
 
     @SuppressWarnings("unchecked")

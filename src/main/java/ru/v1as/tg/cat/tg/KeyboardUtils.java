@@ -6,6 +6,7 @@ import lombok.experimental.UtilityClass;
 import org.apache.http.util.Asserts;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -42,7 +43,29 @@ public class KeyboardUtils {
                 .setReplyMarkup(pollButtons);
     }
 
-    public static DeleteMessage deleteMsg(Long chatId, Message voteMessage) {
-        return new DeleteMessage(chatId, voteMessage.getMessageId());
+    public static EditMessageReplyMarkup getUpdateButtonsMsg(
+            Message message, InlineKeyboardMarkup pollButtons) {
+        return new EditMessageReplyMarkup()
+                .setChatId(message.getChatId())
+                .setMessageId(message.getMessageId())
+                .setReplyMarkup(pollButtons);
+    }
+
+    public static EditMessageReplyMarkup clearButtons(Message message) {
+        return new EditMessageReplyMarkup()
+                .setChatId(message.getChatId())
+                .setMessageId(message.getMessageId())
+                .setReplyMarkup(new InlineKeyboardMarkup());
+    }
+
+    public static EditMessageText editMessageText(Message msg, String newText) {
+        return new EditMessageText()
+                .setChatId(msg.getChatId())
+                .setMessageId(msg.getMessageId())
+                .setText(newText);
+    }
+
+    public static DeleteMessage deleteMsg(Message message) {
+        return new DeleteMessage(message.getChatId(), message.getMessageId());
     }
 }

@@ -43,11 +43,11 @@ public class CuriosCatVoteHandler extends SimpleCallbackHandler {
         CuriosCatRequest request =
                 chatData.getCuriosCatRequest(callbackQuery.getMessage().getMessageId());
         if (request == null) {
-            sender.executeUnsafe(deleteMsg(chat.getId(), callbackQuery.getMessage()));
+            sender.executeUnsafe(deleteMsg(callbackQuery.getMessage()));
             return;
         }
         request.finish(user.toString());
-        sender.executeUnsafe(deleteMsg(chat.getId(), request.getVoteMessage()));
+        sender.executeUnsafe(deleteMsg(request.getVoteMessage()));
         sender.executeUnsafe(
                 new SendMessage()
                         .setChatId(chat.getId())

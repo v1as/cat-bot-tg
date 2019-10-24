@@ -43,7 +43,9 @@ public abstract class DbData<T extends ChatData> {
                             log.info("User registered: " + user);
                             return new UserData(user);
                         });
-
+        if (chat.isUserChat()) {
+            userData.setChatId(chat.getId());
+        }
         chatData.update(chat);
         userData.update(user);
     }

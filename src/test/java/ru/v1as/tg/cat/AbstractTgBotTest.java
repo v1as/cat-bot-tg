@@ -24,10 +24,10 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
-public class AbstractGameBotTest {
+public class AbstractTgBotTest {
 
     @Autowired protected TestAbsSender sender;
-    @Autowired protected AbstractGameBot bot;
+    @Autowired protected AbstractTgBot bot;
     protected Integer lastMsgId = 0;
     protected Integer lastCallbackQueryId = 0;
 
