@@ -33,19 +33,19 @@ public class TgCommandRequest {
     }
 
     public String getFirstArgument() {
-        return getArgument(1);
+        return getArgument(0);
     }
 
     public String getSecondArgument() {
-        return getArgument(2);
+        return getArgument(1);
     }
 
     public String getThirdArgument() {
-        return getArgument(3);
+        return getArgument(2);
     }
 
-    public String getArgument(int i) {
-        checkArgument(i > 1, "Argument index should be positive");
-        return arguments.size() > i - 1 ? arguments.get(i - 1) : null;
+    public String getArgument(int index) {
+        checkArgument(index >= 0, "Argument index should be not negative");
+        return arguments.size() > index ? arguments.get(index) : null;
     }
 }

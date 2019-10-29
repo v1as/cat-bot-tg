@@ -19,7 +19,6 @@ import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.EmojiConst;
 import ru.v1as.tg.cat.callbacks.TgCallbackProcessor;
 import ru.v1as.tg.cat.callbacks.curios.CuriosCatPolLCallback;
-import ru.v1as.tg.cat.callbacks.phase.CuriosCatPhase;
 import ru.v1as.tg.cat.model.CatChatData;
 import ru.v1as.tg.cat.model.CuriosCatRequest;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
@@ -89,7 +88,7 @@ public class CuriosCatRequestScheduler {
     CuriosCatRequest sendMessage(CatChatData chat) {
         CuriosCatRequest request = new CuriosCatRequest(chat);
 
-        new CuriosCatPhase(sender, callbackProcessor, chat, data.getScoreData()).open();
+//        new CuriosCatPhase(sender, callbackProcessor, chat, data.getScoreData()).open();
         sender.executeAsyncUnsafe(
                 new SendMessage()
                         .setChatId(chat.getChatId())

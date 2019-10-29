@@ -16,7 +16,7 @@ import ru.v1as.tg.cat.messages.TgMessageProcessor;
 
 @Getter
 @Component
-class CatBot extends AbstractGameBot {
+class CatBot extends AbstractTgBot {
 
     private final CatBotData data;
     private final TgCallbackProcessor callbackProcessor;

@@ -7,6 +7,7 @@ import static ru.v1as.tg.cat.model.UpdateUtils.getUser;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.annotation.PostConstruct;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +35,11 @@ public abstract class AbstractTgBot extends TelegramLongPollingBot implements Un
 
     @Value("${tg.bot.token}")
     private String botToken;
+
+    @PostConstruct
+    public void init() {
+        Const.setBotName(botUsername);
+    }
 
     @Override
     public void onUpdateReceived(Update update) {
@@ -94,7 +100,6 @@ public abstract class AbstractTgBot extends TelegramLongPollingBot implements Un
     public void setSender(AbsSender sender) {
         this.sender = sender;
     }
-
 
     @Override
     public String getBotUsername() {
