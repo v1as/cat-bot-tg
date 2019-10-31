@@ -28,7 +28,7 @@ public class JoinCatFollowPhase extends AbstractPhase<JoinCatFollowPhase.Context
     private final CatBotData data;
     private final ScoreData scoreData;
     private final StartCommand startCommand;
-    private final CatFollowPhase catFollowPhase;
+    private final RedStonePhase redStonePhase;
 
     @Override
     protected void open() {
@@ -40,7 +40,9 @@ public class JoinCatFollowPhase extends AbstractPhase<JoinCatFollowPhase.Context
                 .choice(EmojiConst.CAT + " Кот!", this::sayCat)
                 .choice(followTheCat)
                 .onSend(msg -> ctx.message = msg)
-                .timeout(new PollTimeoutConfiguration(Duration.of(3, MINUTES)).removeMsg(true))
+                .timeout(
+                        new PollTimeoutConfiguration(Duration.of(3, MINUTES))
+                                .onTimeout(this::close))
                 .send();
         startCommand.register(followTheCat.getUuid(), contextWrap(this::goToCat));
 
@@ -56,8 +58,7 @@ public class JoinCatFollowPhase extends AbstractPhase<JoinCatFollowPhase.Context
 
     private void goToCat(CallbackCommandContext data) {
         Context ctx = getPhaseContext();
-        catFollowPhase.open(
-                catFollowPhase.buildContext(data.getChat(), ctx.getChat(), ctx.message));
+        redStonePhase.open(data.getChat(), ctx.getChat(), ctx.message);
         close();
     }
 
@@ -82,9 +83,8 @@ public class JoinCatFollowPhase extends AbstractPhase<JoinCatFollowPhase.Context
         }
 
         @Override
-        public void onClose(Runnable onClose) {
-            super.onClose(onClose);
-            deleteMsg(message);
+        public void close() {
+            super.close();
         }
     }
 }

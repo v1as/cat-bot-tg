@@ -2,6 +2,7 @@ package ru.v1as.tg.cat.callbacks.phase;
 
 import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -28,6 +29,13 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
 
     protected void deleteMsg(Message msg) {
         sender.executeUnsafe(KeyboardUtils.deleteMsg(msg));
+    }
+
+    protected void deleteMsg(Message msg, Consumer<Boolean> consumer) {
+        if (msg != null) {
+            sender.executeAsyncPromise(
+                    KeyboardUtils.deleteMsg(msg), consumer, t -> consumer.accept(false));
+        }
     }
 
     protected SimplePoll poll(String text) {
@@ -63,6 +71,11 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
 
     protected abstract void open();
 
+    @SneakyThrows
+    protected void timeout(int ms) {
+        Thread.sleep(ms);
+    }
+
     @Override
     public void close() {
         this.phaseContext.get().close();
@@ -73,7 +86,7 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
         return this.phaseContext.get();
     }
 
-    protected  <L> Consumer<L> contextWrap(Consumer<L> consumer) {
+    protected <L> Consumer<L> contextWrap(Consumer<L> consumer) {
         PhaseContext ctx = this.phaseContext.get();
         return t -> {
             phaseContext.set((T) ctx);
@@ -96,5 +109,4 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
             }
         };
     }
-
 }

@@ -1,6 +1,7 @@
 package ru.v1as.tg.cat.commands.impl;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
+import static ru.v1as.tg.cat.EmojiConst.COLLISION;
 
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +21,10 @@ import ru.v1as.tg.cat.model.UserData;
 
 @Component
 @RequiredArgsConstructor
-public class CatFollowPhase extends AbstractPhase<CatFollowPhase.Context> {
+public class RedStonePhase extends AbstractPhase<RedStonePhase.Context> {
 
     private static final PollTimeoutConfiguration TIMEOUT_LEAVE_CAT =
-            new PollTimeoutConfiguration(Duration.of(10, SECONDS))
+            new PollTimeoutConfiguration(Duration.of(15, SECONDS))
                     .removeMsg(true)
                     .message("Любопытный кот убежал");
 
@@ -32,13 +33,16 @@ public class CatFollowPhase extends AbstractPhase<CatFollowPhase.Context> {
 
     @Override
     protected void open() {
+        timeout(1500);
         poll("Кот неторопливо бежит впереди вас")
                 .choice("Попытаться догнать кота", this::fastFollowCat)
                 .choice("Спокойно следовать", this::followTheCat)
-                .timeout(TIMEOUT_LEAVE_CAT);
+                .timeout(TIMEOUT_LEAVE_CAT)
+                .send();
     }
 
     private void fastFollowCat(ChooseContext choice) {
+        timeout(2000);
         sendMessage(
                 "Кот испугался и рванул что было сил, вам не удалось его догнать."
                         + " Хуже того, никто не слышал как вы кричали 'Кот'.");
@@ -46,34 +50,51 @@ public class CatFollowPhase extends AbstractPhase<CatFollowPhase.Context> {
     }
 
     private void followTheCat(ChooseContext data) {
+        timeout(5000);
         poll("Вы продолжаете осторожно следовать за котом, пристально следя за ним взглядом. "
                         + "Боковым зрением вы вдруг замечаете, как что-то блестит на дороге")
                 .choice("Разглядеть находку", this::resStone)
                 .choice("Не отвлекаться", this::catchCat)
-                .timeout(TIMEOUT_LEAVE_CAT);
+                .timeout(TIMEOUT_LEAVE_CAT)
+                .send();
     }
 
     private void resStone(ChooseContext choice) {
+        timeout(5000);
+
         UserData user = data.getUserData(choice.getUser());
         sendMessage(
                 "Вы остановились чтобы разглядеть находку. "
-                        + "Это оказался затейливый красный камешек,"
-                        + " пожалуй вы заберёте его себе - в хозяйстве всё пригодится.");
-        // todo timeout
+                        + "Это оказался затейливый красный камешек "
+                        + COLLISION
+                        + ", пожалуй вы заберёте его себе - в хозяйстве всё пригодится.");
+
+        timeout(5000);
         sendMessage(
-                String.format("Игрок '%s' находит красный камень", user.getUsernameOrFullName()));
+                getPhaseContext().publicChat,
+                "Игрок " + user.getUsernameOrFullName() + " находит красный камень" + COLLISION);
+
+        timeout(5000);
         sendMessage(
                 "Пока вы разглядывали драгоценность кота и след простыл,"
                         + " хотя в воздухе остался лишь след улыбки кота."
-                        + " Похоже он не просто так вас сюда привёл.");
+                        + " Похоже, он не просто так вас сюда привёл.");
+
+        saveCatRequest(choice);
+
         close();
     }
 
     private void catchCat(ChooseContext choice) {
+        timeout(5000);
+
         UserData user = data.getUserData(choice.getUser());
         sendMessage("Кот остановился, и внимательно посмотрел на вас, похоже вы его не поняли.");
-        // todo timeoutSeconds(3);
+        timeout(5000);
+
         sendMessage("Любопытный кот подбежал и потёрся о вашу ногу.");
+        timeout(5000);
+
         sendMessage(
                 getPhaseContext().publicChat,
                 "Любопытный кот убегает к " + user.getUsernameOrFullName());
@@ -83,7 +104,7 @@ public class CatFollowPhase extends AbstractPhase<CatFollowPhase.Context> {
 
     private void saveCatRequest(ChooseContext choice) {
         Context ctx = getPhaseContext();
-        CatChatData chat = data.getChatData(choice.getChat().getId());
+        CatChatData chat = data.getChatData(ctx.getChatId());
         UserData user = data.getUserData(choice.getUser());
         CatRequest catRequest = new CatRequest(ctx.message, user, chat);
         catRequest.finish(CatRequestVote.CAT1);
@@ -92,6 +113,10 @@ public class CatFollowPhase extends AbstractPhase<CatFollowPhase.Context> {
 
     public Context buildContext(Chat chat, Chat publicChat, Message message) {
         return new Context(chat, publicChat, message);
+    }
+
+    public void open(Chat chat, Chat publicChat, Message curiosCatMsg) {
+        this.open(buildContext(chat, publicChat, curiosCatMsg));
     }
 
     class Context extends PhaseContext {

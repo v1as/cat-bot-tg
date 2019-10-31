@@ -29,7 +29,7 @@ public class TgCallbackProcessor {
         prefixToHandler.put(parserPrefix, handler);
         log.info(
                 "Callback handler '{}' registered with prefix '{}'",
-                handler.getClass().getSimpleName(),
+                handler.getClass(),
                 handler.getPrefix());
     }
 
