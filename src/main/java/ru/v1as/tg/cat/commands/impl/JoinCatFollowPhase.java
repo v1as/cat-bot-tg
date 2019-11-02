@@ -1,8 +1,10 @@
 package ru.v1as.tg.cat.commands.impl;
 
 import static java.time.temporal.ChronoUnit.MINUTES;
+import static ru.v1as.tg.cat.utils.RandomUtils.random;
 
 import java.time.Duration;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Chat;
@@ -28,7 +30,7 @@ public class JoinCatFollowPhase extends AbstractPhase<JoinCatFollowPhase.Context
     private final CatBotData data;
     private final ScoreData scoreData;
     private final StartCommand startCommand;
-    private final RedStonePhase redStonePhase;
+    private final List<AbstractCuriosCatPhase> nextPhases;
 
     @Override
     protected void open() {
@@ -42,7 +44,8 @@ public class JoinCatFollowPhase extends AbstractPhase<JoinCatFollowPhase.Context
                 .onSend(msg -> ctx.message = msg)
                 .timeout(
                         new PollTimeoutConfiguration(Duration.of(3, MINUTES))
-                                .onTimeout(this::close))
+                                .removeMsg(true)
+                                .onTimeout(contextWrap(this::close)))
                 .send();
         startCommand.register(followTheCat.getUuid(), contextWrap(this::goToCat));
 
@@ -52,13 +55,14 @@ public class JoinCatFollowPhase extends AbstractPhase<JoinCatFollowPhase.Context
     private void sayCat(ChooseContext ctx) {
         UserData user = data.getUserData(ctx.getUser());
         saveCatRequest(ctx);
-        sendMessage("Любопытный кот убежал к " + user.getUsernameOrFullName());
+        message("Любопытный кот убежал к " + user.getUsernameOrFullName());
         close();
     }
 
     private void goToCat(CallbackCommandContext data) {
         Context ctx = getPhaseContext();
-        redStonePhase.open(data.getChat(), ctx.getChat(), ctx.message);
+        AbstractCuriosCatPhase nexPhase = random(nextPhases);
+        nexPhase.open(data.getChat(), ctx.getChat(), ctx.message);
         close();
     }
 
@@ -71,11 +75,11 @@ public class JoinCatFollowPhase extends AbstractPhase<JoinCatFollowPhase.Context
         scoreData.save(catRequest);
     }
 
-    public Context buildContext(Chat chat) {
-        return new Context(chat);
+    public void open(Chat chat) {
+        this.open(new Context(chat));
     }
 
-    public class Context extends PhaseContext {
+    class Context extends PhaseContext {
         private Message message;
 
         public Context(Chat chat) {

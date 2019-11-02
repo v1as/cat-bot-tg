@@ -23,7 +23,7 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
 
     private ThreadLocal<T> phaseContext = new ThreadLocal<>();
 
-    protected void sendMessage(UserData userData, String text) {
+    protected void message(UserData userData, String text) {
         sender.executeUnsafe(new SendMessage(userData.getChatId(), text));
     }
 
@@ -47,12 +47,12 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
         return poll;
     }
 
-    protected void sendMessage(String text) {
+    protected void message(String text) {
         PhaseContext phaseContext = this.phaseContext.get();
         sender.executeUnsafe(new SendMessage(phaseContext.getChatId(), text));
     }
 
-    protected void sendMessage(Chat chat, String text) {
+    protected void message(Chat chat, String text) {
         sender.executeUnsafe(new SendMessage(chat.getId(), text));
     }
 
@@ -60,7 +60,7 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
         phaseContext.get().onClose(onClose);
     }
 
-    public void open(T phaseContext) {
+    public final void open(T phaseContext) {
         this.phaseContext.set(phaseContext);
         try {
             this.open();

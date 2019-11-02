@@ -29,8 +29,7 @@ public class CuriosCatRequestSchedulerTest extends AbstractCatBotTest {
 
     @Before
     public void init() {
-        scheduler = new CuriosCatRequestScheduler(catBotData, sender);
-        scheduler.setExecutorService(mock(ScheduledExecutorService.class));
+        scheduler = new CuriosCatRequestScheduler(catBotData, sender, null);
         scheduler.init();
 
         getCatBotData().register(getMessageUpdate());
@@ -51,7 +50,6 @@ public class CuriosCatRequestSchedulerTest extends AbstractCatBotTest {
     @Test
     public void curiosCatGoneTest() {
         ScheduledExecutorService executor = mock(ScheduledExecutorService.class);
-        scheduler.setExecutorService(executor);
         scheduler.setChance(1);
         scheduler.run();
 

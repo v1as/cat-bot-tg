@@ -14,18 +14,29 @@ public class PhaseContext {
     private final Chat chat;
     private List<SimplePoll> polls = new ArrayList<>();
     private List<Runnable> onCloses = new ArrayList<>();
+    private boolean finished = false;
 
     public void onClose(Runnable onClose) {
+        checkNotClose();
         onCloses.add(onClose);
     }
 
+    protected void checkNotClose() {
+        if (finished) {
+            throw new IllegalArgumentException("This phase context is already closed.");
+        }
+    }
+
     protected SimplePoll poll(String text) {
+        checkNotClose();
         SimplePoll simplePoll = new SimplePoll();
         polls.add(simplePoll);
         return simplePoll.chatId(chat.getId()).text(text);
     }
 
     public void close() {
+        checkNotClose();
+        this.finished = true;
         for (SimplePoll poll : polls) {
             try {
                 poll.close();

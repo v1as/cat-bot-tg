@@ -1,6 +1,7 @@
 package ru.v1as.tg.cat.callbacks.phase.poll;
 
 import static java.util.Collections.singletonList;
+import static org.springframework.util.StringUtils.isEmpty;
 import static ru.v1as.tg.cat.callbacks.phase.poll.State.CANCELED;
 import static ru.v1as.tg.cat.callbacks.phase.poll.State.CLOSED;
 import static ru.v1as.tg.cat.callbacks.phase.poll.State.CREATED;
@@ -114,6 +115,7 @@ public class SimplePoll {
         this.state = SENDING;
         SendMessage message = new SendMessage(chatId, text).setReplyMarkup(getKeyboard());
         sender.executeAsyncPromise(message, this::pollMessageSent, this::pollMessageFail);
+        log.info("Poll '{}' send to chat '{}'", text, chatId);
         return this;
     }
 
@@ -155,7 +157,14 @@ public class SimplePoll {
             EXECUTOR.schedule(
                     () -> {
                         if (state.equals(SENT)) {
+
                             this.close(timeoutConfiguration.removeMsg());
+
+                            if (!isEmpty(timeoutConfiguration.message())) {
+                                sender.executeUnsafe(
+                                        new SendMessage(chatId, timeoutConfiguration.message()));
+                            }
+
                             if (timeoutConfiguration.onTimeout() != null) {
                                 timeoutConfiguration.onTimeout().run();
                             }
@@ -181,6 +190,7 @@ public class SimplePoll {
             @Override
             public void handle(String value, Chat chat, User user, CallbackQuery callbackQuery) {
                 choose = choices.get(callbackQuery.getData());
+                log.info("User '{}' just choose '{}'", user, choose.getText());
                 if (closeOnChoose) {
                     close();
                 }
@@ -257,5 +267,4 @@ public class SimplePoll {
         this.phaseContextThreadLocal = (ThreadLocal<PhaseContext>) phaseContext;
         this.phaseContext = phaseContext.get();
     }
-
 }
