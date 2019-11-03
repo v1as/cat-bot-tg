@@ -1,4 +1,4 @@
-package ru.v1as.tg.cat.commands.impl;
+package ru.v1as.tg.cat.callbacks.phase;
 
 import org.springframework.stereotype.Component;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;

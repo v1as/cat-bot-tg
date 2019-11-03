@@ -1,4 +1,4 @@
-package ru.v1as.tg.cat.commands.impl;
+package ru.v1as.tg.cat.callbacks.phase;
 
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static ru.v1as.tg.cat.utils.RandomUtils.random;
@@ -12,12 +12,10 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.EmojiConst;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
-import ru.v1as.tg.cat.callbacks.phase.AbstractPhase;
-import ru.v1as.tg.cat.callbacks.phase.PhaseContext;
-import ru.v1as.tg.cat.callbacks.phase.PollTimeoutConfiguration;
 import ru.v1as.tg.cat.callbacks.phase.poll.ChooseContext;
 import ru.v1as.tg.cat.callbacks.phase.poll.PollChoice;
 import ru.v1as.tg.cat.commands.ArgumentCallbackCommand.CallbackCommandContext;
+import ru.v1as.tg.cat.commands.impl.StartCommand;
 import ru.v1as.tg.cat.model.CatChatData;
 import ru.v1as.tg.cat.model.CatRequest;
 import ru.v1as.tg.cat.model.ScoreData;
@@ -43,7 +41,7 @@ public class JoinCatFollowPhase extends AbstractPhase<JoinCatFollowPhase.Context
                 .choice(followTheCat)
                 .onSend(msg -> ctx.message = msg)
                 .timeout(
-                        new PollTimeoutConfiguration(Duration.of(3, MINUTES))
+                        new PollTimeoutConfiguration(Duration.of(5, MINUTES))
                                 .removeMsg(true)
                                 .onTimeout(contextWrap(this::close)))
                 .send();

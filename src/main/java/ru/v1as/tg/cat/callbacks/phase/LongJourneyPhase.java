@@ -1,4 +1,4 @@
-package ru.v1as.tg.cat.commands.impl;
+package ru.v1as.tg.cat.callbacks.phase;
 
 import static ru.v1as.tg.cat.utils.RandomUtils.random;
 
@@ -19,7 +19,7 @@ public class LongJourneyPhase extends AbstractCuriosCatPhase {
                     "Кот уверенно шлёпает своими лапками впереди.",
                     "Вы с котом зашли в какую-то неширокую улочку",
                     "А вот сейчас вы, похоже, идёте мимо булочной, аромат свежих булочек не оставляет вас равнодушным. Коту, впрочем, всё равно.");
-    public static final String LOOP = "LOOP";
+    private static final String LOOP = "LOOP";
 
     @Override
     protected void open() {

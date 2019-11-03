@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -57,10 +58,13 @@ public class ScoreData {
     }
 
     @SneakyThrows
+    @PostConstruct
     public void init() {
         File file = new File(fileName);
         if (file.createNewFile()) {
             log.info("File created: " + file.getAbsolutePath());
+        } else {
+            log.info("File already exists '{}'", file.getAbsolutePath());
         }
         synchronized (ScoreData.class) {
             lines.clear();
@@ -77,7 +81,7 @@ public class ScoreData {
                             });
         }
         log.info(
-                "Scored is loaded. {} lines was read. File: {}",
+                "Scored is loaded. {} lines was read. File: '{}'",
                 lines.size(),
                 file.getAbsoluteFile());
     }

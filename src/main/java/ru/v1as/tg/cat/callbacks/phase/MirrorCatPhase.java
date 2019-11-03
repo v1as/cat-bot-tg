@@ -1,4 +1,4 @@
-package ru.v1as.tg.cat.commands.impl;
+package ru.v1as.tg.cat.callbacks.phase;
 
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT2;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.NOT_CAT;

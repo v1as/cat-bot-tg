@@ -2,7 +2,9 @@ package ru.v1as.tg.cat.commands.impl;
 
 import static java.util.stream.Collectors.joining;
 
+import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
@@ -15,32 +17,38 @@ import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
 @Slf4j
 @Component
-public class ScoreCommandHandler implements CommandHandler {
+public class GlobalScoreCommandHandler implements CommandHandler {
 
-    private final ScoreData scoreData;
-    private UnsafeAbsSender sender;
-
-    public ScoreCommandHandler(ScoreData scoreData, UnsafeAbsSender sender) {
-        this.scoreData = scoreData;
-        this.sender = sender;
-    }
+    @Autowired private ScoreData scoreData;
+    @Autowired private UnsafeAbsSender sender;
 
     @Override
     public String getCommandName() {
-        return "score";
+        return "global_score";
     }
 
     @Override
     public void handle(TgCommandRequest command, Chat chat, User user) {
         String text =
                 scoreData
-                        .getWinnersStream(chat.getId(), null)
+                        .getWinnersStream(chat.getId(), getDateAfter())
                         .map(LongProperty::toString)
                         .collect(joining("\n"));
+        SendMessage message = new SendMessage().setChatId(chat.getId());
         if (text.length() > 0) {
-            sender.executeUnsafe(new SendMessage().setChatId(chat.getId()).setText(text));
+            sender.executeUnsafe(message.setText(getMessagePrefix() + text));
         } else {
+            sender.executeUnsafe(message.setText("Пока что тут пусто"));
             log.info("No score data to send");
         }
     }
+
+    protected String getMessagePrefix() {
+        return "Счёт за всё время: \n\n";
+    }
+
+    public LocalDateTime getDateAfter() {
+        return null;
+    }
+
 }

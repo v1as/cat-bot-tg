@@ -1,9 +1,10 @@
-package ru.v1as.tg.cat.commands.impl;
+package ru.v1as.tg.cat.callbacks.phase;
 
 import static ru.v1as.tg.cat.EmojiConst.COLLISION;
 
 import lombok.RequiredArgsConstructor;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
+import ru.v1as.tg.cat.callbacks.phase.AbstractCuriosCatPhase;
 import ru.v1as.tg.cat.callbacks.phase.poll.ChooseContext;
 import ru.v1as.tg.cat.model.UserData;
 

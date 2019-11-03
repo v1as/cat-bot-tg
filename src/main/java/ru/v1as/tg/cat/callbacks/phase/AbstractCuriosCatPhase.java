@@ -1,4 +1,4 @@
-package ru.v1as.tg.cat.commands.impl;
+package ru.v1as.tg.cat.callbacks.phase;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 
@@ -11,12 +11,9 @@ import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
-import ru.v1as.tg.cat.callbacks.phase.AbstractPhase;
-import ru.v1as.tg.cat.callbacks.phase.PhaseContext;
-import ru.v1as.tg.cat.callbacks.phase.PollTimeoutConfiguration;
 import ru.v1as.tg.cat.callbacks.phase.poll.ChooseContext;
 import ru.v1as.tg.cat.callbacks.phase.poll.SimplePoll;
-import ru.v1as.tg.cat.commands.impl.AbstractCuriosCatPhase.CuriosCatContext;
+import ru.v1as.tg.cat.callbacks.phase.AbstractCuriosCatPhase.CuriosCatContext;
 import ru.v1as.tg.cat.model.CatChatData;
 import ru.v1as.tg.cat.model.CatRequest;
 import ru.v1as.tg.cat.model.ScoreData;

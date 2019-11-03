@@ -19,6 +19,10 @@ public class TgCommandProcessor {
     }
 
     private void register(CommandHandler commandHandler) {
+        if (commandToHandler.containsKey(commandHandler.getCommandName())) {
+            throw new IllegalStateException(
+                    "Command with such name is already registered" + commandHandler.getClass());
+        }
         commandToHandler.put(commandHandler.getCommandName(), commandHandler);
         log.info(
                 "Command '{}' with  name '{}' registered.",
@@ -29,15 +33,15 @@ public class TgCommandProcessor {
     public void process(TgCommandRequest command, Chat chat, User user) {
         CommandHandler commandHandler = commandToHandler.get(command.getName());
         if (commandHandler != null) {
-            log.debug(
-                    "Command '{}' just come from user '{}' in chat '{}'",
+            log.info(
+                    "Command '{}' just come from user '{}' in chat '{}'.  It will be processed by handler: '{}'",
                     commandHandler.getCommandName(),
                     user,
-                    chat);
+                    chat,
+                    commandHandler.getClass().getName());
             commandHandler.handle(command, chat, user);
         } else {
             log.warn("No handlers for this command: {}", command);
         }
     }
-
 }
