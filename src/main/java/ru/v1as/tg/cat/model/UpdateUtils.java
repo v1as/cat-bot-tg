@@ -1,6 +1,10 @@
 package ru.v1as.tg.cat.model;
 
+import static org.apache.http.util.TextUtils.isEmpty;
 
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.experimental.UtilityClass;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -30,4 +34,15 @@ public class UpdateUtils {
         }
         return null;
     }
+
+    public static String getUsernameOrFullName(User user) {
+        if (isEmpty(user.getUserName())) {
+            return Stream.of(user.getFirstName(), user.getLastName())
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.joining(" "));
+        } else {
+            return "@" + user.getUserName();
+        }
+    }
+
 }

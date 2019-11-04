@@ -22,6 +22,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -114,8 +115,12 @@ public class SimplePoll {
     public SimplePoll send() {
         this.state = SENDING;
         SendMessage message = new SendMessage(chatId, text).setReplyMarkup(getKeyboard());
+        String choices =
+                this.choices.values().stream()
+                        .map(PollChoice::getText)
+                        .collect(Collectors.joining("/", "[", "]"));
         sender.executeAsyncPromise(message, this::pollMessageSent, this::pollMessageFail);
-        log.info("Poll '{}' send to chat '{}'", text, chatId);
+        log.info("Poll '{}' send to chat '{}'", text + choices, chatId);
         return this;
     }
 
@@ -232,10 +237,11 @@ public class SimplePoll {
     }
 
     public SimplePoll closeOnChoose(boolean closeOnChoose) {
+        this.closeOnChoose = closeOnChoose;
         return this;
     }
 
-    public SimplePoll closeTextBuilder(@NonNull DefaultCloseTextBuilder defaultCloseTextBuilder) {
+    public SimplePoll closeTextBuilder(@NonNull CloseOnTextBuilder closeOnTextBuilder) {
         this.closeOnTextBuilder = closeOnTextBuilder;
         return this;
     }
@@ -250,7 +256,7 @@ public class SimplePoll {
         return this;
     }
 
-    public SimplePoll removeOnChoice(boolean value) {
+    public SimplePoll removeOnClose(boolean value) {
         this.removeOnClose = value;
         return this;
     }

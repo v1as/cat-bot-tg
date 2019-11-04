@@ -17,7 +17,7 @@ public class KittenOrRatPhase extends AbstractCuriosCatPhase {
         timeout(1000);
         message("Ваш общий с котом путь лежит близ жилых домов.");
         timeout(2000);
-        message("Проходя мимо одного из них, вы едва различает тихий писк.");
+        message("Проходя мимо одного из них, вы слышите едва различает тихий писк.");
         poll("Что будем делать?")
                 .choice("Следовать за котом", random(this::keepFollow, this::keepFollowFail))
                 .choice("Проверить писк", random(this::checkSound, this::checkSoundFail))
@@ -35,11 +35,11 @@ public class KittenOrRatPhase extends AbstractCuriosCatPhase {
     private void checkSoundFail(ChooseContext ctx) {
         timeout(2000);
         message(
-                "Подойдя к подъезду, вы заглядываете в подвальную нишу, из которой доноится подозрительный звук.");
+                "Подойдя к подъезду, вы заглядываете в подвальную нишу, из которой доносится подозрительный звук.");
         timeout(1000);
         message("Снизу выныривает испуганная крыса.");
         timeout(1000);
-        message("Само-собой уже и след простыл.");
+        message("Само собой кота уже и след простыл.");
         catchUpCatAndClose(ctx, NOT_CAT);
     }
 

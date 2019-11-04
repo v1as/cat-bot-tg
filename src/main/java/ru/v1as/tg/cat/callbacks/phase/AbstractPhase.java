@@ -1,9 +1,11 @@
 package ru.v1as.tg.cat.callbacks.phase;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
@@ -14,9 +16,10 @@ import ru.v1as.tg.cat.model.UserData;
 import ru.v1as.tg.cat.tg.KeyboardUtils;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
-@Slf4j
 @RequiredArgsConstructor
 public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> {
+
+    private final Logger log = getLogger(this.getClass());
 
     @Autowired protected UnsafeAbsSender sender;
     @Autowired private TgCallbackProcessor callbackProcessor;
@@ -49,7 +52,9 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
 
     protected void message(String text) {
         PhaseContext phaseContext = this.phaseContext.get();
-        sender.executeUnsafe(new SendMessage(phaseContext.getChatId(), text));
+        Long chatId = phaseContext.getChatId();
+        log.info("Sending message '{}' to chat '{}'", text, chatId);
+        sender.executeUnsafe(new SendMessage(chatId, text));
     }
 
     protected void message(Chat chat, String text) {

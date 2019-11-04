@@ -20,6 +20,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.updateshandlers.SentCallback;
+import ru.v1as.tg.cat.Const.OnlyForAdmins;
 import ru.v1as.tg.cat.commands.TgCommandRequest;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
@@ -36,9 +37,15 @@ public abstract class AbstractTgBot extends TelegramLongPollingBot implements Un
     @Value("${tg.bot.token}")
     private String botToken;
 
+    @Value("${tg.bot.admin_username:}")
+    private String botAdmins;
+
     @PostConstruct
     public void init() {
         Const.setBotName(botUsername);
+        Const.setAdminUserName(botAdmins);
+        log.info("Set up const bot user name: '{}'", botUsername);
+        log.info("Set up const admin user names: '{}'", botAdmins);
     }
 
     @Override
@@ -65,6 +72,8 @@ public abstract class AbstractTgBot extends TelegramLongPollingBot implements Un
                     log.debug("Unsupported update type: " + update);
                 }
             }
+        } catch (OnlyForAdmins noAdmin) {
+            log.info("Update '{}' allowed only for admins", update);
         } catch (Exception e) {
             log.error("Something gone wrong ", e);
         }

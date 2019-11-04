@@ -36,15 +36,15 @@ public class MirrorCatPhase extends AbstractCuriosCatPhase {
         timeout(1000);
         message(
                 "Но долго расслабиться вам не удалось,"
-                    + " недовольное мяуканье привлекло ваше внимание - кот потрусил дальше.");
+                        + " недовольное мяуканье привлекло ваше внимание - кот потрусил дальше.");
         timeout(2000);
         poll("Что дальше?")
-                .choice("Идём за котом", this::followTheCat2)
+                .choice("Идём за котом", this::followTheCat)
                 .choice("Считаем ворон дальше", this::amountRavens)
                 .send();
     }
 
-    private void followTheCat2(ChooseContext chooseContext) {
+    private void followTheCat(ChooseContext chooseContext) {
         timeout(2000);
         message("Вы продолжаете следовать за котом.");
         timeout(2000);
@@ -62,7 +62,7 @@ public class MirrorCatPhase extends AbstractCuriosCatPhase {
         timeout(2000);
         message(
                 "Любопытный кот подмигивает вам и убегает. Как думаете,"
-                    + " можно засчитать кота и его отражение за двоих?");
+                        + " можно засчитать кота и его отражение за двоих?");
         timeout(1000);
         catchUpCatAndClose(chooseContext, CAT2);
     }
@@ -85,5 +85,4 @@ public class MirrorCatPhase extends AbstractCuriosCatPhase {
         catchUpCatAndClose(chooseContext, NOT_CAT);
     }
 
-    private void followTheCat(ChooseContext chooseContext) {}
 }

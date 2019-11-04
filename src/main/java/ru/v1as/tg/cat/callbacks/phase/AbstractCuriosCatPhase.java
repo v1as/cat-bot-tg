@@ -11,9 +11,9 @@ import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
+import ru.v1as.tg.cat.callbacks.phase.AbstractCuriosCatPhase.CuriosCatContext;
 import ru.v1as.tg.cat.callbacks.phase.poll.ChooseContext;
 import ru.v1as.tg.cat.callbacks.phase.poll.SimplePoll;
-import ru.v1as.tg.cat.callbacks.phase.AbstractCuriosCatPhase.CuriosCatContext;
 import ru.v1as.tg.cat.model.CatChatData;
 import ru.v1as.tg.cat.model.CatRequest;
 import ru.v1as.tg.cat.model.ScoreData;
@@ -22,7 +22,7 @@ import ru.v1as.tg.cat.model.UserData;
 public abstract class AbstractCuriosCatPhase extends AbstractPhase<CuriosCatContext> {
 
     protected static final PollTimeoutConfiguration TIMEOUT_LEAVE_CAT =
-            new PollTimeoutConfiguration(Duration.of(15, SECONDS))
+            new PollTimeoutConfiguration(Duration.of(30, SECONDS))
                     .removeMsg(true)
                     .message("Любопытный кот убежал");
 
