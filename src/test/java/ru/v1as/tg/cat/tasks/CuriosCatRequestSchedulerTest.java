@@ -17,6 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import ru.v1as.tg.cat.AbstractCatBotTest;
 import ru.v1as.tg.cat.CaBotTestConfiguration;
 import ru.v1as.tg.cat.CatBotData;
+import ru.v1as.tg.cat.callbacks.phase.JoinCatFollowPhase;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
 @RunWith(SpringRunner.class)
@@ -25,11 +26,12 @@ public class CuriosCatRequestSchedulerTest extends AbstractCatBotTest {
 
     @Autowired CatBotData catBotData;
     @Autowired UnsafeAbsSender sender;
+    @Autowired JoinCatFollowPhase joinCatPhase;
     CuriosCatRequestScheduler scheduler;
 
     @Before
     public void init() {
-        scheduler = new CuriosCatRequestScheduler(catBotData, sender, null);
+        scheduler = new CuriosCatRequestScheduler(catBotData, joinCatPhase);
         scheduler.init();
 
         getCatBotData().register(getMessageUpdate());

@@ -13,7 +13,7 @@ public class MirrorCatPhase extends AbstractCuriosCatPhase {
     @Override
     protected void open() {
         timeout(1000);
-        message("Как и всегда, вы устремляетесь за котом");
+        message("Как и всегда вы устремляетесь за котом");
         timeout(1000);
         message("На улице свежо и приятно. Кот трусит впереди.");
         timeout(1000);
@@ -25,7 +25,7 @@ public class MirrorCatPhase extends AbstractCuriosCatPhase {
 
     private void lookAroundFail(ChooseContext chooseContext) {
         timeout(2000);
-        message("Пока вы считали ворон по сторонами кот сбежал.");
+        message("Пока вы считали ворон по сторонами, кот сбежал.");
         timeout(2000);
         catchUpCatAndClose(chooseContext, NOT_CAT);
     }
@@ -69,7 +69,7 @@ public class MirrorCatPhase extends AbstractCuriosCatPhase {
 
     private void goToCat(ChooseContext chooseContext) {
         timeout(1000);
-        message("О чем вы только думали? Кот недовольно сбегает");
+        message("О чем вы только думали? Кот, раздраженно мяукая, сбегает");
         timeout(2000);
         catchUpCatAndClose(chooseContext, NOT_CAT);
     }

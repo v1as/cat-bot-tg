@@ -13,6 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.v1as.tg.cat.callbacks.TgCallbackProcessor;
 import ru.v1as.tg.cat.callbacks.phase.poll.SimplePoll;
 import ru.v1as.tg.cat.model.UserData;
+import ru.v1as.tg.cat.service.clock.BotClock;
 import ru.v1as.tg.cat.tg.KeyboardUtils;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
@@ -23,6 +24,7 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
 
     @Autowired protected UnsafeAbsSender sender;
     @Autowired private TgCallbackProcessor callbackProcessor;
+    @Autowired protected BotClock clock;
 
     private ThreadLocal<T> phaseContext = new ThreadLocal<>();
 
@@ -78,7 +80,7 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
 
     @SneakyThrows
     protected void timeout(int ms) {
-        Thread.sleep(ms);
+        clock.wait(ms);
     }
 
     @Override

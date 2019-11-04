@@ -50,7 +50,7 @@ public class MadCatPhase extends AbstractCuriosCatPhase {
         timeout(1000);
         message("Вы осторожно отходите от кота.");
         timeout(2000);
-        message("Странный кот, не прекращая шипет, галопом умчался.");
+        message("Странный кот, не прекращая шипеть, галопом умчался.");
         timeout(2000);
         message("Что ж, могло бы быть и хуже.");
         timeout(2000);

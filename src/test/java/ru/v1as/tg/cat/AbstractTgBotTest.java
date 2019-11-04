@@ -7,6 +7,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.LinkedList;
+import java.util.stream.Collectors;
 import junit.framework.AssertionFailedError;
 import org.junit.After;
 import org.junit.Before;
@@ -149,9 +151,21 @@ public class AbstractTgBotTest {
                         .map(clazz::cast)
                         .findFirst()
                         .orElseThrow(
-                                () -> new AssertionFailedError("Wrong type expected: " + clazz));
+                                () ->
+                                        new AssertionFailedError(
+                                                String.format(
+                                                        "Wrong type expected: '%s' but [%s]",
+                                                        clazz.getSimpleName(),
+                                                        getMethodsStr(sender.getMethods()))));
         assertTrue(sender.getMethods().remove(pop));
         return pop;
+    }
+
+    private String getMethodsStr(LinkedList<BotApiMethod<?>> methods) {
+        return methods.stream()
+                .map(Object::getClass)
+                .map(Class::getSimpleName)
+                .collect(Collectors.joining(", "));
     }
 
     protected SendMessage popSendMessage() {

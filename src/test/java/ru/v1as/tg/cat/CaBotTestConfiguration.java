@@ -14,7 +14,13 @@ import ru.v1as.tg.cat.model.ScoreData;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
 @Configuration
-@ComponentScan({"ru.v1as.tg.cat.messages", "ru.v1as.tg.cat.callbacks", "ru.v1as.tg.cat.commands"})
+@ComponentScan({
+    "ru.v1as.tg.cat.messages",
+    "ru.v1as.tg.cat.callbacks",
+    "ru.v1as.tg.cat.commands",
+    "ru.v1as.tg.cat.service",
+    "ru.v1as.tg.cat.callbacks.phase",
+})
 @ActiveProfiles("test")
 public class CaBotTestConfiguration {
 
@@ -42,5 +48,4 @@ public class CaBotTestConfiguration {
             TgMessageProcessor messageProcessor) {
         return new CatBot(catBotData, callbackProcessor, commandProcessor, messageProcessor);
     }
-
 }
