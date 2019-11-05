@@ -36,6 +36,7 @@ public class LongJourneyPhase extends AbstractCuriosCatPhase {
     }
 
     private void walk(ChooseContext chooseContext) {
+        timeout(3000);
         getPhaseContext().increment(LOOP);
         message(random(WALKING));
         timeout(3000);
