@@ -12,6 +12,7 @@ import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.v1as.tg.cat.callbacks.TgCallbackProcessor;
 import ru.v1as.tg.cat.callbacks.phase.poll.SimplePoll;
+import ru.v1as.tg.cat.callbacks.phase.poll.interceptor.PhaseContextChoiceAroundInterceptor;
 import ru.v1as.tg.cat.model.UserData;
 import ru.v1as.tg.cat.service.clock.BotClock;
 import ru.v1as.tg.cat.tg.KeyboardUtils;
@@ -48,8 +49,13 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
         SimplePoll poll = phase.poll(text);
         poll.setSender(sender);
         poll.setCallbackProcessor(callbackProcessor);
-        poll.setPhaseContext(phaseContext);
+        poll.setChoiceAroundInterceptor(getChoiceAroundInterceptor(poll, phaseContext));
         return poll;
+    }
+
+    protected PhaseContextChoiceAroundInterceptor<T> getChoiceAroundInterceptor(
+            SimplePoll poll, ThreadLocal<T> phaseContext) {
+        return new PhaseContextChoiceAroundInterceptor<>(phaseContext);
     }
 
     protected void message(String text) {

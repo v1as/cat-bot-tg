@@ -11,6 +11,8 @@ import ru.v1as.tg.cat.callbacks.TgCallbackProcessor;
 import ru.v1as.tg.cat.commands.TgCommandProcessor;
 import ru.v1as.tg.cat.messages.TgMessageProcessor;
 import ru.v1as.tg.cat.model.ScoreData;
+import ru.v1as.tg.cat.service.clock.BotClock;
+import ru.v1as.tg.cat.service.clock.NoopBotClock;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
 @Configuration
@@ -47,5 +49,11 @@ public class CaBotTestConfiguration {
             TgCommandProcessor commandProcessor,
             TgMessageProcessor messageProcessor) {
         return new CatBot(catBotData, callbackProcessor, commandProcessor, messageProcessor);
+    }
+
+    @Bean
+    @Primary
+    public BotClock getClock() {
+        return new NoopBotClock();
     }
 }

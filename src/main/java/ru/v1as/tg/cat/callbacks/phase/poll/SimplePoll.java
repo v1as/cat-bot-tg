@@ -35,8 +35,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import ru.v1as.tg.cat.callbacks.SimpleCallbackHandler;
 import ru.v1as.tg.cat.callbacks.TgCallBackHandler;
 import ru.v1as.tg.cat.callbacks.TgCallbackProcessor;
-import ru.v1as.tg.cat.callbacks.phase.PhaseContext;
 import ru.v1as.tg.cat.callbacks.phase.PollTimeoutConfiguration;
+import ru.v1as.tg.cat.callbacks.phase.poll.interceptor.ChoiceAroundInterceptor;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
 @Slf4j
@@ -62,35 +62,26 @@ public class SimplePoll {
     private boolean removeOnClose = false;
     private boolean closeOnChoose = true;
     private CloseOnTextBuilder closeOnTextBuilder = new DefaultCloseTextBuilder();
-
-    private PhaseContext phaseContext;
-    private ThreadLocal<PhaseContext> phaseContextThreadLocal;
+    private ChoiceAroundInterceptor choiceAroundInterceptor;
 
     public SimplePoll choice(PollChoice choice) {
         choices.putIfAbsent(choice.getUuid(), choice);
         return this;
     }
 
+    public Map<String, PollChoice> getChoices() {
+        return choices;
+    }
+
     public SimplePoll choice(String text, Consumer<ChooseContext> method) {
-        String callback = generateCallback();
+        String callback = generateCallback(text);
         return choice(
                 new PollChoice(
                         callback,
                         PollChoiceType.TEXT,
                         text,
                         null,
-                        buildChoseContextConsumer(method)));
-    }
-
-    private Consumer<ChooseContext> buildChoseContextConsumer(Consumer<ChooseContext> method) {
-        return (ctx) -> {
-            phaseContextThreadLocal.set(phaseContext);
-            try {
-                method.accept(ctx);
-            } finally {
-                phaseContextThreadLocal.remove();
-            }
-        };
+                        ctx -> choiceAroundInterceptor.around(ctx, method)));
     }
 
     public SimplePoll text(String text) {
@@ -98,7 +89,11 @@ public class SimplePoll {
         return this;
     }
 
-    protected String generateCallback() {
+    public String text() {
+        return this.text;
+    }
+
+    protected String generateCallback(String text) {
         return UUID.randomUUID().toString();
     }
 
@@ -222,8 +217,6 @@ public class SimplePoll {
                     sender.executeUnsafe(clearButtons(message));
                 }
             }
-        } else {
-            log.error("Can't close poll, illegal state: {}", this);
         }
     }
 
@@ -269,8 +262,7 @@ public class SimplePoll {
         this.callbackProcessor = callbackProcessor;
     }
 
-    public void setPhaseContext(ThreadLocal<? extends PhaseContext> phaseContext) {
-        this.phaseContextThreadLocal = (ThreadLocal<PhaseContext>) phaseContext;
-        this.phaseContext = phaseContext.get();
+    public void setChoiceAroundInterceptor(ChoiceAroundInterceptor choiceAroundInterceptor) {
+        this.choiceAroundInterceptor = choiceAroundInterceptor;
     }
 }

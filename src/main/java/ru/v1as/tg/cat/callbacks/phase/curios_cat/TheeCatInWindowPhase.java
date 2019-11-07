@@ -1,4 +1,4 @@
-package ru.v1as.tg.cat.callbacks.phase;
+package ru.v1as.tg.cat.callbacks.phase.curios_cat;
 
 import org.springframework.stereotype.Component;
 import ru.v1as.tg.cat.EmojiConst;
@@ -12,13 +12,9 @@ public class TheeCatInWindowPhase extends AbstractCuriosCatPhase {
 
     @Override
     protected void open() {
-        timeout(2000);
         message("В этот раз Любопытный Кот выглядит довольно целеустрёмлённым.");
-        timeout(3000);
         message("Вы почти что слышите уверенный топот кошачьих лапок.");
-        timeout(3000);
         message("Проходя мимо торца здания, вы замечаете кота в окне");
-        timeout(3000);
         poll("Как поступим?")
                 .choice("Кот! " + EmojiConst.CAT, this::cat1)
                 .choice("Следуем дальше", this::follow1)
@@ -26,9 +22,7 @@ public class TheeCatInWindowPhase extends AbstractCuriosCatPhase {
     }
 
     private void follow1(ChooseContext chooseContext) {
-        timeout(2000);
         message("Кот всё так же серьёзно настроен и бежит вперёд.");
-        timeout(3000);
         message("Вот уже второй кот, подоравшись, смотрит на вас из окна.");
         poll("Что делаем?")
                 .choice("Кот! " + EmojiConst.CAT, this::cat2)
@@ -42,9 +36,7 @@ public class TheeCatInWindowPhase extends AbstractCuriosCatPhase {
     }
 
     private void follow2(ChooseContext chooseContext) {
-        timeout(3000);
         message("Пушистый путеводитель даже ни разу не обернулся на вас за эту прогулку.");
-        timeout(4000);
         message(
                 "Это утро, видимо, какое-то особенное - уже третий кот устроился на подоконнике, поджав лапки.");
         poll("Что дальше?")
@@ -59,9 +51,7 @@ public class TheeCatInWindowPhase extends AbstractCuriosCatPhase {
     }
 
     private void follow3(ChooseContext chooseContext) {
-        timeout(2000);
         message("Последнее, что вы увидели - взмах пушистого хвоста.");
-        timeout(3000);
         Integer cats = getPhaseContext().get(CATS, 0);
         if (cats == 0) {
             message(

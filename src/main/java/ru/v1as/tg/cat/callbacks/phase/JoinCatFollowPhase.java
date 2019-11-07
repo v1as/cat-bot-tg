@@ -18,6 +18,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.EmojiConst;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
+import ru.v1as.tg.cat.callbacks.phase.curios_cat.AbstractCuriosCatPhase;
 import ru.v1as.tg.cat.callbacks.phase.poll.ChooseContext;
 import ru.v1as.tg.cat.callbacks.phase.poll.NopeCloseTextBuilder;
 import ru.v1as.tg.cat.callbacks.phase.poll.PollChoice;

@@ -42,6 +42,10 @@ public class AbstractTgBotTest {
         lastCallbackQueryId = 0;
         AbsSender sender = mock(AbsSender.class);
         bot.setSender(sender);
+        clearMethodsQueue();
+    }
+
+    protected void clearMethodsQueue() {
         this.sender.clear();
     }
 
@@ -74,6 +78,10 @@ public class AbstractTgBotTest {
         when(update.hasMessage()).thenReturn(true);
         when(update.getMessage()).thenReturn(message);
         return update;
+    }
+
+    protected Message getMessage() {
+        return getMessage(++lastMsgId);
     }
 
     protected Message getMessage(Integer newId) {

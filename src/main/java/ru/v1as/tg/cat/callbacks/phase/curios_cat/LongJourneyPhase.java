@@ -1,4 +1,4 @@
-package ru.v1as.tg.cat.callbacks.phase;
+package ru.v1as.tg.cat.callbacks.phase.curios_cat;
 
 import static ru.v1as.tg.cat.utils.RandomUtils.random;
 
@@ -24,10 +24,8 @@ public class LongJourneyPhase extends AbstractCuriosCatPhase {
     @Override
     protected void open() {
         message("Сегодня выдался на удивление приятный денёк.");
-        timeout(2000);
         message(
                 "Вы с котом медленно прогуливаетесь по городу. Правда, он идёт в небольшом отдалении впереди.");
-        timeout(3000);
         poll("Что будем делать?")
                 .choice("Нагоним кота", this::catchUpCat)
                 .choice("Гулять себе в удовольствие", this::walk)
@@ -36,10 +34,8 @@ public class LongJourneyPhase extends AbstractCuriosCatPhase {
     }
 
     private void walk(ChooseContext chooseContext) {
-        timeout(3000);
         getPhaseContext().increment(LOOP);
         message(random(WALKING));
-        timeout(3000);
         poll("Что будем делать?")
                 .choice("Нагоним кота", this::catchUpCat)
                 .choice("Гуляем дальше", this::walk)
@@ -47,7 +43,6 @@ public class LongJourneyPhase extends AbstractCuriosCatPhase {
     }
 
     private void catchUpCat(ChooseContext chooseContext) {
-        timeout(2000);
         Integer loop = getPhaseContext().get(LOOP);
         if (loop < 5) {
             message("Кот недовольно мяукая убегает.");
@@ -56,7 +51,6 @@ public class LongJourneyPhase extends AbstractCuriosCatPhase {
             message(
                     "Кот удивлённо смотрит на вас. Похоже, он совсем забыл о вашей компании во время этой дивной прогулки."
                             + " Пользуюясь его замешательством, вы воскликнули 'Кот!'");
-            timeout(4000);
             catchUpCatAndClose(chooseContext, CatRequestVote.CAT1);
         }
     }
