@@ -24,7 +24,7 @@ public class PhaseContext {
     protected void checkNotClose() {
         if (finished) {
             log.info("Phase context is already closed");
-            throw new IllegalArgumentException("This phase context is already closed.");
+            throw new PhaseContextClosedException("This phase context is already closed.");
         }
     }
 

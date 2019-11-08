@@ -35,8 +35,10 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import ru.v1as.tg.cat.callbacks.SimpleCallbackHandler;
 import ru.v1as.tg.cat.callbacks.TgCallBackHandler;
 import ru.v1as.tg.cat.callbacks.TgCallbackProcessor;
+import ru.v1as.tg.cat.callbacks.phase.PhaseContextClosedException;
 import ru.v1as.tg.cat.callbacks.phase.PollTimeoutConfiguration;
 import ru.v1as.tg.cat.callbacks.phase.poll.interceptor.ChoiceAroundInterceptor;
+import ru.v1as.tg.cat.callbacks.phase.poll.interceptor.NoopChoiceAroundInterceptor;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
 @Slf4j
@@ -62,7 +64,7 @@ public class SimplePoll {
     private boolean removeOnClose = false;
     private boolean closeOnChoose = true;
     private CloseOnTextBuilder closeOnTextBuilder = new DefaultCloseTextBuilder();
-    private ChoiceAroundInterceptor choiceAroundInterceptor;
+    private ChoiceAroundInterceptor choiceAroundInterceptor = new NoopChoiceAroundInterceptor();
 
     public SimplePoll choice(PollChoice choice) {
         choices.putIfAbsent(choice.getUuid(), choice);
@@ -166,7 +168,8 @@ public class SimplePoll {
                             }
 
                             if (timeoutConfiguration.onTimeout() != null) {
-                                timeoutConfiguration.onTimeout().run();
+                                choiceAroundInterceptor.around(
+                                        null, ctx -> timeoutConfiguration.onTimeout().run());
                             }
                         }
                     },
@@ -178,9 +181,9 @@ public class SimplePoll {
     private void processOnSend(Message sent) {
         if (this.onSend != null) {
             try {
-                this.onSend.accept(sent);
+                this.choiceAroundInterceptor.around(null, nullCtx -> this.onSend.accept(sent));
             } catch (Exception e) {
-                log.error("Error while onSend callback.");
+                log.error("Error while onSend callback.", e);
             }
         }
     }
@@ -194,7 +197,11 @@ public class SimplePoll {
                 if (closeOnChoose) {
                     close();
                 }
-                pollChoice.getCallable().accept(new ChooseContext(chat, user, callbackQuery));
+                try {
+                    pollChoice.getCallable().accept(new ChooseContext(chat, user, callbackQuery));
+                } catch (PhaseContextClosedException closed) {
+                    log.debug("Context is closed already. Nothing to do.");
+                }
             }
         };
     }
@@ -262,7 +269,9 @@ public class SimplePoll {
         this.callbackProcessor = callbackProcessor;
     }
 
-    public void setChoiceAroundInterceptor(ChoiceAroundInterceptor choiceAroundInterceptor) {
+    public SimplePoll choiceAroundInterceptor(
+            @NonNull ChoiceAroundInterceptor choiceAroundInterceptor) {
         this.choiceAroundInterceptor = choiceAroundInterceptor;
+        return this;
     }
 }

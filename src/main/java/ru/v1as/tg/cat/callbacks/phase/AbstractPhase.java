@@ -8,6 +8,7 @@ import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.v1as.tg.cat.callbacks.TgCallbackProcessor;
@@ -27,10 +28,19 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
     @Autowired private TgCallbackProcessor callbackProcessor;
     @Autowired protected BotClock clock;
 
-    private ThreadLocal<T> phaseContext = new ThreadLocal<>();
+    private final ThreadLocal<T> phaseContext = new ThreadLocal<>();
 
     protected void message(UserData userData, String text) {
         sender.executeUnsafe(new SendMessage(userData.getChatId(), text));
+    }
+
+    protected void editMessageText(Message message, String newText) {
+        sender.executeUnsafe(
+                new EditMessageText()
+                        .setChatId(message.getChatId())
+                        .setMessageId(message.getMessageId())
+                        .setText(newText)
+                        .setReplyMarkup(message.getReplyMarkup()));
     }
 
     protected void deleteMsg(Message msg) {
@@ -49,7 +59,7 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
         SimplePoll poll = phase.poll(text);
         poll.setSender(sender);
         poll.setCallbackProcessor(callbackProcessor);
-        poll.setChoiceAroundInterceptor(getChoiceAroundInterceptor(poll, phaseContext));
+        poll.choiceAroundInterceptor(getChoiceAroundInterceptor(poll, phaseContext));
         return poll;
     }
 
@@ -100,9 +110,9 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
     }
 
     protected <L> Consumer<L> contextWrap(Consumer<L> consumer) {
-        PhaseContext ctx = this.phaseContext.get();
+        T ctx = this.phaseContext.get();
         return t -> {
-            phaseContext.set((T) ctx);
+            phaseContext.set(ctx);
             try {
                 consumer.accept(t);
             } finally {
@@ -112,9 +122,9 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
     }
 
     protected Runnable contextWrap(Runnable runnable) {
-        PhaseContext ctx = this.phaseContext.get();
+        T ctx = this.phaseContext.get();
         return () -> {
-            phaseContext.set((T) ctx);
+            phaseContext.set(ctx);
             try {
                 runnable.run();
             } finally {

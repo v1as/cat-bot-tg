@@ -59,20 +59,19 @@ public class JoinCatFollowPhase extends AbstractPhase<JoinCatFollowPhase.Context
     @Override
     protected void open() {
         PollChoice followTheCat = PollChoice.startCommandUrl("Пойти за котом");
-        Context ctx = getPhaseContext();
 
         PollTimeoutConfiguration removeAfter5Min =
                 new PollTimeoutConfiguration(Duration.of(5, MINUTES))
                         .removeMsg(true)
-                        .onTimeout(contextWrap(this::close));
+                        .onTimeout(this::close);
 
         poll("Любопытный кот гуляет рядом")
                 .closeOnChoose(false)
                 .removeOnClose(true)
                 .closeTextBuilder(new NopeCloseTextBuilder())
-                .choice(EmojiConst.CAT + " Кот!", contextWrap(this::scheduleSayCat))
+                .choice(EmojiConst.CAT + " Кот!", this::scheduleSayCat)
                 .choice(followTheCat)
-                .onSend(msg -> ctx.message = msg)
+                .onSend(msg -> getPhaseContext().message = msg)
                 .timeout(removeAfter5Min)
                 .send();
         startCommand.register(followTheCat.getUuid(), contextWrap(this::goToCat));
@@ -80,11 +79,23 @@ public class JoinCatFollowPhase extends AbstractPhase<JoinCatFollowPhase.Context
         onClose(() -> startCommand.drop(followTheCat.getUuid()));
     }
 
-    private void scheduleSayCat(ChooseContext ctx) {
+    private void scheduleSayCat(ChooseContext choice) {
+        Context ctx = getPhaseContext();
+        if (!ctx.hasLazyCandidate) {
+            ctx.hasLazyCandidate = true;
+        } else {
+            return;
+        }
+
         log.info(
                 "Waiting for 10 seconds before close request for user '{}'",
-                getUsernameOrFullName(ctx.getUser()));
-        executorService.schedule(contextWrap(() -> sayCat(ctx)), 10, TimeUnit.SECONDS);
+                getUsernameOrFullName(choice.getUser()));
+        String text =
+                String.format(
+                        "Похоже, %s не пойдёт за Любопытным Котом, может кто-то другой сможет?",
+                        getUsernameOrFullName(choice.getUser()));
+        editMessageText(ctx.message, text);
+        executorService.schedule(contextWrap(() -> sayCat(choice)), 10, TimeUnit.SECONDS);
     }
 
     private void sayCat(ChooseContext ctx) {
@@ -98,9 +109,9 @@ public class JoinCatFollowPhase extends AbstractPhase<JoinCatFollowPhase.Context
 
     private void goToCat(CallbackCommandContext data) {
         Context ctx = getPhaseContext();
-        AbstractCuriosCatPhase nexPhase = nextPhaseChoice.get();
-        nexPhase.open(data.getChat(), ctx.getChat(), ctx.message);
+        AbstractCuriosCatPhase nextPhase = nextPhaseChoice.get();
         close();
+        nextPhase.open(data.getChat(), ctx.getChat(), ctx.message);
     }
 
     private void saveCatRequest(ChooseContext choice) {
@@ -118,6 +129,7 @@ public class JoinCatFollowPhase extends AbstractPhase<JoinCatFollowPhase.Context
 
     class Context extends PhaseContext {
         private Message message;
+        private boolean hasLazyCandidate = false;
 
         private Context(Chat chat) {
             super(chat);
