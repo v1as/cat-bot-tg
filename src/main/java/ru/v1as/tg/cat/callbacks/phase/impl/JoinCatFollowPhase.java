@@ -1,4 +1,4 @@
-package ru.v1as.tg.cat.callbacks.phase;
+package ru.v1as.tg.cat.callbacks.phase.impl;
 
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static ru.v1as.tg.cat.model.UpdateUtils.getUsernameOrFullName;
@@ -18,9 +18,12 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.EmojiConst;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
+import ru.v1as.tg.cat.callbacks.phase.AbstractPhase;
+import ru.v1as.tg.cat.callbacks.phase.PhaseContext;
+import ru.v1as.tg.cat.callbacks.phase.PollTimeoutConfiguration;
 import ru.v1as.tg.cat.callbacks.phase.curios_cat.AbstractCuriosCatPhase;
+import ru.v1as.tg.cat.callbacks.phase.impl.JoinCatFollowPhase.Context;
 import ru.v1as.tg.cat.callbacks.phase.poll.ChooseContext;
-import ru.v1as.tg.cat.callbacks.phase.poll.NopeCloseTextBuilder;
 import ru.v1as.tg.cat.callbacks.phase.poll.PollChoice;
 import ru.v1as.tg.cat.commands.ArgumentCallbackCommand.CallbackCommandContext;
 import ru.v1as.tg.cat.commands.impl.StartCommand;
@@ -34,7 +37,7 @@ import ru.v1as.tg.cat.utils.RandomNoRepeats;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class JoinCatFollowPhase extends AbstractPhase<JoinCatFollowPhase.Context> {
+public class JoinCatFollowPhase extends AbstractPhase<Context> {
 
     private ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(1);
 
@@ -68,7 +71,6 @@ public class JoinCatFollowPhase extends AbstractPhase<JoinCatFollowPhase.Context
         poll("Любопытный кот гуляет рядом")
                 .closeOnChoose(false)
                 .removeOnClose(true)
-                .closeTextBuilder(new NopeCloseTextBuilder())
                 .choice(EmojiConst.CAT + " Кот!", this::scheduleSayCat)
                 .choice(followTheCat)
                 .onSend(msg -> getPhaseContext().message = msg)

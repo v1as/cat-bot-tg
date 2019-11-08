@@ -21,7 +21,7 @@ public class PhaseContext {
         onCloses.add(onClose);
     }
 
-    protected void checkNotClose() {
+    public void checkNotClose() {
         if (finished) {
             log.info("Phase context is already closed");
             throw new PhaseContextClosedException("This phase context is already closed.");

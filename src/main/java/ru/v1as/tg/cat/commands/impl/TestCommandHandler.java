@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
-import ru.v1as.tg.cat.callbacks.phase.JoinCatFollowPhase;
+import ru.v1as.tg.cat.callbacks.phase.impl.JoinCatFollowPhase;
 import ru.v1as.tg.cat.commands.CommandHandler;
 import ru.v1as.tg.cat.commands.TgCommandRequest;
 

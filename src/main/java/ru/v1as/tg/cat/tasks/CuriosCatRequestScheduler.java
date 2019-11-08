@@ -10,7 +10,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.v1as.tg.cat.CatBotData;
-import ru.v1as.tg.cat.callbacks.phase.JoinCatFollowPhase;
+import ru.v1as.tg.cat.callbacks.phase.impl.JoinCatFollowPhase;
 import ru.v1as.tg.cat.model.CatChatData;
 
 @Slf4j

@@ -13,10 +13,10 @@ import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.v1as.tg.cat.callbacks.TgCallbackProcessor;
 import ru.v1as.tg.cat.callbacks.phase.poll.SimplePoll;
+import ru.v1as.tg.cat.callbacks.phase.poll.UpdateWithChoiceTextBuilder;
 import ru.v1as.tg.cat.callbacks.phase.poll.interceptor.PhaseContextChoiceAroundInterceptor;
 import ru.v1as.tg.cat.model.UserData;
 import ru.v1as.tg.cat.service.clock.BotClock;
-import ru.v1as.tg.cat.tg.KeyboardUtils;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
 @RequiredArgsConstructor
@@ -43,22 +43,12 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
                         .setReplyMarkup(message.getReplyMarkup()));
     }
 
-    protected void deleteMsg(Message msg) {
-        sender.executeUnsafe(KeyboardUtils.deleteMsg(msg));
-    }
-
-    protected void deleteMsg(Message msg, Consumer<Boolean> consumer) {
-        if (msg != null) {
-            sender.executeAsyncPromise(
-                    KeyboardUtils.deleteMsg(msg), consumer, t -> consumer.accept(false));
-        }
-    }
-
     protected SimplePoll poll(String text) {
         T phase = phaseContext.get();
         SimplePoll poll = phase.poll(text);
         poll.setSender(sender);
         poll.setCallbackProcessor(callbackProcessor);
+        poll.closeTextBuilder(new UpdateWithChoiceTextBuilder());
         poll.choiceAroundInterceptor(getChoiceAroundInterceptor(poll, phaseContext));
         return poll;
     }

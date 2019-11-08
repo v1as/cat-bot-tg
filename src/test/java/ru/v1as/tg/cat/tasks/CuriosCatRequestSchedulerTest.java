@@ -17,7 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import ru.v1as.tg.cat.AbstractCatBotTest;
 import ru.v1as.tg.cat.CaBotTestConfiguration;
 import ru.v1as.tg.cat.CatBotData;
-import ru.v1as.tg.cat.callbacks.phase.JoinCatFollowPhase;
+import ru.v1as.tg.cat.callbacks.phase.impl.JoinCatFollowPhase;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
 @RunWith(SpringRunner.class)

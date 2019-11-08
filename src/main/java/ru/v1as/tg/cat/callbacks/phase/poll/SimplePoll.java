@@ -63,7 +63,7 @@ public class SimplePoll {
 
     private boolean removeOnClose = false;
     private boolean closeOnChoose = true;
-    private CloseOnTextBuilder closeOnTextBuilder = new DefaultCloseTextBuilder();
+    private CloseOnTextBuilder closeOnTextBuilder = new NopeCloseTextBuilder();
     private ChoiceAroundInterceptor choiceAroundInterceptor = new NoopChoiceAroundInterceptor();
 
     public SimplePoll choice(PollChoice choice) {
