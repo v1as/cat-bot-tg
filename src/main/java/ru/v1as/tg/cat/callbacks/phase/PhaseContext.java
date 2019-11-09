@@ -13,13 +13,7 @@ public class PhaseContext {
 
     private final Chat chat;
     private List<SimplePoll> polls = new ArrayList<>();
-    private List<Runnable> onCloses = new ArrayList<>();
     private boolean finished = false;
-
-    public void onClose(Runnable onClose) {
-        checkNotClose();
-        onCloses.add(onClose);
-    }
 
     public void checkNotClose() {
         if (finished) {
@@ -45,14 +39,6 @@ public class PhaseContext {
                 log.error("Error while closing poll");
             }
         }
-        for (Runnable onClose : onCloses) {
-            try {
-                onClose.run();
-            } catch (Exception e) {
-                log.error("Error while closing poll");
-            }
-        }
-        onCloses.clear();
         polls.clear();
     }
 

@@ -2,7 +2,9 @@ package ru.v1as.tg.cat.callbacks.phase.impl;
 
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static ru.v1as.tg.cat.model.UpdateUtils.getUsernameOrFullName;
+import static ru.v1as.tg.cat.utils.RandomUtils.random;
 
+import com.google.common.collect.ImmutableList;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
@@ -25,6 +27,7 @@ import ru.v1as.tg.cat.callbacks.phase.curios_cat.AbstractCuriosCatPhase;
 import ru.v1as.tg.cat.callbacks.phase.impl.JoinCatFollowPhase.Context;
 import ru.v1as.tg.cat.callbacks.phase.poll.ChooseContext;
 import ru.v1as.tg.cat.callbacks.phase.poll.PollChoice;
+import ru.v1as.tg.cat.callbacks.phase.poll.UpdateWithChoiceTextBuilder;
 import ru.v1as.tg.cat.commands.ArgumentCallbackCommand.CallbackCommandContext;
 import ru.v1as.tg.cat.commands.impl.StartCommand;
 import ru.v1as.tg.cat.model.CatChatData;
@@ -38,6 +41,11 @@ import ru.v1as.tg.cat.utils.RandomNoRepeats;
 @Component
 @RequiredArgsConstructor
 public class JoinCatFollowPhase extends AbstractPhase<Context> {
+
+    private static final ImmutableList<String> YOU_ARE_LATE_MESSAGE =
+            ImmutableList.of(
+                    "Прости, но, похоже, тебя опередили.",
+                    "Сожалею, но кто-то оказался быстрее тебя.");
 
     private ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(1);
 
@@ -67,18 +75,28 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
                 new PollTimeoutConfiguration(Duration.of(5, MINUTES))
                         .removeMsg(true)
                         .onTimeout(this::close);
-
+        Context ctx = getPhaseContext();
         poll("Любопытный кот гуляет рядом")
                 .closeOnChoose(false)
+                .closeTextBuilder(new UpdateWithChoiceTextBuilder())
                 .removeOnClose(true)
                 .choice(EmojiConst.CAT + " Кот!", this::scheduleSayCat)
                 .choice(followTheCat)
-                .onSend(msg -> getPhaseContext().message = msg)
+                .onSend(msg -> ctx.message = msg)
                 .timeout(removeAfter5Min)
                 .send();
-        startCommand.register(followTheCat.getUuid(), contextWrap(this::goToCat));
+        ctx.startCommandArgument = followTheCat.getUuid();
+        startCommand.register(ctx.startCommandArgument, contextWrap(this::goToCat));
+    }
 
-        onClose(() -> startCommand.drop(followTheCat.getUuid()));
+    @Override
+    public void close() {
+        super.close();
+        Context ctx = getPhaseContext();
+        startCommand.drop(ctx.startCommandArgument);
+        startCommand.register(ctx.startCommandArgument, contextWrap(this::youAreLate));
+        executorService.schedule(
+                () -> startCommand.drop(ctx.startCommandArgument), 1, TimeUnit.MINUTES);
     }
 
     private void scheduleSayCat(ChooseContext choice) {
@@ -110,10 +128,15 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
     }
 
     private void goToCat(CallbackCommandContext data) {
+        close();
         Context ctx = getPhaseContext();
         AbstractCuriosCatPhase nextPhase = nextPhaseChoice.get();
-        close();
         nextPhase.open(data.getChat(), ctx.getChat(), ctx.message);
+    }
+
+    private void youAreLate(CallbackCommandContext data) {
+        final String msg = random(YOU_ARE_LATE_MESSAGE);
+        message(data.getChat(), msg);
     }
 
     private void saveCatRequest(ChooseContext choice) {
@@ -129,7 +152,9 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
         this.open(new Context(chat));
     }
 
-    class Context extends PhaseContext {
+    static class Context extends PhaseContext {
+
+        private String startCommandArgument;
         private Message message;
         private boolean hasLazyCandidate = false;
 

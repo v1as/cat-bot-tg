@@ -69,10 +69,6 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
         sender.executeUnsafe(new SendMessage(chat.getId(), text));
     }
 
-    protected void onClose(Runnable onClose) {
-        phaseContext.get().onClose(onClose);
-    }
-
     public final void open(T phaseContext) {
         this.phaseContext.set(phaseContext);
         try {
@@ -92,7 +88,6 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
     @Override
     public void close() {
         this.phaseContext.get().close();
-        this.phaseContext.remove();
     }
 
     protected T getPhaseContext() {
