@@ -45,7 +45,7 @@ public class LongJourneyPhase extends AbstractCuriosCatPhase {
     private void catchUpCat(ChooseContext chooseContext) {
         Integer loop = getPhaseContext().get(LOOP);
         if (loop < 5) {
-            message("Кот недовольно мяукая убегает.");
+            message("Кот, недовольно мяукая, убегает.");
             catchUpCatAndClose(CatRequestVote.NOT_CAT);
         } else {
             messages(
