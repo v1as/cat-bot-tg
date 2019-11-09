@@ -23,10 +23,11 @@ public class ParkGardenPhase extends AbstractCuriosCatPhase {
 
     @Override
     protected void open() {
-        message("Что за свежий солнечный день!");
-        message("С окружением вам тоже повезло: сам Любопытный Кот составил вам компанию.");
-        message("Ваш общий путь лежит через зелёный цветущий парк.");
-        message("Похоже у Любопытного Кота сегодня игривое настроение.");
+        messages(
+                "Что за свежий солнечный день!",
+                "С окружением вам тоже повезло: сам Любопытный Кот составил вам компанию.",
+                "Ваш общий путь лежит через зелёный цветущий парк.",
+                "Похоже у Любопытного Кота сегодня игривое настроение.");
         poll("Что будем делать?")
                 .choice("Присесть на скамейку", this::sitOnBench)
                 .choice("Кот! " + EmojiConst.CAT, this::cat)
@@ -34,15 +35,15 @@ public class ParkGardenPhase extends AbstractCuriosCatPhase {
     }
 
     private void cat(ChooseContext chooseContext) {
-        message("Вы воспользовались занятостью кота и получили свой бал.");
-        message("И, конечно, отправились по своим важным делам.");
-        message("Скучный зануда.");
-        catchUpCatAndClose(chooseContext, CatRequestVote.CAT1);
+        messages(
+                "Вы воспользовались занятостью кота и получили свой бал.",
+                "И, конечно, отправились по своим важным делам.",
+                "Скучный зануда.");
+        catchUpCatAndClose(CatRequestVote.CAT1);
     }
 
     private void sitOnBench(ChooseContext chooseContext) {
-        message("Вы удобно устроились на скамье.");
-        message("Кот всё так же играет с бабочкой.");
+        messages("Вы удобно устроились на скамье.", "Кот всё так же играет с бабочкой.");
         poll("Что будем делать?")
                 .choice("Отдыхать", this::rest)
                 .choice("Кот!" + EmojiConst.CAT, this::goodBye)
@@ -52,9 +53,10 @@ public class ParkGardenPhase extends AbstractCuriosCatPhase {
     private void rest(ChooseContext chooseContext) {
         Integer loop = getPhaseContext().increment("LOOP");
         if (loop >= chillingMessages.size()) {
-            message("Похоже у кота появились более важные дела.");
-            message("Он кивнул вам на прощанье и исчез.");
-            catchUpCatAndClose(chooseContext, CatRequestVote.CAT1);
+            messages(
+                    "Похоже у кота появились более важные дела.",
+                    "Он кивнул вам на прощанье и исчез.");
+            catchUpCatAndClose(CatRequestVote.CAT1);
         } else {
             message(chillingMessages.get());
             poll("Что будем делать?")
@@ -65,8 +67,7 @@ public class ParkGardenPhase extends AbstractCuriosCatPhase {
     }
 
     private void goodBye(ChooseContext chooseContext) {
-        message("Вы славно отдохнули.");
-        message("Да еще и балл свой получили. Разве не прекрасно?");
-        catchUpCatAndClose(chooseContext, CatRequestVote.CAT1);
+        messages("Вы славно отдохнули.", "Да еще и балл свой получили. Разве не прекрасно?");
+        catchUpCatAndClose(CatRequestVote.CAT1);
     }
 }

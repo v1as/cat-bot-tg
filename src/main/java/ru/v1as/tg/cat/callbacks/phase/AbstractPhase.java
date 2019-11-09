@@ -4,7 +4,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -58,6 +57,12 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
         return new PhaseContextChoiceAroundInterceptor<>(phaseContext);
     }
 
+    protected void messages(String... texts) {
+        for (String text : texts) {
+            message(text);
+        }
+    }
+
     protected void message(String text) {
         PhaseContext phaseContext = this.phaseContext.get();
         Long chatId = phaseContext.getChatId();
@@ -80,7 +85,6 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
 
     protected abstract void open();
 
-    @SneakyThrows
     protected void timeout(int ms) {
         clock.wait(ms);
     }

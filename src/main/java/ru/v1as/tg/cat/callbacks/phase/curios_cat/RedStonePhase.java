@@ -1,6 +1,7 @@
 package ru.v1as.tg.cat.callbacks.phase.curios_cat;
 
 import static ru.v1as.tg.cat.EmojiConst.COLLISION;
+import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT1;
 
 import lombok.RequiredArgsConstructor;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
@@ -20,10 +21,10 @@ public class RedStonePhase extends AbstractCuriosCatPhase {
     }
 
     private void fastFollowCat(ChooseContext choice) {
-        message(
-                "Кот испугался и рванул что было сил, вам не удалось его догнать."
-                        + " Хуже того, никто не слышал как вы кричали 'Кот'.");
-        catchUpCatAndClose(choice, CatRequestVote.NOT_CAT);
+        messages(
+                "Кот испугался и рванул что было сил, вам не удалось его догнать.",
+                " Хуже того, никто не слышал как вы кричали 'Кот'.");
+        catchUpCatAndClose(CatRequestVote.NOT_CAT);
     }
 
     private void followTheCat(ChooseContext data) {
@@ -38,32 +39,30 @@ public class RedStonePhase extends AbstractCuriosCatPhase {
     private void resStone(ChooseContext choice) {
 
         UserData user = data.getUserData(choice.getUser());
-        message(
-                "Вы остановились чтобы разглядеть находку. "
-                        + "Это оказался затейливый красный камешек "
-                        + COLLISION
-                        + ", пожалуй вы заберёте его себе - в хозяйстве всё пригодится.");
+        messages(
+                "Вы остановились чтобы разглядеть находку.",
+                "Это оказался затейливый красный камешек " + COLLISION,
+                "Пожалуй вы заберёте его себе - в хозяйстве всё пригодится.");
 
         message(
                 getPhaseContext().getPublicChat(),
                 "Игрок " + user.getUsernameOrFullName() + " находит красный камень" + COLLISION);
 
-        message(
+        messages(
                 "Пока вы разглядывали драгоценность кота и след простыл,"
-                        + " хотя в воздухе остался лишь след улыбки кота."
-                        + " Похоже, он не просто так вас сюда привёл.");
+                        + " хотя в воздухе остался лишь след улыбки кота.",
+                " Похоже, он не просто так вас сюда привёл.");
 
-        catchUpCatAndClose(choice, CatRequestVote.CAT1);
+        catchUpCatAndClose(CAT1);
     }
 
     private void catchCat(ChooseContext choice) {
 
         UserData user = data.getUserData(choice.getUser());
-        message("Кот остановился, и внимательно посмотрел на вас, похоже вы его не поняли.");
-
-        message("Любопытный кот подбежал и потёрся о вашу ногу.");
-
-        catchUpCatAndClose(choice, CatRequestVote.CAT1);
+        messages(
+                "Кот остановился, и внимательно посмотрел на вас, похоже вы его не поняли.",
+                "Любопытный кот подбежал и потёрся о вашу ногу.");
+        catchUpCatAndClose(CAT1);
         close();
     }
 }

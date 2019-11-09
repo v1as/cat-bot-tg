@@ -24,13 +24,13 @@ public class TownLegendsCuriosCatPhase extends AbstractCuriosCatPhase {
         message("Голос рассказчика затихает за спиной.");
         message("Сегодня вам не суждено услышать удивительную историю.");
         message("Зато хоть кота засчитают.");
-        catchUpCatAndClose(chooseContext, CatRequestVote.CAT1);
+        catchUpCatAndClose(CatRequestVote.CAT1);
     }
 
     private void followFail(ChooseContext chooseContext) {
         message("Коту не слишком понравилось, что вы не захотели слушать старика.");
         message("Далее всё как всегда - недовольное мяуканье и исчезающий хвост.");
-        catchUpCatAndClose(chooseContext, CatRequestVote.NOT_CAT);
+        catchUpCatAndClose(CatRequestVote.NOT_CAT);
     }
 
     private void listenLegends(ChooseContext chooseContext) {}

@@ -1,7 +1,8 @@
 package ru.v1as.tg.cat.callbacks.phase.curios_cat;
 
+import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.NOT_CAT;
+
 import org.springframework.stereotype.Component;
-import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 import ru.v1as.tg.cat.callbacks.phase.poll.ChooseContext;
 
 @Component
@@ -9,7 +10,7 @@ public class MadCatPhase extends AbstractCuriosCatPhase {
 
     @Override
     protected void open() {
-        message("В этот раз точно что-то не так. Кот бежит явно быстрее обычного.");
+        messages("В этот раз точно что-то не так.", " Кот бежит явно быстрее обычного.");
         poll("Что делаем?")
                 .choice("Ускоряем шаг", this::goFaster)
                 .choice("Идём спокойно", this::justGo)
@@ -17,9 +18,10 @@ public class MadCatPhase extends AbstractCuriosCatPhase {
     }
 
     private void justGo(ChooseContext chooseContext) {
-        message(
-                "Вы продолжаете идти как и шли, а странный кот скрывается за поворотом. Туда ему и дорога.");
-        catchUpCatAndClose(chooseContext, CatRequestVote.NOT_CAT);
+        messages(
+                "Вы продолжаете идти как и шли, а странный кот скрывается за поворотом.",
+                " Туда ему и дорога.");
+        catchUpCatAndClose(NOT_CAT);
     }
 
     private void goFaster(ChooseContext chooseContext) {
@@ -31,16 +33,17 @@ public class MadCatPhase extends AbstractCuriosCatPhase {
     }
 
     private void stand(ChooseContext chooseContext) {
-        message(" О нет, похоже, вы обознались, и это не любопытный кот, это бешеный кот!");
-        message(
+        messages(
+                " О нет, похоже, вы обознались, и это не любопытный кот, это бешеный кот!",
                 "Вы отправляетесь восвояси с расцарапанным лицом. Вероятно, вам следует обратиться к врачу.");
-        catchUpCatAndClose(chooseContext, CatRequestVote.NOT_CAT);
+        catchUpCatAndClose(NOT_CAT);
     }
 
     private void runAway(ChooseContext chooseContext) {
-        message("Вы осторожно отходите от кота.");
-        message("Странный кот, не прекращая шипеть, галопом умчался.");
-        message("Что ж, могло бы быть и хуже.");
-        catchUpCatAndClose(chooseContext, CatRequestVote.NOT_CAT);
+        messages(
+                "Вы осторожно отходите от кота.",
+                "Странный кот, не прекращая шипеть, галопом умчался.",
+                "Что ж, могло бы быть и хуже.");
+        catchUpCatAndClose(NOT_CAT);
     }
 }

@@ -40,4 +40,8 @@ public class ChatData {
                 + '\''
                 + '}';
     }
+
+    public boolean isPublic() {
+        return !isPrivate;
+    }
 }

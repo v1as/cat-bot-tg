@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class RandomUtils {
 
-    public static final Random RAND = new Random();
+    private static final Random RAND = new Random();
 
     public static <T> T random(List<T> values) {
         return (T) values.get(RAND.nextInt(values.size()));

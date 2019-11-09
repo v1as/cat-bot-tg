@@ -23,8 +23,8 @@ public class LongJourneyPhase extends AbstractCuriosCatPhase {
 
     @Override
     protected void open() {
-        message("Сегодня выдался на удивление приятный денёк.");
-        message(
+        messages(
+                "Сегодня выдался на удивление приятный денёк.",
                 "Вы с котом медленно прогуливаетесь по городу. Правда, он идёт в небольшом отдалении впереди.");
         poll("Что будем делать?")
                 .choice("Нагоним кота", this::catchUpCat)
@@ -46,12 +46,13 @@ public class LongJourneyPhase extends AbstractCuriosCatPhase {
         Integer loop = getPhaseContext().get(LOOP);
         if (loop < 5) {
             message("Кот недовольно мяукая убегает.");
-            catchUpCatAndClose(chooseContext, CatRequestVote.NOT_CAT);
+            catchUpCatAndClose(CatRequestVote.NOT_CAT);
         } else {
-            message(
-                    "Кот удивлённо смотрит на вас. Похоже, он совсем забыл о вашей компании во время этой дивной прогулки."
-                            + " Пользуюясь его замешательством, вы воскликнули 'Кот!'");
-            catchUpCatAndClose(chooseContext, CatRequestVote.CAT1);
+            messages(
+                    "Кот удивлённо смотрит на вас.",
+                    "Похоже, он совсем забыл о вашей компании во время этой дивной прогулки.",
+                    "Пользуюясь его замешательством, вы воскликнули 'Кот!'");
+            catchUpCatAndClose(CatRequestVote.CAT1);
         }
     }
 }

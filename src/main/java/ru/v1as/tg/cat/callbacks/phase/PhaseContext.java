@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.meta.api.objects.Chat;
+import org.telegram.telegrambots.meta.api.objects.User;
 import ru.v1as.tg.cat.callbacks.phase.poll.SimplePoll;
 
 @RequiredArgsConstructor
@@ -12,6 +13,7 @@ import ru.v1as.tg.cat.callbacks.phase.poll.SimplePoll;
 public class PhaseContext {
 
     private final Chat chat;
+    private final User user;
     private List<SimplePoll> polls = new ArrayList<>();
     private boolean finished = false;
 
@@ -48,5 +50,9 @@ public class PhaseContext {
 
     public Chat getChat() {
         return chat;
+    }
+
+    public User getUser() {
+        return user;
     }
 }

@@ -9,4 +9,6 @@ public class EmojiConst {
     public static final String THIRD_PLACE_MEDAL = "\uD83E\uDD49";
     public static final String SMALL_ORANGE_DIAMOND = "\uD83D\uDD38";
     public static final String COLLISION = "\uD83D\uDCA5";
+    public static final String WINK = "\uD83D\uDE09";
+    public static final String SMIRK_CAT = "\uD83D\uDE3C";
 }

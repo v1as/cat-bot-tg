@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.callbacks.phase.impl.JoinCatFollowPhase;
 import ru.v1as.tg.cat.model.CatChatData;
+import ru.v1as.tg.cat.model.ChatData;
 
 @Slf4j
 @Setter
@@ -44,24 +45,23 @@ public class CuriosCatRequestScheduler {
             firstTime = false;
             return;
         }
-        for (CatChatData chat : data.getChats()) {
+
+        final CatChatData[] chats =
+                data.getChats().stream().filter(ChatData::isPublic).toArray(CatChatData[]::new);
+        for (CatChatData chat : chats) {
             if (chat.isPrivate()) {
                 continue;
             }
             try {
                 double randomResult = random.nextDouble();
-                log.info(
-                        "Random result for curios cat {} in chat '{}'.",
-                        randomResult,
-                        chat.getName());
                 if (randomResult < chance) {
-                    log.info("Curios cat is sending...");
-                    joinCatFollowPhase.open(chat.getChat());
+                    log.info("Curios cat is sending to chat {}", chat);
+                    joinCatFollowPhase.open(chat.getChat(), null);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        log.info("Curios cat was executed for {} chats", data.getChats().size());
+        log.info("Curios cat was executed for {} chats", chats.length);
     }
 }

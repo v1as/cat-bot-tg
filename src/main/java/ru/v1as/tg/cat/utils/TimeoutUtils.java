@@ -8,6 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 public class TimeoutUtils {
 
     public static int getMsForTextReading(int symbols) {
-        return Math.max(1500, symbols * 50);
+        return Math.max(1500, symbols * 70);
     }
 }

@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.User;
 import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.EmojiConst;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
@@ -131,7 +132,7 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
         close();
         Context ctx = getPhaseContext();
         AbstractCuriosCatPhase nextPhase = nextPhaseChoice.get();
-        nextPhase.open(data.getChat(), ctx.getChat(), ctx.message);
+        nextPhase.open(data.getChat(), ctx.getChat(), data.getUser(), ctx.message);
     }
 
     private void youAreLate(CallbackCommandContext data) {
@@ -148,8 +149,8 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
         scoreData.save(catRequest);
     }
 
-    public void open(Chat chat) {
-        this.open(new Context(chat));
+    public void open(Chat chat, User user) {
+        this.open(new Context(chat, user));
     }
 
     static class Context extends PhaseContext {
@@ -158,8 +159,8 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
         private Message message;
         private boolean hasLazyCandidate = false;
 
-        private Context(Chat chat) {
-            super(chat);
+        private Context(Chat chat, User user) {
+            super(chat, user);
         }
 
         @Override

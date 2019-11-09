@@ -12,8 +12,9 @@ public class MirrorCatPhase extends AbstractCuriosCatPhase {
 
     @Override
     protected void open() {
-        message("Как и всегда вы устремляетесь за котом");
-        message("На улице свежо и приятно. Кот трусит впереди.");
+        messages(
+                "Как и всегда вы устремляетесь за котом",
+                "На улице свежо и приятно. Кот трусит впереди.");
         poll("Что будем делать?")
                 .choice("Оглядеться", random(this::lookAround, this::lookAroundFail))
                 .choice("Следуем дальше", this::followTheCat)
@@ -22,12 +23,12 @@ public class MirrorCatPhase extends AbstractCuriosCatPhase {
 
     private void lookAroundFail(ChooseContext chooseContext) {
         message("Пока вы считали ворон по сторонами, кот сбежал.");
-        catchUpCatAndClose(chooseContext, NOT_CAT);
+        catchUpCatAndClose(NOT_CAT);
     }
 
     private void lookAround(ChooseContext chooseContext) {
-        message("Вы осмотрелись по сторонам и вдохнули полной грудью.");
-        message(
+        messages(
+                "Вы осмотрелись по сторонам и вдохнули полной грудью.",
                 "Но долго расслабиться вам не удалось,"
                         + " недовольное мяуканье привлекло ваше внимание - кот потрусил дальше.");
         poll("Что дальше?")
@@ -37,8 +38,9 @@ public class MirrorCatPhase extends AbstractCuriosCatPhase {
     }
 
     private void followTheCat(ChooseContext chooseContext) {
-        message("Вы продолжаете следовать за котом.");
-        message("Котяра остановился и, оглянувшись на вас, начал лакать воду из лужи.");
+        messages(
+                "Вы продолжаете следовать за котом.",
+                "Котяра остановился и, оглянувшись на вас, начал лакать воду из лужи.");
         poll("Что будем делать?")
                 .choice("Подойти к коту", this::goToCat)
                 .choice("Наблюдать", this::watchAtCat)
@@ -46,22 +48,23 @@ public class MirrorCatPhase extends AbstractCuriosCatPhase {
     }
 
     private void watchAtCat(ChooseContext chooseContext) {
-        message("Наблюдая за котом, вы встречаетесь с ним взглядом в отражении.");
-        message(
-                "Любопытный кот подмигивает вам и убегает. Как думаете,"
-                        + " можно засчитать кота и его отражение за двоих?");
-        catchUpCatAndClose(chooseContext, CAT2);
+        messages(
+                "Наблюдая за котом, вы встречаетесь с ним взглядом в отражении.",
+                "Любопытный кот подмигивает вам и убегает.",
+                "Как думаете, можно засчитать кота и его отражение за двоих?");
+        catchUpCatAndClose(CAT2);
     }
 
     private void goToCat(ChooseContext chooseContext) {
         message("О чем вы только думали? Кот, раздраженно мяукая, сбегает");
-        catchUpCatAndClose(chooseContext, NOT_CAT);
+        catchUpCatAndClose(NOT_CAT);
     }
 
     private void amountRavens(ChooseContext chooseContext) {
-        message("Вы продолжаете наслаждаться погодой.");
-        message("Кот, естесственно, не стал вас ждать и сбежал.");
-        message("Зато вы славно отдохнули.");
-        catchUpCatAndClose(chooseContext, NOT_CAT);
+        messages(
+                "Вы продолжаете наслаждаться погодой.",
+                "Кот, естесственно, не стал вас ждать и сбежал.",
+                "Зато вы славно отдохнули.");
+        catchUpCatAndClose(NOT_CAT);
     }
 }
