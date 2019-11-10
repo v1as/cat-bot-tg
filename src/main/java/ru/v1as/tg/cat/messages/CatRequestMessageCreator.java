@@ -30,6 +30,7 @@ public class CatRequestMessageCreator implements MessageHandler {
         UserData userData = data.getUserData(user);
         CatChatData chatData = data.getChatData(chat.getId());
         CatRequest catRequest = new CatRequest(message, userData, chatData);
+        catRequest.setIsReal(true);
         sender.executeAsyncUnsafe(
                 buildIsThatCatMessage(message, chat, catRequest),
                 new IsCatPollCallback(chatData, catRequest));

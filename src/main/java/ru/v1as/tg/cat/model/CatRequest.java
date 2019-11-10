@@ -22,6 +22,7 @@ public class CatRequest extends TgRequestPoll<CatRequestVote> {
     final Message sourceMessage;
     final UserData owner;
     final Map<UserData, CatRequestVote> votes = new ConcurrentHashMap<>();
+    Boolean isReal = false;
     InlineKeyboardMarkup pollButtons;
 
     public CatRequest(Message sourceMessage, UserData owner, ChatData chat) {

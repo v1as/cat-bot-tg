@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.IntSummaryStatistics;
 import java.util.List;
@@ -122,6 +123,7 @@ public class ScoreData {
         CatRequestVote result;
         LocalDateTime date;
         Long chatId;
+        Boolean isReal;
 
         ScoreLine(CatRequest request) {
             this.id = request.getSourceMessage().getMessageId();
@@ -131,20 +133,22 @@ public class ScoreData {
             this.result = request.getResult();
             this.date = request.getCreated();
             this.chatId = request.getChat().getChatId();
+            this.isReal = request.getIsReal();
         }
 
         ScoreLine(String data) {
             String[] fields = data.split(SPLIT_CHAR);
-            this.id = toInt(fields[0]);
-            this.userId = toInt(fields[1]);
-            this.fullName = fields[2];
-            this.userName = fields[3];
-            this.result = CatRequestVote.valueOf(fields[4]);
+            this.isReal = toBoolean(fields[0]);
+            this.id = toInt(fields[1]);
+            this.userId = toInt(fields[2]);
+            this.fullName = fields[3];
+            this.userName = fields[4];
+            this.result = CatRequestVote.valueOf(fields[5]);
             this.date =
-                    isEmpty(fields[5])
+                    isEmpty(fields[6])
                             ? null
-                            : LocalDateTime.parse(fields[5], DateTimeFormatter.ISO_DATE_TIME);
-            this.chatId = toLong(fields[6]);
+                            : LocalDateTime.parse(fields[6], DateTimeFormatter.ISO_DATE_TIME);
+            this.chatId = toLong(fields[7]);
         }
 
         private Long toLong(String field) {
@@ -153,6 +157,10 @@ public class ScoreData {
 
         private Integer toInt(String field) {
             return isEmpty(field) ? null : Integer.valueOf(field);
+        }
+
+        private Boolean toBoolean(String field) {
+            return isEmpty(field) ? null : Boolean.valueOf(field);
         }
 
         String getUserString() {
@@ -166,6 +174,7 @@ public class ScoreData {
         @Override
         public String toString() {
             return Stream.of(
+                            isReal != null ? isReal : false,
                             id,
                             userId,
                             fullName,
