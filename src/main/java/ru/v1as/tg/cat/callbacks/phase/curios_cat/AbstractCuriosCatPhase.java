@@ -114,12 +114,14 @@ public abstract class AbstractCuriosCatPhase extends AbstractPhase<CuriosCatCont
     @Getter
     class CuriosCatContext extends PhaseContext {
 
-        private Message message;
-        private Chat publicChat;
-        private Map<String, Object> values = new HashMap<>();
+        private final User user;
+        private final Message message;
+        private final Chat publicChat;
+        private final Map<String, Object> values = new HashMap<>();
 
         CuriosCatContext(Chat chat, Chat publicChat, User user, Message message) {
-            super(chat, user);
+            super(chat);
+            this.user = user;
             this.message = message;
             this.publicChat = publicChat;
         }
@@ -143,6 +145,10 @@ public abstract class AbstractCuriosCatPhase extends AbstractPhase<CuriosCatCont
             Integer val = (Integer) values.computeIfAbsent(name, n -> 0);
             set(name, ++val);
             return val;
+        }
+
+        public User getUser() {
+            return user;
         }
     }
 }

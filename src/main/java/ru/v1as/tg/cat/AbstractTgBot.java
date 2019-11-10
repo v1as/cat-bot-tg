@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -44,6 +45,7 @@ public abstract class AbstractTgBot extends TelegramLongPollingBot implements Un
     public void init() {
         Const.setBotName(botUsername);
         Const.setAdminUserName(botAdmins);
+        Const.setBotToken(botToken);
         log.info("Set up const bot user name: '{}'", botUsername);
         log.info("Set up const admin user names: '{}'", botAdmins);
     }
@@ -99,8 +101,8 @@ public abstract class AbstractTgBot extends TelegramLongPollingBot implements Un
         sender.executeAsync(method, callback);
     }
 
-    @SneakyThrows
     @Override
+    @SneakyThrows
     public <T extends Serializable, Method extends BotApiMethod<T>> T executeUnsafe(Method method) {
         log.debug(method.toString());
         return sender.execute(method);
@@ -108,6 +110,13 @@ public abstract class AbstractTgBot extends TelegramLongPollingBot implements Un
 
     public void setSender(AbsSender sender) {
         this.sender = sender;
+    }
+
+    @Override
+    @SneakyThrows
+    public Message executeUnsafe(SendDocument sendDocument) {
+        log.debug(sendDocument.toString());
+        return sender.execute(sendDocument);
     }
 
     @Override

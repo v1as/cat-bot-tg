@@ -4,10 +4,10 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
@@ -15,7 +15,7 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 @Slf4j
 @ComponentScan
 @EnableScheduling
-@SpringBootConfiguration
+@Configuration
 public class TgCatApplication implements ApplicationListener<ApplicationStartedEvent> {
 
     @Autowired private CatBot catBot;
@@ -32,5 +32,4 @@ public class TgCatApplication implements ApplicationListener<ApplicationStartedE
         telegramBotsApi.registerBot(catBot);
         log.info("Bot registered!");
     }
-
 }

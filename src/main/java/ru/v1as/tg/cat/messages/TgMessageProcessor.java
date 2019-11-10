@@ -23,4 +23,8 @@ public class TgMessageProcessor {
             handler.handle(message, chat, user);
         }
     }
+
+    public void drop(MessageHandler messageHandler) {
+        handlers.remove(messageHandler);
+    }
 }
