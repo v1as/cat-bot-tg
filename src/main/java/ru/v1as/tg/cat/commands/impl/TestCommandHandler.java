@@ -26,7 +26,7 @@ public class TestCommandHandler implements CommandHandler {
     @Override
     public void handle(TgCommandRequest command, Chat chat, User user) {
         onlyForAdminCheck(user);
-        testPhase.open(chat, user);
+        testPhase.open(chat);
         log.info("Test phase started...");
     }
 }

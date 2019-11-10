@@ -149,8 +149,8 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
         scoreData.save(catRequest);
     }
 
-    public void open(Chat chat, User user) {
-        this.open(new Context(chat, user));
+    public void open(Chat chat) {
+        this.open(new Context(chat));
     }
 
     static class Context extends PhaseContext {
@@ -159,8 +159,8 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
         private Message message;
         private boolean hasLazyCandidate = false;
 
-        private Context(Chat chat, User user) {
-            super(chat, user);
+        private Context(Chat chat) {
+            super(chat);
         }
 
         @Override

@@ -94,9 +94,11 @@ public class ScoreData {
     }
 
     public List<ScoreLine> getScore(Long chatId) {
-        return this.lines.stream()
-                .filter(l -> Objects.equals(chatId, l.chatId))
-                .collect(Collectors.toList());
+        Stream<ScoreLine> stream = this.lines.stream();
+        if (null != chatId) {
+            stream = stream.filter(l -> Objects.equals(chatId, l.chatId));
+        }
+        return stream.collect(Collectors.toList());
     }
 
     public Stream<LongProperty> getWinnersStream(Long chatId, LocalDateTime after) {

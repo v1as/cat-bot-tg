@@ -3,7 +3,10 @@ package ru.v1as.tg.cat.tg;
 import java.io.Serializable;
 import java.util.function.Consumer;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import org.telegram.telegrambots.meta.updateshandlers.SentCallback;
 
@@ -41,4 +44,7 @@ public interface UnsafeAbsSender {
     <T extends Serializable, Method extends BotApiMethod<T>> T executeUnsafe(Method method);
 
     void setSender(AbsSender sender);
+
+    Message executeUnsafe(SendDocument sendDocument);
+
 }

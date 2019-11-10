@@ -12,6 +12,7 @@ public class Const {
     public static final String LINE = "\n";
     private static String botName;
     private static Set<String> adminUserNames;
+    private static String botToken;
 
     public static String getBotName() {
         if (botName == null) {
@@ -50,5 +51,21 @@ public class Const {
         }
     }
 
+    public static void setBotToken(String botToken) {
+        if (Const.botName == null) {
+            Const.botToken = botToken;
+        } else {
+            throw new IllegalStateException("This variable is already defined");
+        }
+    }
+
+    public static String getBotToken() {
+        return botToken;
+    }
+
     public static class OnlyForAdmins extends RuntimeException {}
+
+    public String getUrlFileDocument() {
+
+    }
 }

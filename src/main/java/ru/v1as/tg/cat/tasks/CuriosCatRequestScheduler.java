@@ -56,7 +56,7 @@ public class CuriosCatRequestScheduler {
                 double randomResult = random.nextDouble();
                 if (randomResult < chance) {
                     log.info("Curios cat is sending to chat {}", chat);
-                    joinCatFollowPhase.open(chat.getChat(), null);
+                    joinCatFollowPhase.open(chat.getChat());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
