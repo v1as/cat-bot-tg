@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Slf4j
 @Profile("!test")
@@ -15,4 +16,5 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EntityScan("ru.v1as.tg.cat.jpa.entities")
 @Import({DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 @Configuration
+@EnableTransactionManagement
 public class JpaConfiguration {}

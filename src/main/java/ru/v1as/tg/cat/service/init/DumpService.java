@@ -5,6 +5,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,15 +21,9 @@ public class DumpService {
         return fileName;
     }
 
-    public void load(String fileName) {
-        final String sqlString = String.format("RUNSCRIPT FROM '%s';", fileName);
-        final Query nativeQuery = em.createNativeQuery(sqlString);
-        nativeQuery.executeUpdate();
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteAllAndLoad(String fileName) {
+        em.createNativeQuery("DROP ALL OBJECTS").executeUpdate();
+        em.createNativeQuery(String.format("RUNSCRIPT FROM '%s';", fileName)).executeUpdate();
     }
-
-    public void deleteAll() {
-        final Query nativeQuery = em.createNativeQuery("DROP ALL OBJECTS");
-        nativeQuery.executeUpdate();
-    }
-
 }

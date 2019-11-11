@@ -12,6 +12,6 @@ import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 @DiscriminatorValue("CAT")
 public class CatUserEvent extends UserEvent {
     private CatRequestVote result;
-    private boolean isCurios;
+    private CatEventType catType;
     private String questName;
 }

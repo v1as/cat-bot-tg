@@ -52,7 +52,7 @@ public class Const {
     }
 
     public static void setBotToken(String botToken) {
-        if (Const.botName == null) {
+        if (Const.botToken == null) {
             Const.botToken = botToken;
         } else {
             throw new IllegalStateException("This variable is already defined");
@@ -65,7 +65,7 @@ public class Const {
 
     public static class OnlyForAdmins extends RuntimeException {}
 
-    public String getUrlFileDocument() {
-
+    public static String getUrlFileDocument(String filePath) {
+        return String.format("https://api.telegram.org/file/bot%s/%s", botToken, filePath);
     }
 }
