@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import org.telegram.telegrambots.meta.api.objects.Message;
 
 @Value
 @RequiredArgsConstructor
@@ -18,18 +19,20 @@ public class TgCommandRequest {
     private static final Pattern PATTERN_WITH_NAME =
             Pattern.compile("/([\\w0-9_]+)[@]?([\\w0-9_]+)?(\\s)?(.*)");
 
+    Message message;
     String name;
     String botName;
     List<String> arguments;
 
-    public static TgCommandRequest parse(String text) {
+    public static TgCommandRequest parse(Message msg) {
+        final String text = msg.getText();
         Matcher matcher = PATTERN_WITH_NAME.matcher(text);
         checkArgument(matcher.matches(), "Unsupported command format: " + text);
         String name = matcher.group(1);
         String botName = matcher.group(2);
         String argsStr = matcher.group(4);
         List<String> args = isEmpty(argsStr) ? emptyList() : Arrays.asList(argsStr.split(" "));
-        return new TgCommandRequest(name, botName, args);
+        return new TgCommandRequest(msg, name, botName, args);
     }
 
     public String getFirstArgument() {

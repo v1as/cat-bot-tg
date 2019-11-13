@@ -22,7 +22,7 @@ public class DumpService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void deleteAllAndLoad(String fileName) {
+    public void deleteAllAndLoadDump(String fileName) {
         em.createNativeQuery("DROP ALL OBJECTS").executeUpdate();
         em.createNativeQuery(String.format("RUNSCRIPT FROM '%s';", fileName)).executeUpdate();
     }
