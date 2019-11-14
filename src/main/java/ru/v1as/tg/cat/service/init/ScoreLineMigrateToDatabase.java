@@ -2,19 +2,15 @@ package ru.v1as.tg.cat.service.init;
 
 import static java.util.function.Function.identity;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.telegram.telegrambots.meta.api.methods.ForwardMessage;
 import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChat;
 import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChatMember;
 import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChatMembersCount;
@@ -22,9 +18,9 @@ import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.ChatMember;
 import org.telegram.telegrambots.meta.api.objects.User;
 import ru.v1as.tg.cat.jpa.dao.CatUserEventDao;
-import ru.v1as.tg.cat.jpa.dao.PublicChatDao;
+import ru.v1as.tg.cat.jpa.dao.ChatDao;
 import ru.v1as.tg.cat.jpa.dao.UserDao;
-import ru.v1as.tg.cat.jpa.entities.chat.PublicChatEntity;
+import ru.v1as.tg.cat.jpa.entities.chat.ChatEntity;
 import ru.v1as.tg.cat.jpa.entities.user.UserEntity;
 import ru.v1as.tg.cat.model.ScoreData;
 import ru.v1as.tg.cat.model.ScoreData.ScoreLine;
@@ -35,7 +31,7 @@ import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 @RequiredArgsConstructor
 public class ScoreLineMigrateToDatabase {
     private final UserDao userDao;
-    private final PublicChatDao publicChatDao;
+    private final ChatDao publicChatDao;
     private final CatUserEventDao catUserEventDao;
     private final ScoreData scoreData;
     private final UnsafeAbsSender unsafeAbsSender;
@@ -51,7 +47,7 @@ public class ScoreLineMigrateToDatabase {
                         .map(
                                 line ->
                                         UserEntity.builder()
-                                                .username(line.getUserName())
+                                                .userName(line.getUserName())
                                                 .firstName(line.getFullName())
                                                 .id(line.getUserId())
                                                 .build())
@@ -60,17 +56,16 @@ public class ScoreLineMigrateToDatabase {
 
         log.info("Loaded {} users", id2User.size());
 
-        final Map<Long, PublicChatEntity> id2Chat =
+        final Map<Long, ChatEntity> id2Chat =
                 lines.stream()
                         .map(ScoreLine::getChatId)
                         .map(
                                 id -> {
-                                    PublicChatEntity chat = new PublicChatEntity();
+                                    ChatEntity chat = new ChatEntity();
                                     chat.setId(id);
                                     return chat;
                                 })
-                        .collect(
-                                Collectors.toMap(PublicChatEntity::getId, identity(), (a, b) -> b));
+                        .collect(Collectors.toMap(ChatEntity::getId, identity(), (a, b) -> b));
 
         log.info("Loaded {} chats", id2Chat.size());
 
@@ -82,7 +77,7 @@ public class ScoreLineMigrateToDatabase {
                     log.info("Loaded user chat {}", chat);
                     toRemoveChatIds.add(chatId);
                 } else {
-                    final PublicChatEntity publicChatEntity = id2Chat.get(chatId);
+                    final ChatEntity publicChatEntity = id2Chat.get(chatId);
                     publicChatEntity.setTitle(chat.getTitle());
                     publicChatEntity.setDescription(chat.getDescription());
                     try {
@@ -110,7 +105,7 @@ public class ScoreLineMigrateToDatabase {
 
         Set<Integer> toRemoveUsersIds = new HashSet<>();
         for (UserEntity userEntity : id2User.values()) {
-            for (PublicChatEntity chat : id2Chat.values()) {
+            for (ChatEntity chat : id2Chat.values()) {
                 try {
                     final ChatMember chatMember =
                             unsafeAbsSender.executeUnsafe(
@@ -121,7 +116,7 @@ public class ScoreLineMigrateToDatabase {
                         final User user = chatMember.getUser();
                         userEntity.setFirstName(user.getFirstName());
                         userEntity.setLastName(user.getLastName());
-                        userEntity.setUsername(user.getUserName());
+                        userEntity.setUserName(user.getUserName());
                         userEntity.setLanguageCode(user.getLanguageCode());
                         chat.getUsers().add(userEntity);
                         log.info(
@@ -145,5 +140,4 @@ public class ScoreLineMigrateToDatabase {
         System.out.println(publicChatDao.findAll());
         System.out.println(userDao.findAll());
     }
-
 }

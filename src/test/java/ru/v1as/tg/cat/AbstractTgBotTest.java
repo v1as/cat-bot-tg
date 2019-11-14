@@ -6,6 +6,7 @@ import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static ru.v1as.tg.cat.model.TgUserWrapper.wrap;
 
 import java.util.LinkedList;
 import java.util.stream.Collectors;
@@ -25,6 +26,9 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.bots.AbsSender;
+import ru.v1as.tg.cat.model.TgChat;
+import ru.v1as.tg.cat.model.TgChatWrapper;
+import ru.v1as.tg.cat.model.TgUser;
 
 public class AbstractTgBotTest {
 
@@ -126,6 +130,10 @@ public class AbstractTgBotTest {
         return query;
     }
 
+    protected TgUser getTgUser() {
+        return wrap(getUser());
+    }
+
     protected User getUser() {
         User user = mock(User.class);
         when(user.getId()).thenReturn(getUserId());
@@ -139,6 +147,10 @@ public class AbstractTgBotTest {
 
     protected Integer getUserId() {
         return userId;
+    }
+
+    protected TgChat getTgChat() {
+        return TgChatWrapper.wrap(getChat());
     }
 
     protected Chat getChat() {

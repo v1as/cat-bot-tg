@@ -1,6 +1,8 @@
 package ru.v1as.tg.cat.model;
 
 import static org.apache.http.util.TextUtils.isEmpty;
+import static ru.v1as.tg.cat.model.TgChatWrapper.wrap;
+import static ru.v1as.tg.cat.model.TgUserWrapper.wrap;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -13,36 +15,28 @@ import org.telegram.telegrambots.meta.api.objects.User;
 @UtilityClass
 public class UpdateUtils {
 
-    public static Chat getChat(Update update) {
+    public static TgChat getChat(Update update) {
+        Chat result = null;
         if (update.hasMessage()) {
-            return update.getMessage().getChat();
+            result = update.getMessage().getChat();
         } else if (update.hasCallbackQuery()) {
-            return update.getCallbackQuery().getMessage().getChat();
+            result = update.getCallbackQuery().getMessage().getChat();
         } else if (update.hasEditedMessage()) {
-            return update.getEditedMessage().getChat();
+            result = update.getEditedMessage().getChat();
         }
-        return null;
+        return result != null ? wrap(result) : null;
     }
 
-    public static User getUser(Update update) {
+    public static TgUser getUser(Update update) {
+        User from = null;
         if (update.hasMessage()) {
-            return update.getMessage().getFrom();
+            from = update.getMessage().getFrom();
         } else if (update.hasCallbackQuery()) {
-            return update.getCallbackQuery().getFrom();
+            from = update.getCallbackQuery().getFrom();
         } else if (update.hasEditedMessage()) {
-            return update.getEditedMessage().getFrom();
+            from = update.getEditedMessage().getFrom();
         }
-        return null;
-    }
-
-    public static String getUsernameOrFullName(User user) {
-        if (isEmpty(user.getUserName())) {
-            return Stream.of(user.getFirstName(), user.getLastName())
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.joining(" "));
-        } else {
-            return "@" + user.getUserName();
-        }
+        return from != null ? wrap(from) : null;
     }
 
 }

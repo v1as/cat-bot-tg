@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CuriosCatRequest extends TgRequestPoll<String> {
 
-    public CuriosCatRequest(ChatData chat) {
+    public CuriosCatRequest(TgChat chat) {
         super(chat);
     }
 

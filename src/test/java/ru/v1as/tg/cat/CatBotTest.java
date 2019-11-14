@@ -14,10 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 import ru.v1as.tg.cat.model.CatRequest;
-import ru.v1as.tg.cat.model.ChatData;
 import ru.v1as.tg.cat.model.ScoreData;
 import ru.v1as.tg.cat.model.ScoreData.ScoreLine;
-import ru.v1as.tg.cat.model.UserData;
 import ru.v1as.tg.cat.tasks.RequestsChecker;
 
 @RunWith(SpringRunner.class)
@@ -101,9 +99,6 @@ public class CatBotTest extends AbstractCatBotTest {
     }
 
     private CatRequest getCatRequest() {
-        return new CatRequest(
-                getMessageUpdate().getMessage(),
-                new UserData(getUser()),
-                new ChatData(getChat(), false));
+        return new CatRequest(getMessageUpdate().getMessage(), getTgUser(), getTgChat());
     }
 }

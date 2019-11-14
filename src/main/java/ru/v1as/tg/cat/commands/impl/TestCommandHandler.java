@@ -5,11 +5,11 @@ import static ru.v1as.tg.cat.Const.onlyForAdminCheck;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Chat;
-import org.telegram.telegrambots.meta.api.objects.User;
 import ru.v1as.tg.cat.callbacks.phase.impl.JoinCatFollowPhase;
 import ru.v1as.tg.cat.commands.CommandHandler;
 import ru.v1as.tg.cat.commands.TgCommandRequest;
+import ru.v1as.tg.cat.model.TgChat;
+import ru.v1as.tg.cat.model.TgUser;
 
 @Slf4j
 @Component
@@ -24,7 +24,7 @@ public class TestCommandHandler implements CommandHandler {
     }
 
     @Override
-    public void handle(TgCommandRequest command, Chat chat, User user) {
+    public void handle(TgCommandRequest command, TgChat chat, TgUser user) {
         onlyForAdminCheck(user);
         testPhase.open(chat);
         log.info("Test phase started...");

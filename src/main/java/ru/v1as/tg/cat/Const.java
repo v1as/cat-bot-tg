@@ -5,7 +5,7 @@ import static org.springframework.util.StringUtils.isEmpty;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.telegram.telegrambots.meta.api.objects.User;
+import ru.v1as.tg.cat.model.TgUser;
 
 public class Const {
 
@@ -45,7 +45,7 @@ public class Const {
         }
     }
 
-    public static void onlyForAdminCheck(User user) {
+    public static void onlyForAdminCheck(TgUser user) {
         if (isEmpty(user.getUserName()) || !adminUserNames.contains(user.getUserName())) {
             throw new OnlyForAdmins();
         }

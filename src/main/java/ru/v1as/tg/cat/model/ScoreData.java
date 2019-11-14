@@ -134,7 +134,7 @@ public class ScoreData {
             this.userName = request.getOwner().getUserName();
             this.result = request.getResult();
             this.date = request.getCreated();
-            this.chatId = request.getChat().getChatId();
+            this.chatId = request.getChat().getId();
             this.isReal = request.getIsReal();
         }
 

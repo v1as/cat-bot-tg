@@ -30,7 +30,7 @@ public class CuriosCatPhaseTests extends AbstractTgBotTest {
     }
 
     private void testPhase(AbstractCuriosCatPhase phase) {
-        phase.open(getChat(), getChat(), getUser(), getMessage());
+        phase.open(getTgChat(), getTgChat(), getTgUser(), getMessage());
         SendMessage message = popSendMessage();
         System.out.println(message);
     }

@@ -20,12 +20,12 @@ import ru.v1as.tg.cat.callbacks.is_cat.RequestAnswerResult;
 public class CatRequest extends TgRequestPoll<CatRequestVote> {
 
     final Message sourceMessage;
-    final UserData owner;
-    final Map<UserData, CatRequestVote> votes = new ConcurrentHashMap<>();
+    final TgUser owner;
+    final Map<TgUser, CatRequestVote> votes = new ConcurrentHashMap<>();
     Boolean isReal = false;
     InlineKeyboardMarkup pollButtons;
 
-    public CatRequest(Message sourceMessage, UserData owner, ChatData chat) {
+    public CatRequest(Message sourceMessage, TgUser owner, TgChat chat) {
         super(chat);
         this.sourceMessage = sourceMessage;
         this.owner = owner;
@@ -35,7 +35,7 @@ public class CatRequest extends TgRequestPoll<CatRequestVote> {
                 sourceMessage.getMessageId());
     }
 
-    public RequestAnswerResult vote(UserData user, CatRequestVote vote) {
+    public RequestAnswerResult vote(TgUser user, CatRequestVote vote) {
         Integer userId = user.getId();
         if (finished || canceled) {
             return RequestAnswerResult.FINISHED;

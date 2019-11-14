@@ -5,54 +5,53 @@ import lombok.SneakyThrows;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.User;
 import ru.v1as.tg.cat.callbacks.TgCallbackProcessor;
 import ru.v1as.tg.cat.commands.TgCommandProcessor;
-import ru.v1as.tg.cat.commands.TgCommandProcessorByName;
 import ru.v1as.tg.cat.commands.TgCommandRequest;
+import ru.v1as.tg.cat.model.TgChat;
+import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.messages.TgMessageProcessor;
 
 @Getter
 @Component
 class CatBot extends AbstractTgBot {
 
-    private final CatBotData data;
+    private final TgUpdateBeforeHandler updateBeforeHandler;
     private final TgCallbackProcessor callbackProcessor;
     private final TgCommandProcessor commandProcessor;
     private final TgMessageProcessor messageProcessor;
 
     public CatBot(
-            @Lazy CatBotData data,
+            @Lazy TgUpdateBeforeHandler updateBeforeHandler,
             @Lazy TgCallbackProcessor callbackProcessor,
             @Lazy TgCommandProcessor commandProcessor,
             @Lazy TgMessageProcessor messageProcessor) {
-        this.data = data;
+        this.updateBeforeHandler = updateBeforeHandler;
         this.callbackProcessor = callbackProcessor;
         this.commandProcessor = commandProcessor;
         this.messageProcessor = messageProcessor;
     }
 
     @Override
-    protected void onUpdateCommand(TgCommandRequest command, Chat chat, User user) {
+    protected void onUpdateCommand(TgCommandRequest command, TgChat chat, TgUser user) {
         this.commandProcessor.process(command, chat, user);
     }
 
     @Override
     protected void before(Update update) {
-        data.register(update);
+        updateBeforeHandler.register(update);
     }
 
     @Override
     @SneakyThrows
-    protected void onUpdateCallbackQuery(CallbackQuery callbackQuery, Chat chat, User user) {
+    protected void onUpdateCallbackQuery(CallbackQuery callbackQuery, TgChat chat, TgUser user) {
         callbackProcessor.process(callbackQuery, chat, user);
     }
 
     @Override
-    protected void onUpdateMessage(Message message, Chat chat, User user) {
+    protected void onUpdateMessage(Message message, TgChat chat, TgUser user) {
         messageProcessor.process(message, chat, user);
     }
 
@@ -60,5 +59,4 @@ class CatBot extends AbstractTgBot {
     public String getBotUsername() {
         return "Котобот";
     }
-
 }

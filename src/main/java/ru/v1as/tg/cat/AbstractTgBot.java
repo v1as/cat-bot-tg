@@ -15,14 +15,14 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.updateshandlers.SentCallback;
 import ru.v1as.tg.cat.Const.OnlyForAdmins;
 import ru.v1as.tg.cat.commands.TgCommandRequest;
+import ru.v1as.tg.cat.model.TgChat;
+import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
 public abstract class AbstractTgBot extends TelegramLongPollingBot implements UnsafeAbsSender {
@@ -53,8 +53,8 @@ public abstract class AbstractTgBot extends TelegramLongPollingBot implements Un
     @Override
     public void onUpdateReceived(Update update) {
         try {
-            Chat chat = getChat(update);
-            User user = getUser(update);
+            TgChat chat = getChat(update);
+            TgUser user = getUser(update);
             if (chat == null || user == null) {
                 log.warn("Such type updated does not supported '{}'", update);
                 return;
@@ -81,14 +81,14 @@ public abstract class AbstractTgBot extends TelegramLongPollingBot implements Un
         }
     }
 
-    protected abstract void onUpdateCommand(TgCommandRequest command, Chat chat, User user);
+    protected abstract void onUpdateCommand(TgCommandRequest command, TgChat chat, TgUser user);
 
     protected abstract void before(Update update);
 
     protected abstract void onUpdateCallbackQuery(
-            CallbackQuery callbackQuery, Chat chat, User user);
+            CallbackQuery callbackQuery, TgChat chat, TgUser user);
 
-    protected abstract void onUpdateMessage(Message message, Chat chat, User user);
+    protected abstract void onUpdateMessage(Message message, TgChat chat, TgUser user);
 
     @SneakyThrows
     @Override

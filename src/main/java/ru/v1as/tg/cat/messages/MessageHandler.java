@@ -1,8 +1,8 @@
 package ru.v1as.tg.cat.messages;
 
-import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.User;
+import ru.v1as.tg.cat.model.TgChat;
+import ru.v1as.tg.cat.model.TgUser;
 
 public interface MessageHandler {
 
@@ -10,7 +10,7 @@ public interface MessageHandler {
     int MIN_PRIORITY = 1000;
     int TOP_PRIORITY = 100;
 
-    void handle(Message message, Chat chat, User user);
+    void handle(Message message, TgChat chat, TgUser user);
 
     default int priority() {
         return DEFAULT_PRIORITY;
