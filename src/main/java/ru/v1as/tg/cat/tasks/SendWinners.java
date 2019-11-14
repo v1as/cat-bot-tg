@@ -12,17 +12,17 @@ import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.MedalsListBuilder;
 import ru.v1as.tg.cat.model.ChatData;
 import ru.v1as.tg.cat.model.LongProperty;
-import ru.v1as.tg.cat.model.ScoreData;
-import ru.v1as.tg.cat.tg.UnsafeAbsSender;
+import ru.v1as.tg.cat.service.ScoreDataService;
+import ru.v1as.tg.cat.tg.TgSender;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class SendWinners {
 
-    private final UnsafeAbsSender sender;
+    private final TgSender sender;
     private final CatBotData data;
-    private final ScoreData scoreData;
+    private final ScoreDataService scoreData;
 
     @PostConstruct
     public void init() {
@@ -49,7 +49,7 @@ public class SendWinners {
                 for (String s : result) {
                     text.append(s).append('\n');
                 }
-                sender.executeUnsafe(
+                sender.executeTg(
                         new SendMessage().setChatId(chat.getChatId()).setText(text.toString()));
                 log.info("Winners data '{}' was sent to chat {}", text, chat);
             } catch (Exception ex) {

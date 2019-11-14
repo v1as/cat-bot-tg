@@ -7,18 +7,18 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
-import ru.v1as.tg.cat.tg.UnsafeAbsSender;
+import ru.v1as.tg.cat.tg.TgSender;
 
 @Component
 @RequiredArgsConstructor
 public class ClearButtonsCallbackHandler implements DefaultTgCallbackHandler {
 
-    private final UnsafeAbsSender sender;
+    private final TgSender sender;
 
     @Override
     public void handle(TgChat chat, TgUser user, CallbackQuery callbackQuery) {
         Message msg = callbackQuery.getMessage();
-        sender.executeUnsafe(
+        sender.executeTg(
                 new EditMessageReplyMarkup()
                         .setMessageId(msg.getMessageId())
                         .setChatId(msg.getChatId()));

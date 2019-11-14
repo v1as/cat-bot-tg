@@ -23,9 +23,9 @@ import ru.v1as.tg.cat.Const.OnlyForAdmins;
 import ru.v1as.tg.cat.commands.TgCommandRequest;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
-import ru.v1as.tg.cat.tg.UnsafeAbsSender;
+import ru.v1as.tg.cat.tg.TgSender;
 
-public abstract class AbstractTgBot extends TelegramLongPollingBot implements UnsafeAbsSender {
+public abstract class AbstractTgBot extends TelegramLongPollingBot implements TgSender {
 
     private final Logger log = getLogger(this.getClass());
 
@@ -96,14 +96,14 @@ public abstract class AbstractTgBot extends TelegramLongPollingBot implements Un
                     T extends Serializable,
                     Method extends BotApiMethod<T>,
                     Callback extends SentCallback<T>>
-            void executeAsyncUnsafe(Method method, Callback callback) {
+            void executeTgAsync(Method method, Callback callback) {
         log.debug(method.toString());
         sender.executeAsync(method, callback);
     }
 
     @Override
     @SneakyThrows
-    public <T extends Serializable, Method extends BotApiMethod<T>> T executeUnsafe(Method method) {
+    public <T extends Serializable, Method extends BotApiMethod<T>> T executeTg(Method method) {
         log.debug(method.toString());
         return sender.execute(method);
     }
@@ -114,7 +114,7 @@ public abstract class AbstractTgBot extends TelegramLongPollingBot implements Un
 
     @Override
     @SneakyThrows
-    public Message executeUnsafe(SendDocument sendDocument) {
+    public Message executeTg(SendDocument sendDocument) {
         log.debug(sendDocument.toString());
         return sender.execute(sendDocument);
     }

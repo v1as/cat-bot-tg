@@ -18,8 +18,8 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 import ru.v1as.tg.cat.model.CatRequest;
-import ru.v1as.tg.cat.model.ScoreData;
-import ru.v1as.tg.cat.tg.UnsafeAbsSender;
+import ru.v1as.tg.cat.service.CatEventService;
+import ru.v1as.tg.cat.tg.TgSender;
 
 @Slf4j
 @Component
@@ -27,9 +27,9 @@ import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 public class RequestsChecker {
 
     private final int RATE = 2_000;
-    private final UnsafeAbsSender sender;
+    private final TgSender sender;
     private final CatBotData data;
-    private final ScoreData scoreData;
+    private final CatEventService catService;
 
     @PostConstruct
     public void init() {
@@ -61,9 +61,10 @@ public class RequestsChecker {
             if (voteValue.isPresent()) {
                 CatRequestVote vote = voteValue.get();
                 request.finish(vote);
-                scoreData.save(request);
                 Message message = request.getVoteMessage();
-                sender.executeUnsafe(
+                catService.poll(
+                        request.getChat(), request.getOwner(), message, request.getResult());
+                sender.executeTg(
                         new EditMessageText()
                                 .setChatId(message.getChatId())
                                 .setMessageId(message.getMessageId())

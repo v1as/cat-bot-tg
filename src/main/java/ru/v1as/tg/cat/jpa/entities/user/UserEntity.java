@@ -26,7 +26,7 @@ public class UserEntity implements TgUser {
     private String firstName;
     private String lastName;
     private String languageCode;
-    private Boolean privateChat;
+    private boolean privateChat;
 
     public String getUsernameOrFullName() {
         if (isEmpty(userName)) {

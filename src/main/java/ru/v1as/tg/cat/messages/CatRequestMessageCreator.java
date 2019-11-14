@@ -12,14 +12,14 @@ import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.model.CatChatData;
 import ru.v1as.tg.cat.model.CatRequest;
-import ru.v1as.tg.cat.tg.UnsafeAbsSender;
+import ru.v1as.tg.cat.tg.TgSender;
 
 @Component
 @RequiredArgsConstructor
 public class CatRequestMessageCreator implements MessageHandler {
 
     private final CatBotData data;
-    private final UnsafeAbsSender sender;
+    private final TgSender sender;
 
     @Override
     public void handle(Message message, TgChat chat, TgUser user) {
@@ -29,7 +29,7 @@ public class CatRequestMessageCreator implements MessageHandler {
         CatChatData chatData = data.getChatData(chat.getId());
         CatRequest catRequest = new CatRequest(message, user, chat);
         catRequest.setIsReal(true);
-        sender.executeAsyncUnsafe(
+        sender.executeTgAsync(
                 buildIsThatCatMessage(message, chat, catRequest),
                 new IsCatPollCallback(chatData, catRequest));
     }

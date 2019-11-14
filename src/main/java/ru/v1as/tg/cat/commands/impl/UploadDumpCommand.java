@@ -10,7 +10,7 @@ import ru.v1as.tg.cat.commands.TgCommandRequest;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.messages.DumpDocumentMessageHandler;
-import ru.v1as.tg.cat.tg.UnsafeAbsSender;
+import ru.v1as.tg.cat.tg.TgSender;
 
 @Component
 @RequiredArgsConstructor
@@ -18,7 +18,7 @@ public class UploadDumpCommand implements CommandHandler {
 
     private static final String NAME = "upload_dump";
     private final DumpDocumentMessageHandler dumpDocumentMessageHandler;
-    private final UnsafeAbsSender sender;
+    private final TgSender sender;
 
     @Override
     public String getCommandName() {
@@ -31,8 +31,8 @@ public class UploadDumpCommand implements CommandHandler {
         dumpDocumentMessageHandler.addRequest(
                 command.getMessage(),
                 () ->
-                        sender.executeUnsafe(
+                        sender.executeTg(
                                 new SendMessage(chat.getId(), "Не дождался дамп файла.")));
-        sender.executeUnsafe(new SendMessage(chat.getId(), "Теперь пришлите dump.sql файл"));
+        sender.executeTg(new SendMessage(chat.getId(), "Теперь пришлите dump.sql файл"));
     }
 }

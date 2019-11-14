@@ -12,14 +12,14 @@ import ru.v1as.tg.cat.commands.TgCommandRequest;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.service.init.DumpService;
-import ru.v1as.tg.cat.tg.UnsafeAbsSender;
+import ru.v1as.tg.cat.tg.TgSender;
 
 @Component
 @RequiredArgsConstructor
 public class SqlDatabaseDumpCommandHandler implements CommandHandler {
 
     private final DumpService dumpService;
-    private final UnsafeAbsSender sender;
+    private final TgSender sender;
 
     @Override
     public String getCommandName() {
@@ -35,12 +35,12 @@ public class SqlDatabaseDumpCommandHandler implements CommandHandler {
             SendDocument document = new SendDocument();
             document.setChatId(chat.getId());
             document.setDocument(dumpFile);
-            sender.executeUnsafe(document);
+            sender.executeTg(document);
             if (!dumpFile.delete()) {
-                sender.executeUnsafe(new SendMessage(chat.getId(), "Файл не удалось удалить"));
+                sender.executeTg(new SendMessage(chat.getId(), "Файл не удалось удалить"));
             }
         } else {
-            sender.executeUnsafe(new SendMessage(chat.getId(), "Ошибка создания файла"));
+            sender.executeTg(new SendMessage(chat.getId(), "Ошибка создания файла"));
         }
     }
 }

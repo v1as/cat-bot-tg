@@ -12,14 +12,15 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import ru.v1as.tg.cat.AbstractTgBotTest;
 import ru.v1as.tg.cat.CaBotTestConfiguration;
 import ru.v1as.tg.cat.callbacks.phase.curios_cat.CuriosCatPhaseTests.CuriosConfigurationTest;
-import ru.v1as.tg.cat.tg.UnsafeAbsSender;
+import ru.v1as.tg.cat.tg.TgSender;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {CaBotTestConfiguration.class, CuriosConfigurationTest.class})
 public class CuriosCatPhaseTests extends AbstractTgBotTest {
 
     @Autowired List<AbstractCuriosCatPhase> phases;
-    @Autowired UnsafeAbsSender sender;
+    @Autowired
+    TgSender sender;
 
     @Test
     public void test1() {
