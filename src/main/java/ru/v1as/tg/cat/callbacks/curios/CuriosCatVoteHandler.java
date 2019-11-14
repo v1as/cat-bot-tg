@@ -1,22 +1,27 @@
 package ru.v1as.tg.cat.callbacks.curios;
 
+import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT1;
 import static ru.v1as.tg.cat.tg.KeyboardUtils.deleteMsg;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.Chat;
-import org.telegram.telegrambots.meta.api.objects.User;
 import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.EmojiConst;
 import ru.v1as.tg.cat.callbacks.SimpleCallbackHandler;
-import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
+import ru.v1as.tg.cat.jpa.dao.CatUserEventDao;
+import ru.v1as.tg.cat.jpa.dao.ChatDao;
+import ru.v1as.tg.cat.jpa.dao.UserDao;
+import ru.v1as.tg.cat.jpa.entities.chat.ChatEntity;
+import ru.v1as.tg.cat.jpa.entities.events.CatUserEvent;
+import ru.v1as.tg.cat.jpa.entities.user.UserEntity;
 import ru.v1as.tg.cat.model.CatChatData;
 import ru.v1as.tg.cat.model.CatRequest;
 import ru.v1as.tg.cat.model.CuriosCatRequest;
 import ru.v1as.tg.cat.model.ScoreData;
-import ru.v1as.tg.cat.model.UserData;
+import ru.v1as.tg.cat.model.TgChat;
+import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
 @Slf4j
@@ -28,6 +33,9 @@ public class CuriosCatVoteHandler extends SimpleCallbackHandler {
     private final CatBotData data;
     private final ScoreData scoreData;
     private final UnsafeAbsSender sender;
+    private CatUserEventDao catUserEventDao;
+    private UserDao userDao;
+    private ChatDao chatDao;
 
     public CuriosCatVoteHandler(CatBotData data1, ScoreData scoreData, UnsafeAbsSender sender) {
         super(CURIOS_CAT_CB);
@@ -37,9 +45,8 @@ public class CuriosCatVoteHandler extends SimpleCallbackHandler {
     }
 
     @Override
-    public void handle(String value, Chat chat, User user, CallbackQuery callbackQuery) {
+    public void handle(String value, TgChat chat, TgUser user, CallbackQuery callbackQuery) {
         CatChatData chatData = data.getChatData(chat.getId());
-        UserData userData = data.getUserData(user);
         CuriosCatRequest request =
                 chatData.getCuriosCatRequest(callbackQuery.getMessage().getMessageId());
         if (request == null) {
@@ -53,11 +60,15 @@ public class CuriosCatVoteHandler extends SimpleCallbackHandler {
                         .setChatId(chat.getId())
                         .setText(
                                 "Любопытный Кот убежал к "
-                                        + userData.getUsernameOrFullName()
+                                        + user.getUsernameOrFullName()
                                         + "   "
                                         + EmojiConst.CAT));
-        CatRequest catRequest = new CatRequest(request.getVoteMessage(), userData, chatData);
-        catRequest.finish(CatRequestVote.CAT1);
+        CatRequest catRequest = new CatRequest(request.getVoteMessage(), user, chat);
+        catRequest.finish(CAT1);
         scoreData.save(catRequest);
+        final UserEntity userEntity = userDao.getOne(user.getId());
+        final ChatEntity chatEntity = chatDao.getOne(chat.getId());
+        catUserEventDao.save(
+                CatUserEvent.curiosCat(chatEntity, userEntity, request.getVoteMessage()));
     }
 }

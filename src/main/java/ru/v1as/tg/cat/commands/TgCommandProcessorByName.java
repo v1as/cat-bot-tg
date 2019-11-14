@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Chat;
-import org.telegram.telegrambots.meta.api.objects.User;
+import ru.v1as.tg.cat.model.TgChat;
+import ru.v1as.tg.cat.model.TgUser;
 
 @Slf4j
 @Component
@@ -32,7 +32,7 @@ public class TgCommandProcessorByName implements TgCommandProcessor {
     }
 
     @Override
-    public void process(TgCommandRequest command, Chat chat, User user) {
+    public void process(TgCommandRequest command, TgChat chat, TgUser user) {
         CommandHandler commandHandler = commandToHandler.get(command.getName());
         if (commandHandler != null) {
             log.info(

@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.telegram.telegrambots.meta.api.objects.Chat;
 import ru.v1as.tg.cat.callbacks.phase.poll.SimplePoll;
+import ru.v1as.tg.cat.model.TgChat;
 
 @RequiredArgsConstructor
 @Slf4j
 public class PhaseContext {
 
-    private final Chat chat;
+    private final TgChat chat;
     private final List<SimplePoll> polls = new ArrayList<>();
     private boolean finished = false;
 
@@ -46,7 +46,7 @@ public class PhaseContext {
         return chat != null ? chat.getId() : null;
     }
 
-    public Chat getChat() {
+    public TgChat getChat() {
         return chat;
     }
 }

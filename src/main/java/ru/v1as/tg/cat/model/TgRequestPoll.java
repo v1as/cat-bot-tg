@@ -11,7 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @RequiredArgsConstructor
 public class TgRequestPoll<T> {
 
-    protected final ChatData chat;
+    protected final TgChat chat;
     protected final LocalDateTime created = LocalDateTime.now();
     boolean finished = false;
     boolean canceled = false;
@@ -62,9 +62,9 @@ public class TgRequestPoll<T> {
             return false;
         }
         TgRequestPoll<?> that = (TgRequestPoll<?>) o;
-        return Objects.equals(chat, that.chat) &&
-            Objects.equals(created, that.created) &&
-            Objects.equals(voteMessage, that.voteMessage);
+        return Objects.equals(chat, that.chat)
+                && Objects.equals(created, that.created)
+                && Objects.equals(voteMessage, that.voteMessage);
     }
 
     @Override

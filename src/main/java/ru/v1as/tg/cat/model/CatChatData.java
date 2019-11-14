@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.Getter;
-import org.telegram.telegrambots.meta.api.objects.Chat;
 
 @Getter
 public class CatChatData extends ChatData {
@@ -14,7 +13,7 @@ public class CatChatData extends ChatData {
     final Map<Integer, CatRequest> msgIdToCatRequests = new HashMap<>();
     final Map<Integer, CuriosCatRequest> msgIdToCuriosRequest = new HashMap<>();
 
-    public CatChatData(Chat chat) {
+    public CatChatData(TgChat chat) {
         super(chat, chat.isUserChat());
     }
 

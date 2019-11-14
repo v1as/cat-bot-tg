@@ -5,9 +5,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.EqualsAndHashCode;
-import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.User;
+import ru.v1as.tg.cat.model.TgChat;
+import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.messages.TgMessageProcessor.InterruptMessageProcessing;
 
 public abstract class RequestWithTimeoutCommandHandler implements MessageHandler {
@@ -19,7 +19,7 @@ public abstract class RequestWithTimeoutCommandHandler implements MessageHandler
     }
 
     @Override
-    public final void handle(Message message, Chat chat, User user) {
+    public final void handle(Message message, TgChat chat, TgUser user) {
         clearExpiredRequests();
         final LoadDumpRequest request = new LoadDumpRequest(message);
         if (!requests.contains(request)) {
@@ -36,7 +36,7 @@ public abstract class RequestWithTimeoutCommandHandler implements MessageHandler
         return TOP_PRIORITY;
     }
 
-    protected abstract boolean handleRequest(Message message, Chat chat, User user);
+    protected abstract boolean handleRequest(Message message, TgChat chat, TgUser user);
 
     private void clearExpiredRequests() {
         final Set<LoadDumpRequest> expired =

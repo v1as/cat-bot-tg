@@ -7,8 +7,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import lombok.Value;
 import org.slf4j.Logger;
-import org.telegram.telegrambots.meta.api.objects.Chat;
-import org.telegram.telegrambots.meta.api.objects.User;
+import ru.v1as.tg.cat.model.TgChat;
+import ru.v1as.tg.cat.model.TgUser;
 
 public abstract class ArgumentCallbackCommand implements CommandHandler {
 
@@ -25,7 +25,7 @@ public abstract class ArgumentCallbackCommand implements CommandHandler {
     }
 
     @Override
-    public void handle(TgCommandRequest command, Chat chat, User user) {
+    public void handle(TgCommandRequest command, TgChat chat, TgUser user) {
         String argument = command.getFirstArgument();
         if (isEmpty(argument) || !callbacks.containsKey(argument)) {
             if (defaultConsumer != null) {
@@ -62,8 +62,8 @@ public abstract class ArgumentCallbackCommand implements CommandHandler {
     @Value
     public static class CallbackCommandContext {
         TgCommandRequest command;
-        Chat chat;
-        User user;
+        TgChat chat;
+        TgUser user;
         String argument;
     }
 }

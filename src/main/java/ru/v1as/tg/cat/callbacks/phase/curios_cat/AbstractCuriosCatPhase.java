@@ -9,9 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.User;
 import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 import ru.v1as.tg.cat.callbacks.phase.AbstractPhase;
@@ -22,10 +20,10 @@ import ru.v1as.tg.cat.callbacks.phase.poll.PollChoice;
 import ru.v1as.tg.cat.callbacks.phase.poll.SimplePoll;
 import ru.v1as.tg.cat.callbacks.phase.poll.interceptor.PhaseContextChoiceAroundInterceptor;
 import ru.v1as.tg.cat.callbacks.phase.poll.interceptor.TimeoutPhaseContextChoiceAroundInterceptor;
-import ru.v1as.tg.cat.model.CatChatData;
+import ru.v1as.tg.cat.model.TgChat;
+import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.model.CatRequest;
 import ru.v1as.tg.cat.model.ScoreData;
-import ru.v1as.tg.cat.model.UserData;
 import ru.v1as.tg.cat.service.clock.BotClock;
 
 public abstract class AbstractCuriosCatPhase extends AbstractPhase<CuriosCatContext> {
@@ -39,11 +37,12 @@ public abstract class AbstractCuriosCatPhase extends AbstractPhase<CuriosCatCont
     @Autowired protected ScoreData scoreData;
     @Autowired protected BotClock botClock;
 
-    public CuriosCatContext buildContext(Chat chat, Chat publicChat, User user, Message message) {
+    public CuriosCatContext buildContext(
+            TgChat chat, TgChat publicChat, TgUser user, Message message) {
         return new CuriosCatContext(chat, publicChat, user, message);
     }
 
-    public void open(Chat chat, Chat publicChat, User user, Message curiosCatMsg) {
+    public void open(TgChat chat, TgChat publicChat, TgUser user, Message curiosCatMsg) {
         CuriosCatContext curiosCatContext = buildContext(chat, publicChat, user, curiosCatMsg);
         this.open(curiosCatContext);
     }
@@ -73,8 +72,8 @@ public abstract class AbstractCuriosCatPhase extends AbstractPhase<CuriosCatCont
     }
 
     @Override
-    protected void message(UserData userData, String text) {
-        super.message(userData, text);
+    protected void message(TgUser user, String text) {
+        super.message(user, text);
         botClock.wait(getMsForTextReading(text.length()));
     }
 
@@ -85,15 +84,15 @@ public abstract class AbstractCuriosCatPhase extends AbstractPhase<CuriosCatCont
     }
 
     @Override
-    protected void message(Chat chat, String text) {
+    protected void message(TgChat chat, String text) {
         super.message(chat, text);
         botClock.wait(getMsForTextReading(text.length()));
     }
 
     protected void catchUpCatAndClose(CatRequestVote result) {
         CuriosCatContext ctx = getPhaseContext();
-        CatChatData chat = data.getChatData(ctx.getPublicChat().getId());
-        UserData user = data.getUserData(ctx.getUser());
+        final TgUser user = ctx.getUser();
+        final TgChat publicChat = ctx.getPublicChat();
         String message = "";
         if (result == CatRequestVote.CAT1) {
             message = "Любопытный кот убегает к ";
@@ -104,8 +103,8 @@ public abstract class AbstractCuriosCatPhase extends AbstractPhase<CuriosCatCont
         } else if (result == NOT_CAT) {
             message = "Любопытный кот сбегает от игрока ";
         }
-        message(ctx.getPublicChat(), message + user.getUsernameOrFullName());
-        CatRequest catRequest = new CatRequest(ctx.message, user, chat);
+        message(publicChat, message + user.getUsernameOrFullName());
+        CatRequest catRequest = new CatRequest(ctx.message, user, publicChat);
         catRequest.finish(result);
         scoreData.save(catRequest);
         close();
@@ -114,12 +113,12 @@ public abstract class AbstractCuriosCatPhase extends AbstractPhase<CuriosCatCont
     @Getter
     class CuriosCatContext extends PhaseContext {
 
-        private final User user;
+        private final TgUser user;
         private final Message message;
-        private final Chat publicChat;
+        private final TgChat publicChat;
         private final Map<String, Object> values = new HashMap<>();
 
-        CuriosCatContext(Chat chat, Chat publicChat, User user, Message message) {
+        CuriosCatContext(TgChat chat, TgChat publicChat, TgUser user, Message message) {
             super(chat);
             this.user = user;
             this.message = message;
@@ -147,7 +146,7 @@ public abstract class AbstractCuriosCatPhase extends AbstractPhase<CuriosCatCont
             return val;
         }
 
-        public User getUser() {
+        public TgUser getUser() {
             return user;
         }
     }

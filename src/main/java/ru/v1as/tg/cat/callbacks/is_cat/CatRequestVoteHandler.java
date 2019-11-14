@@ -16,15 +16,14 @@ import static ru.v1as.tg.cat.tg.KeyboardUtils.inlineKeyboardMarkup;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.callbacks.TgCallBackHandler;
+import ru.v1as.tg.cat.model.TgChat;
+import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.model.CatRequest;
 import ru.v1as.tg.cat.model.ScoreData;
-import ru.v1as.tg.cat.model.UserData;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
 @Component
@@ -61,15 +60,14 @@ public class CatRequestVoteHandler implements TgCallBackHandler<CatRequestVote> 
     }
 
     @Override
-    public void handle(CatRequestVote vote, Chat chat, User user, CallbackQuery callbackQuery) {
+    public void handle(CatRequestVote vote, TgChat chat, TgUser user, CallbackQuery callbackQuery) {
         Message msg = callbackQuery.getMessage();
         CatRequest catRequest = data.getChatData(chat.getId()).getCatRequest(msg.getMessageId());
-        UserData userData = data.getUserData(user);
         if (catRequest == null || vote == null) {
             sender.executeUnsafe(clearButtons(msg));
             return;
         }
-        RequestAnswerResult voted = catRequest.vote(userData, vote);
+        RequestAnswerResult voted = catRequest.vote(user, vote);
         sender.executeUnsafe(getVoteAnswerMsg(callbackQuery, voted));
         if (FINISHED.equals(voted)) {
             sender.executeUnsafe(clearButtons(msg));

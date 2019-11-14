@@ -13,22 +13,24 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import lombok.Data;
-import ru.v1as.tg.cat.jpa.entities.chat.PublicChatEntity;
+import lombok.NoArgsConstructor;
+import ru.v1as.tg.cat.jpa.entities.chat.ChatEntity;
 import ru.v1as.tg.cat.jpa.entities.user.UserEntity;
 
 @Entity
 @Data
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
+@NoArgsConstructor
 public abstract class UserEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
+    protected Long id;
 
     @Enumerated(EnumType.STRING)
     private UserEventType type;
 
-    @ManyToOne private PublicChatEntity chat;
-    @ManyToOne private UserEntity user;
-    private LocalDateTime date;
+    @ManyToOne protected ChatEntity chat;
+    @ManyToOne protected UserEntity user;
+    protected LocalDateTime date;
 }

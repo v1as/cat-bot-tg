@@ -8,8 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.Chat;
-import org.telegram.telegrambots.meta.api.objects.User;
+import ru.v1as.tg.cat.model.TgChat;
+import ru.v1as.tg.cat.model.TgUser;
 
 @Slf4j
 @Component
@@ -42,7 +42,7 @@ public class TgCallbackProcessor {
     }
 
     @SuppressWarnings("unchecked")
-    public void process(CallbackQuery callback, Chat chat, User user) {
+    public void process(CallbackQuery callback, TgChat chat, TgUser user) {
         String data = callback.getData();
         log.debug("Callback '{}' received from user '{}' in chat '{}'", data, user, chat);
 

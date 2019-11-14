@@ -8,13 +8,13 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
-import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.v1as.tg.cat.callbacks.TgCallbackProcessor;
 import ru.v1as.tg.cat.callbacks.phase.poll.SimplePoll;
 import ru.v1as.tg.cat.callbacks.phase.poll.UpdateWithChoiceTextBuilder;
 import ru.v1as.tg.cat.callbacks.phase.poll.interceptor.PhaseContextChoiceAroundInterceptor;
-import ru.v1as.tg.cat.model.UserData;
+import ru.v1as.tg.cat.model.TgChat;
+import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.service.clock.BotClock;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
@@ -29,8 +29,8 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
 
     private final ThreadLocal<T> phaseContext = new ThreadLocal<>();
 
-    protected void message(UserData userData, String text) {
-        sender.executeUnsafe(new SendMessage(userData.getChatId(), text));
+    protected void message(TgUser userData, String text) {
+        sender.executeUnsafe(new SendMessage(userData.getId().longValue(), text));
     }
 
     protected void editMessageText(Message message, String newText) {
@@ -70,7 +70,7 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
         sender.executeUnsafe(new SendMessage(chatId, text));
     }
 
-    protected void message(Chat chat, String text) {
+    protected void message(TgChat chat, String text) {
         sender.executeUnsafe(new SendMessage(chat.getId(), text));
     }
 

@@ -16,12 +16,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Document;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.User;
 import ru.v1as.tg.cat.Const;
 import ru.v1as.tg.cat.jpa.dao.UserDao;
+import ru.v1as.tg.cat.model.TgChat;
+import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.service.init.DumpService;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
@@ -37,7 +37,7 @@ public class DumpDocumentMessageHandler extends RequestWithTimeoutCommandHandler
     @Override
     @SneakyThrows
     @Transactional(rollbackFor = Exception.class)
-    protected boolean handleRequest(Message message, Chat chat, User user) {
+    protected boolean handleRequest(Message message, TgChat chat, TgUser user) {
         final Document document = message.getDocument();
         if (null == document || !document.getFileName().endsWith(".sql")) {
             sender.executeUnsafe(

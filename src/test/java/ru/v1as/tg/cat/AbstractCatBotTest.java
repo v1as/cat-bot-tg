@@ -8,7 +8,8 @@ import ru.v1as.tg.cat.model.ScoreData;
 public class AbstractCatBotTest extends AbstractTgBotTest {
 
     public CatBotData getCatBotData() {
-        return getCatBot().getData();
+        //        return getCatBot().getData();
+        return null;
     }
 
     public CatBot getCatBot() {
@@ -16,7 +17,8 @@ public class AbstractCatBotTest extends AbstractTgBotTest {
     }
 
     public ScoreData getCatBotScoreData() {
-        return (getCatBot()).getData().getScoreData();
+        //        return (getCatBot()).getData().getScoreData();
+        return null;
     }
 
     public CatRequest getOnlyOneCatRequest() {

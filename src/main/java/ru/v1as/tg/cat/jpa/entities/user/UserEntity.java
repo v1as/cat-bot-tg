@@ -12,6 +12,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import ru.v1as.tg.cat.model.TgUser;
 
 @Entity
 @Data
@@ -19,21 +20,42 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserEntity {
+public class UserEntity implements TgUser {
     @Id private Integer id;
-    private String username;
+    private String userName;
     private String firstName;
     private String lastName;
     private String languageCode;
     private Boolean privateChat;
 
     public String getUsernameOrFullName() {
-        if (isEmpty(username)) {
+        if (isEmpty(userName)) {
             return Stream.of(firstName, lastName)
                     .filter(Objects::nonNull)
                     .collect(Collectors.joining(" "));
         } else {
-            return "@" + username;
+            return "@" + userName;
         }
+    }
+
+    public boolean update(TgUser user) {
+        boolean changed = false;
+        if (Objects.equals(userName, user.getUserName())) {
+            userName = user.getUserName();
+            changed = true;
+        }
+        if (Objects.equals(firstName, user.getFirstName())) {
+            firstName = user.getFirstName();
+            changed = true;
+        }
+        if (Objects.equals(lastName, user.getLastName())) {
+            lastName = user.getLastName();
+            changed = true;
+        }
+        if (Objects.equals(languageCode, user.getLanguageCode())) {
+            languageCode = user.getLanguageCode();
+            changed = true;
+        }
+        return changed;
     }
 }

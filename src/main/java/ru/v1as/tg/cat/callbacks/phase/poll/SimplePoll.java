@@ -27,9 +27,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.v1as.tg.cat.callbacks.SimpleCallbackHandler;
@@ -39,6 +37,8 @@ import ru.v1as.tg.cat.callbacks.phase.PhaseContextClosedException;
 import ru.v1as.tg.cat.callbacks.phase.PollTimeoutConfiguration;
 import ru.v1as.tg.cat.callbacks.phase.poll.interceptor.ChoiceAroundInterceptor;
 import ru.v1as.tg.cat.callbacks.phase.poll.interceptor.NoopChoiceAroundInterceptor;
+import ru.v1as.tg.cat.model.TgChat;
+import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
 
 @Slf4j
@@ -191,7 +191,8 @@ public class SimplePoll {
     private TgCallBackHandler callbackHandler(PollChoice pollChoice) {
         return new SimpleCallbackHandler(pollChoice.getUuid()) {
             @Override
-            public void handle(String value, Chat chat, User user, CallbackQuery callbackQuery) {
+            public void handle(
+                    String value, TgChat chat, TgUser user, CallbackQuery callbackQuery) {
                 choose = choices.get(callbackQuery.getData());
                 log.info("User '{}' just choose '{}'", user, choose.getText());
                 if (closeOnChoose) {

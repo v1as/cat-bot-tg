@@ -6,7 +6,6 @@ import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT1;
 import lombok.RequiredArgsConstructor;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 import ru.v1as.tg.cat.callbacks.phase.poll.ChooseContext;
-import ru.v1as.tg.cat.model.UserData;
 
 @RequiredArgsConstructor
 public class RedStonePhase extends AbstractCuriosCatPhase {
@@ -38,7 +37,6 @@ public class RedStonePhase extends AbstractCuriosCatPhase {
 
     private void resStone(ChooseContext choice) {
 
-        UserData user = data.getUserData(choice.getUser());
         messages(
                 "Вы остановились чтобы разглядеть находку.",
                 "Это оказался затейливый красный камешек " + COLLISION,
@@ -46,7 +44,10 @@ public class RedStonePhase extends AbstractCuriosCatPhase {
 
         message(
                 getPhaseContext().getPublicChat(),
-                "Игрок " + user.getUsernameOrFullName() + " находит красный камень" + COLLISION);
+                "Игрок "
+                        + choice.getUser().getUsernameOrFullName()
+                        + " находит красный камень"
+                        + COLLISION);
 
         messages(
                 "Пока вы разглядывали драгоценность кота и след простыл,"
@@ -57,8 +58,6 @@ public class RedStonePhase extends AbstractCuriosCatPhase {
     }
 
     private void catchCat(ChooseContext choice) {
-
-        UserData user = data.getUserData(choice.getUser());
         messages(
                 "Кот остановился, и внимательно посмотрел на вас, похоже вы его не поняли.",
                 "Любопытный кот подбежал и потёрся о вашу ногу.");

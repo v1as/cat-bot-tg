@@ -2,8 +2,11 @@ package ru.v1as.tg.cat;
 
 import java.io.Serializable;
 import java.util.LinkedList;
+import java.util.List;
 import org.glassfish.jersey.internal.util.Producer;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.updateshandlers.SentCallback;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
@@ -12,6 +15,7 @@ public class TestAbsSender implements UnsafeAbsSender {
 
     protected LinkedList<BotApiMethod<?>> methods = new LinkedList<>();
     protected Producer<? extends Serializable> messageProducer = () -> null;
+    private List<SendDocument> documents = new LinkedList<>();
 
     @SuppressWarnings("unchecked")
     @Override
@@ -34,6 +38,12 @@ public class TestAbsSender implements UnsafeAbsSender {
     @Override
     public void setSender(AbsSender sender) {
         // nothing to do
+    }
+
+    @Override
+    public Message executeUnsafe(SendDocument sendDocument) {
+        documents.add(sendDocument);
+        return (Message) messageProducer.call();
     }
 
     public void setMessageProducer(Producer<? extends Serializable> messageProducer) {

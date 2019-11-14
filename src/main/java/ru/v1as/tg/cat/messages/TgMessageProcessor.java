@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.User;
+import ru.v1as.tg.cat.model.TgChat;
+import ru.v1as.tg.cat.model.TgUser;
 
 @Component
 @Slf4j
@@ -22,7 +22,7 @@ public class TgMessageProcessor {
                         .collect(Collectors.toList());
     }
 
-    public void process(Message message, Chat chat, User user) {
+    public void process(Message message, TgChat chat, TgUser user) {
         for (MessageHandler handler : handlers) {
             try {
                 handler.handle(message, chat, user);

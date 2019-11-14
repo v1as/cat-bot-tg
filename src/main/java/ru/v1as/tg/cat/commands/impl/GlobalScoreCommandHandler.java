@@ -7,10 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Chat;
-import org.telegram.telegrambots.meta.api.objects.User;
 import ru.v1as.tg.cat.commands.CommandHandler;
 import ru.v1as.tg.cat.commands.TgCommandRequest;
+import ru.v1as.tg.cat.model.TgChat;
+import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.model.LongProperty;
 import ru.v1as.tg.cat.model.ScoreData;
 import ru.v1as.tg.cat.tg.UnsafeAbsSender;
@@ -28,7 +28,7 @@ public class GlobalScoreCommandHandler implements CommandHandler {
     }
 
     @Override
-    public void handle(TgCommandRequest command, Chat chat, User user) {
+    public void handle(TgCommandRequest command, TgChat chat, TgUser user) {
         String text =
                 scoreData
                         .getWinnersStream(chat.getId(), getDateAfter())
@@ -50,5 +50,4 @@ public class GlobalScoreCommandHandler implements CommandHandler {
     public LocalDateTime getDateAfter() {
         return null;
     }
-
 }
