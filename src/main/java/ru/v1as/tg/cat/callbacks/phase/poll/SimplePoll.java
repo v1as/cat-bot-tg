@@ -39,14 +39,14 @@ import ru.v1as.tg.cat.callbacks.phase.poll.interceptor.ChoiceAroundInterceptor;
 import ru.v1as.tg.cat.callbacks.phase.poll.interceptor.NoopChoiceAroundInterceptor;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
-import ru.v1as.tg.cat.tg.UnsafeAbsSender;
+import ru.v1as.tg.cat.tg.TgSender;
 
 @Slf4j
 public class SimplePoll {
 
     private static final ScheduledExecutorService EXECUTOR = new ScheduledThreadPoolExecutor(1);
 
-    private UnsafeAbsSender sender;
+    private TgSender sender;
     private TgCallbackProcessor callbackProcessor;
 
     private Long chatId;
@@ -163,7 +163,7 @@ public class SimplePoll {
                             this.close(timeoutConfiguration.removeMsg());
 
                             if (!isEmpty(timeoutConfiguration.message())) {
-                                sender.executeUnsafe(
+                                sender.executeTg(
                                         new SendMessage(chatId, timeoutConfiguration.message()));
                             }
 
@@ -215,14 +215,14 @@ public class SimplePoll {
         if (state.equals(SENT)) {
             state = CLOSED;
             if (shouldRemove) {
-                sender.executeUnsafe(deleteMsg(message));
+                sender.executeTg(deleteMsg(message));
             } else {
                 String newText =
                         closeOnTextBuilder.build(text, choose != null ? choose.getText() : null);
                 if (!Objects.equals(newText, text)) {
-                    sender.executeUnsafe(editMessageText(message, newText));
+                    sender.executeTg(editMessageText(message, newText));
                 } else {
-                    sender.executeUnsafe(clearButtons(message));
+                    sender.executeTg(clearButtons(message));
                 }
             }
         }
@@ -231,7 +231,7 @@ public class SimplePoll {
     public void cancel() {
         if (state.equals(SENT)) {
             state = CANCELED;
-            sender.executeUnsafe(deleteMsg(message));
+            sender.executeTg(deleteMsg(message));
         } else {
             log.error("Can't close poll, illegal state: {}", this);
         }
@@ -262,7 +262,7 @@ public class SimplePoll {
         return this;
     }
 
-    public void setSender(UnsafeAbsSender sender) {
+    public void setSender(TgSender sender) {
         this.sender = sender;
     }
 

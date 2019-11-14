@@ -16,25 +16,25 @@ import ru.v1as.tg.cat.callbacks.phase.poll.interceptor.PhaseContextChoiceAroundI
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.service.clock.BotClock;
-import ru.v1as.tg.cat.tg.UnsafeAbsSender;
+import ru.v1as.tg.cat.tg.TgSender;
 
 @RequiredArgsConstructor
 public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> {
 
     private final Logger log = getLogger(this.getClass());
 
-    @Autowired protected UnsafeAbsSender sender;
+    @Autowired protected TgSender sender;
     @Autowired private TgCallbackProcessor callbackProcessor;
     @Autowired protected BotClock clock;
 
     private final ThreadLocal<T> phaseContext = new ThreadLocal<>();
 
     protected void message(TgUser userData, String text) {
-        sender.executeUnsafe(new SendMessage(userData.getId().longValue(), text));
+        sender.executeTg(new SendMessage(userData.getId().longValue(), text));
     }
 
     protected void editMessageText(Message message, String newText) {
-        sender.executeUnsafe(
+        sender.executeTg(
                 new EditMessageText()
                         .setChatId(message.getChatId())
                         .setMessageId(message.getMessageId())
@@ -67,11 +67,11 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
         PhaseContext phaseContext = this.phaseContext.get();
         Long chatId = phaseContext.getChatId();
         log.info("Sending message '{}' to chat '{}'", text, chatId);
-        sender.executeUnsafe(new SendMessage(chatId, text));
+        sender.executeTg(new SendMessage(chatId, text));
     }
 
     protected void message(TgChat chat, String text) {
-        sender.executeUnsafe(new SendMessage(chat.getId(), text));
+        sender.executeTg(new SendMessage(chat.getId(), text));
     }
 
     public final void open(T phaseContext) {

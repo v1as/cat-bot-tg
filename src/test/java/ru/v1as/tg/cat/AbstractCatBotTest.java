@@ -3,7 +3,6 @@ package ru.v1as.tg.cat;
 import java.util.Collection;
 import org.junit.Assert;
 import ru.v1as.tg.cat.model.CatRequest;
-import ru.v1as.tg.cat.model.ScoreData;
 
 public class AbstractCatBotTest extends AbstractTgBotTest {
 
@@ -14,11 +13,6 @@ public class AbstractCatBotTest extends AbstractTgBotTest {
 
     public CatBot getCatBot() {
         return (CatBot) bot;
-    }
-
-    public ScoreData getCatBotScoreData() {
-        //        return (getCatBot()).getData().getScoreData();
-        return null;
     }
 
     public CatRequest getOnlyOneCatRequest() {

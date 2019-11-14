@@ -4,8 +4,6 @@ import java.time.LocalDateTime;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -22,13 +20,10 @@ import ru.v1as.tg.cat.jpa.entities.user.UserEntity;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
 @NoArgsConstructor
-public abstract class UserEvent {
+public class UserEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     protected Long id;
-
-    @Enumerated(EnumType.STRING)
-    private UserEventType type;
 
     @ManyToOne protected ChatEntity chat;
     @ManyToOne protected UserEntity user;

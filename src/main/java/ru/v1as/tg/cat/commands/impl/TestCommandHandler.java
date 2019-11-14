@@ -10,6 +10,7 @@ import ru.v1as.tg.cat.commands.CommandHandler;
 import ru.v1as.tg.cat.commands.TgCommandRequest;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
+import ru.v1as.tg.cat.tg.TgSender;
 
 @Slf4j
 @Component
@@ -17,6 +18,7 @@ import ru.v1as.tg.cat.model.TgUser;
 public class TestCommandHandler implements CommandHandler {
 
     private final JoinCatFollowPhase testPhase;
+    private final TgSender sender;
 
     @Override
     public String getCommandName() {
@@ -26,6 +28,7 @@ public class TestCommandHandler implements CommandHandler {
     @Override
     public void handle(TgCommandRequest command, TgChat chat, TgUser user) {
         onlyForAdminCheck(user);
+
         testPhase.open(chat);
         log.info("Test phase started...");
     }

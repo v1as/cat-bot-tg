@@ -15,9 +15,9 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.v1as.tg.cat.jpa.dao.ChatDao;
 import ru.v1as.tg.cat.jpa.dao.UserDao;
 import ru.v1as.tg.cat.jpa.entities.chat.ChatEntity;
+import ru.v1as.tg.cat.jpa.entities.user.UserEntity;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
-import ru.v1as.tg.cat.jpa.entities.user.UserEntity;
 
 @Component
 @RequiredArgsConstructor
@@ -78,7 +78,7 @@ public class DatabaseUpdateBeforeHandler implements TgUpdateBeforeHandler {
         } else {
             userToSave = userEntity.update(user);
         }
-        if (chat.isUserChat() && !userEntity.getPrivateChat()) {
+        if (chat.isUserChat() && !userEntity.isPrivateChat()) {
             userToSave = true;
             userEntity.setPrivateChat(true);
         }

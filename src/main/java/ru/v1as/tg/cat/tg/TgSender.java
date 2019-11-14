@@ -6,18 +6,17 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import org.telegram.telegrambots.meta.updateshandlers.SentCallback;
 
-public interface UnsafeAbsSender {
+public interface TgSender {
 
     <T extends Serializable, Method extends BotApiMethod<T>, Callback extends SentCallback<T>>
-            void executeAsyncUnsafe(Method method, Callback callback);
+            void executeTgAsync(Method method, Callback callback);
 
     default <T extends Serializable, Method extends BotApiMethod<T>> void executeAsyncPromise(
             Method method, Consumer<T> success, Consumer<Throwable> error) {
-        executeAsyncUnsafe(
+        executeTgAsync(
                 method,
                 new LogSentCallback<T>() {
                     @Override
@@ -41,10 +40,10 @@ public interface UnsafeAbsSender {
                 });
     }
 
-    <T extends Serializable, Method extends BotApiMethod<T>> T executeUnsafe(Method method);
+    <T extends Serializable, Method extends BotApiMethod<T>> T executeTg(Method method);
 
     void setSender(AbsSender sender);
 
-    Message executeUnsafe(SendDocument sendDocument);
+    Message executeTg(SendDocument sendDocument);
 
 }

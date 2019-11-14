@@ -20,23 +20,24 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.callbacks.TgCallBackHandler;
+import ru.v1as.tg.cat.model.CatRequest;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
-import ru.v1as.tg.cat.model.CatRequest;
-import ru.v1as.tg.cat.model.ScoreData;
-import ru.v1as.tg.cat.tg.UnsafeAbsSender;
+import ru.v1as.tg.cat.service.CatEventService;
+import ru.v1as.tg.cat.tg.TgSender;
 
 @Component
 public class CatRequestVoteHandler implements TgCallBackHandler<CatRequestVote> {
 
     private final CatBotData data;
-    private final UnsafeAbsSender sender;
-    private final ScoreData scoreData;
+    private final TgSender sender;
+    private final CatEventService catEventService;
 
-    public CatRequestVoteHandler(CatBotData data, UnsafeAbsSender sender) {
+    public CatRequestVoteHandler(
+            CatBotData data, TgSender sender, CatEventService catEventService) {
         this.data = data;
         this.sender = sender;
-        this.scoreData = data.getScoreData();
+        this.catEventService = catEventService;
     }
 
     public static InlineKeyboardMarkup getCatePollButtons(CatRequest catRequest) {
@@ -62,24 +63,24 @@ public class CatRequestVoteHandler implements TgCallBackHandler<CatRequestVote> 
     @Override
     public void handle(CatRequestVote vote, TgChat chat, TgUser user, CallbackQuery callbackQuery) {
         Message msg = callbackQuery.getMessage();
-        CatRequest catRequest = data.getChatData(chat.getId()).getCatRequest(msg.getMessageId());
-        if (catRequest == null || vote == null) {
-            sender.executeUnsafe(clearButtons(msg));
+        CatRequest request = data.getChatData(chat.getId()).getCatRequest(msg.getMessageId());
+        if (request == null || vote == null) {
+            sender.executeTg(clearButtons(msg));
             return;
         }
-        RequestAnswerResult voted = catRequest.vote(user, vote);
-        sender.executeUnsafe(getVoteAnswerMsg(callbackQuery, voted));
+        RequestAnswerResult voted = request.vote(user, vote);
+        sender.executeTg(getVoteAnswerMsg(callbackQuery, voted));
         if (FINISHED.equals(voted)) {
-            sender.executeUnsafe(clearButtons(msg));
+            sender.executeTg(clearButtons(msg));
         } else if (CANCELED.equals(voted)) {
-            catRequest.cancel();
-            scoreData.save(catRequest);
-            sender.executeUnsafe(deleteMsg(catRequest.getVoteMessage()));
+            request.cancel();
+            catEventService.poll(chat, user, request.getVoteMessage(), NOT_CAT);
+            sender.executeTg(deleteMsg(request.getVoteMessage()));
         } else {
-            InlineKeyboardMarkup pollButtons = getCatePollButtons(catRequest);
-            if (!catRequest.getPollButtons().equals(pollButtons)) {
-                catRequest.setPollButtons(pollButtons);
-                sender.executeUnsafe(getUpdateButtonsMsg(msg, pollButtons));
+            InlineKeyboardMarkup pollButtons = getCatePollButtons(request);
+            if (!request.getPollButtons().equals(pollButtons)) {
+                request.setPollButtons(pollButtons);
+                sender.executeTg(getUpdateButtonsMsg(msg, pollButtons));
             }
         }
     }

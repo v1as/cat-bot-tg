@@ -22,8 +22,7 @@ import ru.v1as.tg.cat.callbacks.phase.poll.interceptor.PhaseContextChoiceAroundI
 import ru.v1as.tg.cat.callbacks.phase.poll.interceptor.TimeoutPhaseContextChoiceAroundInterceptor;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
-import ru.v1as.tg.cat.model.CatRequest;
-import ru.v1as.tg.cat.model.ScoreData;
+import ru.v1as.tg.cat.service.CatEventService;
 import ru.v1as.tg.cat.service.clock.BotClock;
 
 public abstract class AbstractCuriosCatPhase extends AbstractPhase<CuriosCatContext> {
@@ -34,7 +33,7 @@ public abstract class AbstractCuriosCatPhase extends AbstractPhase<CuriosCatCont
                     .onTimeout(() -> this.catchUpCatAndClose(NOT_CAT));
 
     @Autowired protected CatBotData data;
-    @Autowired protected ScoreData scoreData;
+    @Autowired protected CatEventService catEventService;
     @Autowired protected BotClock botClock;
 
     public CuriosCatContext buildContext(
@@ -104,9 +103,8 @@ public abstract class AbstractCuriosCatPhase extends AbstractPhase<CuriosCatCont
             message = "Любопытный кот сбегает от игрока ";
         }
         message(publicChat, message + user.getUsernameOrFullName());
-        CatRequest catRequest = new CatRequest(ctx.message, user, publicChat);
-        catRequest.finish(result);
-        scoreData.save(catRequest);
+        catEventService.saveCuriosCatQuest(
+                user, publicChat, ctx.message, result, getClass().getSimpleName());
         close();
     }
 

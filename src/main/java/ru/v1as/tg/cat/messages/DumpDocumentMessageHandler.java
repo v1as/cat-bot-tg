@@ -23,14 +23,14 @@ import ru.v1as.tg.cat.jpa.dao.UserDao;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.service.init.DumpService;
-import ru.v1as.tg.cat.tg.UnsafeAbsSender;
+import ru.v1as.tg.cat.tg.TgSender;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class DumpDocumentMessageHandler extends RequestWithTimeoutCommandHandler {
 
-    private final UnsafeAbsSender sender;
+    private final TgSender sender;
     private final DumpService dumpService;
     private final UserDao userDao;
 
@@ -40,7 +40,7 @@ public class DumpDocumentMessageHandler extends RequestWithTimeoutCommandHandler
     protected boolean handleRequest(Message message, TgChat chat, TgUser user) {
         final Document document = message.getDocument();
         if (null == document || !document.getFileName().endsWith(".sql")) {
-            sender.executeUnsafe(
+            sender.executeTg(
                     new SendMessage(
                             chat.getId(), "Пришлите файл, который оканчивается на '.sql'."));
             return false;
@@ -58,7 +58,7 @@ public class DumpDocumentMessageHandler extends RequestWithTimeoutCommandHandler
                 }
             }
         }
-        sender.executeUnsafe(
+        sender.executeTg(
                 new SendMessage(
                         chat.getId(), "Файл загружен. Загружено юзеров " + userDao.count()));
         return true;
@@ -76,7 +76,7 @@ public class DumpDocumentMessageHandler extends RequestWithTimeoutCommandHandler
 
     private InputStream getDumpFileInputStream(Document document) throws IOException {
         final GetFile getFile = new GetFile().setFileId(document.getFileId());
-        URL url = new URL(Const.getUrlFileDocument(sender.executeUnsafe(getFile).getFilePath()));
+        URL url = new URL(Const.getUrlFileDocument(sender.executeTg(getFile).getFilePath()));
         URLConnection connection = url.openConnection();
         return connection.getInputStream();
     }

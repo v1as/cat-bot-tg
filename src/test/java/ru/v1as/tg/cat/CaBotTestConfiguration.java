@@ -1,7 +1,5 @@
 package ru.v1as.tg.cat;
 
-import static org.mockito.Mockito.mock;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -10,10 +8,9 @@ import org.springframework.test.context.ActiveProfiles;
 import ru.v1as.tg.cat.callbacks.TgCallbackProcessor;
 import ru.v1as.tg.cat.commands.TgCommandProcessorByName;
 import ru.v1as.tg.cat.messages.TgMessageProcessor;
-import ru.v1as.tg.cat.model.ScoreData;
 import ru.v1as.tg.cat.service.clock.BotClock;
 import ru.v1as.tg.cat.service.clock.NoopBotClock;
-import ru.v1as.tg.cat.tg.UnsafeAbsSender;
+import ru.v1as.tg.cat.tg.TgSender;
 
 @Configuration
 @ComponentScan({
@@ -28,18 +25,13 @@ public class CaBotTestConfiguration {
 
     @Bean
     @Primary
-    public UnsafeAbsSender unsafeAbsSender() {
+    public TgSender tgSender() {
         return new TestAbsSender();
     }
 
     @Bean
-    public CatBotData getDbData(ScoreData scoreData) {
-        return new CatBotData(scoreData);
-    }
-
-    @Bean
-    public ScoreData getScoreData() {
-        return mock(ScoreData.class);
+    public CatBotData getDbData() {
+        return new CatBotData();
     }
 
     @Bean

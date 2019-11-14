@@ -9,9 +9,9 @@ import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.updateshandlers.SentCallback;
-import ru.v1as.tg.cat.tg.UnsafeAbsSender;
+import ru.v1as.tg.cat.tg.TgSender;
 
-public class TestAbsSender implements UnsafeAbsSender {
+public class TestAbsSender implements TgSender {
 
     protected LinkedList<BotApiMethod<?>> methods = new LinkedList<>();
     protected Producer<? extends Serializable> messageProducer = () -> null;
@@ -23,14 +23,14 @@ public class TestAbsSender implements UnsafeAbsSender {
                     T extends Serializable,
                     Method extends BotApiMethod<T>,
                     Callback extends SentCallback<T>>
-            void executeAsyncUnsafe(Method method, Callback callback) {
+            void executeTgAsync(Method method, Callback callback) {
         methods.add(method);
 
         callback.onResult(method, (T) messageProducer.call());
     }
 
     @Override
-    public <T extends Serializable, Method extends BotApiMethod<T>> T executeUnsafe(Method method) {
+    public <T extends Serializable, Method extends BotApiMethod<T>> T executeTg(Method method) {
         methods.add(method);
         return null;
     }
@@ -41,7 +41,7 @@ public class TestAbsSender implements UnsafeAbsSender {
     }
 
     @Override
-    public Message executeUnsafe(SendDocument sendDocument) {
+    public Message executeTg(SendDocument sendDocument) {
         documents.add(sendDocument);
         return (Message) messageProducer.call();
     }

@@ -1,96 +1,57 @@
 package ru.v1as.tg.cat.model;
 
 import static java.lang.System.lineSeparator;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.summarizingInt;
 import static lombok.AccessLevel.PRIVATE;
 import static org.apache.http.util.TextUtils.isEmpty;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.IntSummaryStatistics;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 
 @Slf4j
-@Component
 @RequiredArgsConstructor
-public class ScoreData {
+public class FileScoreDataReader {
 
     private static final String SPLIT_CHAR = "%";
-    @Getter @Setter private String fileName = "cat_scores.txt";
+    private static final String CAT_SCORES_TXT = "cat_scores.txt";
     private List<ScoreLine> lines = new ArrayList<>();
-    private List<ScoreLine> toSave = new ArrayList<>();
-
-    @Scheduled(fixedDelay = 60_000)
-    @SneakyThrows
-    public void flush() {
-        if (toSave.size() == 0) {
-            return;
-        }
-        synchronized (ScoreData.class) {
-            try (FileOutputStream fos = new FileOutputStream(fileName, true)) {
-                for (ScoreLine line : toSave) {
-                    fos.write(line.toString().getBytes());
-                }
-            }
-            toSave.clear();
-        }
-    }
 
     @SneakyThrows
-    @PostConstruct
     public void init() {
-        File file = new File(fileName);
+        File file = new File(CAT_SCORES_TXT);
         if (file.createNewFile()) {
             log.info("File created: " + file.getAbsolutePath());
         } else {
             log.info("File already exists '{}'", file.getAbsolutePath());
         }
-        synchronized (ScoreData.class) {
-            lines.clear();
-            toSave.clear();
-            Files.lines(Paths.get(fileName))
-                    .filter(s -> !s.isEmpty())
-                    .forEach(
-                            str -> {
-                                try {
-                                    lines.add(new ScoreLine(str));
-                                } catch (Exception ex) {
-                                    log.error("Can't read line: " + str, ex);
-                                }
-                            });
-        }
+        lines.clear();
+        Files.lines(Paths.get(CAT_SCORES_TXT))
+                .filter(s -> !s.isEmpty())
+                .forEach(
+                        str -> {
+                            try {
+                                lines.add(new ScoreLine(str));
+                            } catch (Exception ex) {
+                                log.error("Can't read line: " + str, ex);
+                            }
+                        });
         log.info(
                 "Scored is loaded. {} lines was read. File: '{}'",
                 lines.size(),
                 file.getAbsoluteFile());
-    }
-
-    public void save(CatRequest catRequest) {
-        ScoreLine line = new ScoreLine(catRequest);
-        lines.add(line);
-        toSave.add(line);
     }
 
     public List<ScoreLine> getScore(Long chatId) {
@@ -99,20 +60,6 @@ public class ScoreData {
             stream = stream.filter(l -> Objects.equals(chatId, l.chatId));
         }
         return stream.collect(Collectors.toList());
-    }
-
-    public Stream<LongProperty> getWinnersStream(Long chatId, LocalDateTime after) {
-        Map<String, IntSummaryStatistics> grouped =
-                getScore(chatId).stream()
-                        .filter(line -> line.getDate() != null)
-                        .filter(scoreLine -> after == null || after.isBefore(scoreLine.getDate()))
-                        .collect(
-                                groupingBy(
-                                        ScoreLine::getUserString,
-                                        summarizingInt(ScoreLine::getAmount)));
-        return grouped.entrySet().stream()
-                .sorted(Comparator.comparingLong(e -> -1 * e.getValue().getSum()))
-                .map(e -> new LongProperty(e.getKey(), e.getValue().getSum()));
     }
 
     @FieldDefaults(level = PRIVATE, makeFinal = true)

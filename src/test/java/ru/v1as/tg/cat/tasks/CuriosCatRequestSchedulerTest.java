@@ -18,14 +18,15 @@ import ru.v1as.tg.cat.AbstractCatBotTest;
 import ru.v1as.tg.cat.CaBotTestConfiguration;
 import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.callbacks.phase.impl.JoinCatFollowPhase;
-import ru.v1as.tg.cat.tg.UnsafeAbsSender;
+import ru.v1as.tg.cat.tg.TgSender;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = CaBotTestConfiguration.class)
 public class CuriosCatRequestSchedulerTest extends AbstractCatBotTest {
 
     @Autowired CatBotData catBotData;
-    @Autowired UnsafeAbsSender sender;
+    @Autowired
+    TgSender sender;
     @Autowired JoinCatFollowPhase joinCatPhase;
     CuriosCatRequestScheduler scheduler;
 

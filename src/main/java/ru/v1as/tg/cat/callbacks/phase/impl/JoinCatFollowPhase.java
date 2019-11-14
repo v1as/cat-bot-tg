@@ -15,9 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.EmojiConst;
-import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 import ru.v1as.tg.cat.callbacks.phase.AbstractPhase;
 import ru.v1as.tg.cat.callbacks.phase.PhaseContext;
 import ru.v1as.tg.cat.callbacks.phase.PollTimeoutConfiguration;
@@ -28,10 +26,9 @@ import ru.v1as.tg.cat.callbacks.phase.poll.PollChoice;
 import ru.v1as.tg.cat.callbacks.phase.poll.UpdateWithChoiceTextBuilder;
 import ru.v1as.tg.cat.commands.ArgumentCallbackCommand.CallbackCommandContext;
 import ru.v1as.tg.cat.commands.impl.StartCommand;
-import ru.v1as.tg.cat.model.CatRequest;
-import ru.v1as.tg.cat.model.ScoreData;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
+import ru.v1as.tg.cat.service.CatEventService;
 import ru.v1as.tg.cat.utils.RandomChoice;
 import ru.v1as.tg.cat.utils.RandomNoRepeats;
 
@@ -47,11 +44,10 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
 
     private ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(1);
 
-    private final CatBotData data;
-    private final ScoreData scoreData;
     private final StartCommand startCommand;
     private final List<AbstractCuriosCatPhase> nextPhases;
     private RandomChoice<AbstractCuriosCatPhase> nextPhaseChoice;
+    private final CatEventService catEventService;
 
     @PostConstruct
     public void init() {
@@ -138,11 +134,10 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
     }
 
     private void saveCatRequest(ChooseContext choice) {
-        final Context phaseContext = getPhaseContext();
         final TgUser user = choice.getUser();
-        CatRequest catRequest = new CatRequest(phaseContext.message, user, choice.getChat());
-        catRequest.finish(CatRequestVote.CAT1);
-        scoreData.save(catRequest);
+        final TgChat chat = getPhaseContext().getChat();
+        final Message message = getPhaseContext().message;
+        catEventService.saveCuriosCat(user, chat, message);
     }
 
     public void open(TgChat chat) {
