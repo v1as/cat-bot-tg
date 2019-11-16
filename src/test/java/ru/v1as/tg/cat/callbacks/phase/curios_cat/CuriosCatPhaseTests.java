@@ -9,14 +9,14 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import ru.v1as.tg.cat.AbstractTgBotTest;
+import ru.v1as.tg.cat.TgBotTest;
 import ru.v1as.tg.cat.CaBotTestConfiguration;
 import ru.v1as.tg.cat.callbacks.phase.curios_cat.CuriosCatPhaseTests.CuriosConfigurationTest;
 import ru.v1as.tg.cat.tg.TgSender;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {CaBotTestConfiguration.class, CuriosConfigurationTest.class})
-public class CuriosCatPhaseTests extends AbstractTgBotTest {
+public class CuriosCatPhaseTests extends TgBotTest {
 
     @Autowired List<AbstractCuriosCatPhase> phases;
     @Autowired

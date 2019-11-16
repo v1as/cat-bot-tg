@@ -13,8 +13,6 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChat;
 import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChatMember;
@@ -33,8 +31,8 @@ import ru.v1as.tg.cat.model.FileScoreDataReader.ScoreLine;
 import ru.v1as.tg.cat.tg.TgSender;
 
 @Slf4j
-//@Profile("!test")
-//@Component
+// @Profile("!test")
+// @Component
 @RequiredArgsConstructor
 public class ScoreLineMigrateToDatabase {
     private final UserDao userDao;
@@ -88,7 +86,7 @@ public class ScoreLineMigrateToDatabase {
         Set<Long> toRemoveChatIds = new HashSet<>();
         for (Long chatId : id2Chat.keySet()) {
             try {
-                final Chat chat = sender.executeTg(new GetChat(chatId));
+                final Chat chat = sender.execute(new GetChat(chatId));
                 if (chat.isUserChat()) {
                     log.info("Loaded user chat {}", chat);
                     toRemoveChatIds.add(chatId);
@@ -98,7 +96,7 @@ public class ScoreLineMigrateToDatabase {
                     publicChatEntity.setDescription(chat.getDescription());
                     try {
                         final Integer amount =
-                                sender.executeTg(new GetChatMembersCount().setChatId(chatId));
+                                sender.execute(new GetChatMembersCount().setChatId(chatId));
                         publicChatEntity.setMembersAmount(amount);
                     } catch (Exception e) {
                         log.error(
@@ -123,7 +121,7 @@ public class ScoreLineMigrateToDatabase {
             for (ChatEntity chat : id2Chat.values()) {
                 try {
                     final ChatMember chatMember =
-                            sender.executeTg(
+                            sender.execute(
                                     new GetChatMember()
                                             .setUserId(userEntity.getId())
                                             .setChatId(chat.getId()));

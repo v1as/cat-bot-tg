@@ -18,7 +18,7 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 @Configuration
 public class TgCatApplication implements ApplicationListener<ApplicationStartedEvent> {
 
-    @Autowired private CatBot catBot;
+    @Autowired private TgBot tgBot;
 
     public static void main(String[] args) {
         ApiContextInitializer.init();
@@ -29,7 +29,7 @@ public class TgCatApplication implements ApplicationListener<ApplicationStartedE
     @SneakyThrows
     public void onApplicationEvent(ApplicationStartedEvent event) {
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
-        telegramBotsApi.registerBot(catBot);
+        telegramBotsApi.registerBot(tgBot);
         log.info("Bot registered!");
     }
 }

@@ -33,7 +33,7 @@ public class CatRequestMessageCreator implements MessageHandler {
         CatRequest catRequest = new CatRequest(user, msgId, chat.getId());
         catRequest.setIsReal(true);
         log.info("Cat poll registered for user '{}' with message {}", user, msgId);
-        sender.executeTgAsync(
+        sender.executeAsync(
                 buildIsThatCatMessage(msg, chat, catRequest),
                 new IsCatPollCallback(chatData, catRequest));
     }

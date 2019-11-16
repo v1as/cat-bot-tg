@@ -9,5 +9,4 @@ public class NoopChoiceAroundInterceptor implements ChoiceAroundInterceptor {
     public void around(ChooseContext ctx, Consumer<ChooseContext> method) {
         method.accept(ctx);
     }
-
 }

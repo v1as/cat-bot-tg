@@ -22,5 +22,4 @@ public class MonthScoreCommandHandler extends GlobalScoreCommandHandler {
     protected String getMessagePrefix() {
         return "Начиная с " + getDateAfter().toLocalDate() + ":\n\n";
     }
-
 }

@@ -2,7 +2,7 @@ package ru.v1as.tg.cat.callbacks.phase.poll;
 
 import static ru.v1as.tg.cat.EmojiConst.SMALL_ORANGE_DIAMOND;
 
-import ru.v1as.tg.cat.Const;
+import ru.v1as.tg.cat.service.Const;
 
 public class UpdateWithChoiceTextBuilder implements CloseOnTextBuilder {
 

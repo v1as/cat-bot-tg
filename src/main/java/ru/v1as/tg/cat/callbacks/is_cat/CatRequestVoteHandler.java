@@ -68,26 +68,26 @@ public class CatRequestVoteHandler implements TgCallBackHandler<CatRequestVote> 
         final Integer msgId = msg.getMessageId();
         CatRequest req = data.getChatData(chat).getCatRequest(msgId);
         if (req == null || vote == null) {
-            sender.executeTg(clearButtons(msg));
+            sender.execute(clearButtons(msg));
             return;
         }
         RequestAnswerResult voted = req.vote(user, vote);
         log.info("User '{}' just voted: {} for request {}", user, vote, msgId);
-        sender.executeTg(getVoteAnswerMsg(callbackQuery, voted));
+        sender.execute(getVoteAnswerMsg(callbackQuery, voted));
         if (FINISHED.equals(voted)) {
-            sender.executeTg(clearButtons(msg));
+            sender.execute(clearButtons(msg));
         } else if (CANCELED.equals(voted)) {
             req.cancel();
             log.info("Request for user '{}' is canceled.", user.getUsernameOrFullName());
             final Integer messageId = req.getMessageId();
             final Long chatId = req.getChatId();
             catEventService.poll(NOT_CAT, messageId, chatId, user.getId());
-            sender.executeTg(new DeleteMessage(chatId, messageId));
+            sender.execute(new DeleteMessage(chatId, messageId));
         } else {
             InlineKeyboardMarkup pollButtons = getCatePollButtons(req);
             if (!req.getPollButtons().equals(pollButtons)) {
                 req.setPollButtons(pollButtons);
-                sender.executeTg(getUpdateButtonsMsg(msg, pollButtons));
+                sender.execute(getUpdateButtonsMsg(msg, pollButtons));
             }
         }
     }

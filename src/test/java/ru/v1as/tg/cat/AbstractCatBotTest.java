@@ -4,7 +4,7 @@ import java.util.Collection;
 import org.junit.Assert;
 import ru.v1as.tg.cat.model.CatRequest;
 
-public class AbstractCatBotTest extends AbstractTgBotTest {
+public class AbstractCatBotTest extends TgBotTest {
 
     public CatBotData getCatBotData() {
         return catBotData;

@@ -163,7 +163,7 @@ public class SimplePoll {
                             this.close(timeoutConfiguration.removeMsg());
 
                             if (!isEmpty(timeoutConfiguration.message())) {
-                                sender.executeTg(
+                                sender.execute(
                                         new SendMessage(chatId, timeoutConfiguration.message()));
                             }
 
@@ -215,14 +215,14 @@ public class SimplePoll {
         if (state.equals(SENT)) {
             state = CLOSED;
             if (shouldRemove) {
-                sender.executeTg(deleteMsg(message));
+                sender.execute(deleteMsg(message));
             } else {
                 String newText =
                         closeOnTextBuilder.build(text, choose != null ? choose.getText() : null);
                 if (!Objects.equals(newText, text)) {
-                    sender.executeTg(editMessageText(message, newText));
+                    sender.execute(editMessageText(message, newText));
                 } else {
-                    sender.executeTg(clearButtons(message));
+                    sender.execute(clearButtons(message));
                 }
             }
         }
@@ -231,7 +231,7 @@ public class SimplePoll {
     public void cancel() {
         if (state.equals(SENT)) {
             state = CANCELED;
-            sender.executeTg(deleteMsg(message));
+            sender.execute(deleteMsg(message));
         } else {
             log.error("Can't close poll, illegal state: {}", this);
         }

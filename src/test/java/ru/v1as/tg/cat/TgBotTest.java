@@ -25,16 +25,15 @@ import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
-import org.telegram.telegrambots.meta.bots.AbsSender;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgChatWrapper;
 import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.service.CatEventService;
 
-public class AbstractTgBotTest {
+public class TgBotTest {
 
     @Autowired protected TestAbsSender sender;
-    @Autowired protected AbstractTgBot bot;
+    @Autowired protected TgBot bot;
     @Autowired protected CatBotData catBotData;
     @Autowired protected CatEventService catEventService;
 
@@ -48,8 +47,6 @@ public class AbstractTgBotTest {
         sender.setMessageProducer(() -> getMessage(++lastMsgId));
         lastMsgId = 0;
         lastCallbackQueryId = 0;
-        AbsSender sender = mock(AbsSender.class);
-        bot.setSender(sender);
         clearMethodsQueue();
     }
 

@@ -18,7 +18,7 @@ import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Document;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import ru.v1as.tg.cat.Const;
+import ru.v1as.tg.cat.service.Const;
 import ru.v1as.tg.cat.jpa.dao.UserDao;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
@@ -40,7 +40,7 @@ public class DumpDocumentMessageHandler extends RequestWithTimeoutCommandHandler
     protected boolean handleRequest(Message message, TgChat chat, TgUser user) {
         final Document document = message.getDocument();
         if (null == document || !document.getFileName().endsWith(".sql")) {
-            sender.executeTg(
+            sender.execute(
                     new SendMessage(
                             chat.getId(), "Пришлите файл, который оканчивается на '.sql'."));
             return false;
@@ -58,7 +58,7 @@ public class DumpDocumentMessageHandler extends RequestWithTimeoutCommandHandler
                 }
             }
         }
-        sender.executeTg(
+        sender.execute(
                 new SendMessage(
                         chat.getId(), "Файл загружен. Загружено юзеров " + userDao.count()));
         return true;
@@ -76,7 +76,7 @@ public class DumpDocumentMessageHandler extends RequestWithTimeoutCommandHandler
 
     private InputStream getDumpFileInputStream(Document document) throws IOException {
         final GetFile getFile = new GetFile().setFileId(document.getFileId());
-        URL url = new URL(Const.getUrlFileDocument(sender.executeTg(getFile).getFilePath()));
+        URL url = new URL(Const.getUrlFileDocument(sender.execute(getFile).getFilePath()));
         URLConnection connection = url.openConnection();
         return connection.getInputStream();
     }

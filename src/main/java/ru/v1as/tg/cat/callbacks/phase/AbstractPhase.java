@@ -30,11 +30,11 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
     private final ThreadLocal<T> phaseContext = new ThreadLocal<>();
 
     protected void message(TgUser userData, String text) {
-        sender.executeTg(new SendMessage(userData.getId().longValue(), text));
+        sender.execute(new SendMessage(userData.getId().longValue(), text));
     }
 
     protected void editMessageText(Message message, String newText) {
-        sender.executeTg(
+        sender.execute(
                 new EditMessageText()
                         .setChatId(message.getChatId())
                         .setMessageId(message.getMessageId())
@@ -67,11 +67,11 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
         PhaseContext phaseContext = this.phaseContext.get();
         Long chatId = phaseContext.getChatId();
         log.info("Sending message '{}' to chat '{}'", text, chatId);
-        sender.executeTg(new SendMessage(chatId, text));
+        sender.execute(new SendMessage(chatId, text));
     }
 
     protected void message(TgChat chat, String text) {
-        sender.executeTg(new SendMessage(chat.getId(), text));
+        sender.execute(new SendMessage(chat.getId(), text));
     }
 
     public final void open(T phaseContext) {

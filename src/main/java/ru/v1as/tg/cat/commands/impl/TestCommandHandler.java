@@ -1,6 +1,6 @@
 package ru.v1as.tg.cat.commands.impl;
 
-import static ru.v1as.tg.cat.Const.onlyForAdminCheck;
+import static ru.v1as.tg.cat.service.Const.onlyForAdminCheck;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

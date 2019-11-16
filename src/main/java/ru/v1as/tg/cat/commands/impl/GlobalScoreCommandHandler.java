@@ -37,9 +37,9 @@ public class GlobalScoreCommandHandler implements CommandHandler {
                         .collect(joining("\n"));
         SendMessage message = new SendMessage().setChatId(chat.getId());
         if (text.length() > 0) {
-            sender.executeTg(message.setText(getMessagePrefix() + text));
+            sender.execute(message.setText(getMessagePrefix() + text));
         } else {
-            sender.executeTg(message.setText("Пока что тут пусто"));
+            sender.execute(message.setText("Пока что тут пусто"));
             log.info("No score data to send");
         }
     }

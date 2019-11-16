@@ -16,7 +16,7 @@ public class StartCommand extends ArgumentCallbackCommand {
     }
 
     private static Consumer<CallbackCommandContext> getDefaultBehaviour(TgSender sender) {
-        return ctx -> sender.executeTg(new SendMessage(ctx.getChat().getId(), "Приветствую!"));
+        return ctx -> sender.execute(new SendMessage(ctx.getChat().getId(), "Приветствую!"));
     }
 
     @Override
