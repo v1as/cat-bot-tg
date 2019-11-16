@@ -43,14 +43,14 @@ public class RequestsChecker {
                 data.getChats().stream()
                         .flatMap(c -> c.getNotFinishedCatRequests().stream())
                         .toArray(CatRequest[]::new);
-        for (CatRequest request : catRequests) {
+        for (CatRequest req : catRequests) {
             Map<CatRequestVote, Long> votes =
-                    request.getVotes().entrySet().stream()
+                    req.getVotes().entrySet().stream()
                             .collect(groupingBy(Entry::getValue, counting()));
             Optional<CatRequestVote> voteValue = Optional.empty();
             if (votes.size() == 1 && votes.values().iterator().next() >= 3L) {
                 voteValue = Optional.of(votes.keySet().iterator().next());
-            } else if (request.getAge().toHours() > 4 && votes.size() > 0) {
+            } else if (req.getAge().toHours() > 4 && votes.size() > 0) {
                 Long maxVotes = votes.values().stream().max(Long::compareTo).get();
                 voteValue =
                         votes.entrySet().stream()
@@ -60,14 +60,20 @@ public class RequestsChecker {
             }
             if (voteValue.isPresent()) {
                 CatRequestVote vote = voteValue.get();
-                request.finish(vote);
-                Message message = request.getVoteMessage();
+                req.finish(vote);
+                log.info(
+                        "Request for user '{}' is finished with result '{}'.",
+                        req.getOwner(),
+                        vote);
                 catService.poll(
-                        request.getChat(), request.getOwner(), message, request.getResult());
+                        req.getResult(),
+                        req.getMessageId(),
+                        req.getChatId(),
+                        req.getOwner().getId());
                 sender.executeTg(
                         new EditMessageText()
-                                .setChatId(message.getChatId())
-                                .setMessageId(message.getMessageId())
+                                .setChatId(req.getChatId())
+                                .setMessageId(req.getMessageId())
                                 .setText(vote.getAmount() + "x" + CAT));
             }
         }

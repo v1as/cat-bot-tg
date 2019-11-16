@@ -29,11 +29,15 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgChatWrapper;
 import ru.v1as.tg.cat.model.TgUser;
+import ru.v1as.tg.cat.service.CatEventService;
 
 public class AbstractTgBotTest {
 
     @Autowired protected TestAbsSender sender;
     @Autowired protected AbstractTgBot bot;
+    @Autowired protected CatBotData catBotData;
+    @Autowired protected CatEventService catEventService;
+
     protected Integer lastMsgId = 0;
     protected Integer lastCallbackQueryId = 0;
 
@@ -97,6 +101,13 @@ public class AbstractTgBotTest {
         Chat chat = getChat();
         when(message.getChat()).thenReturn(chat);
         return message;
+    }
+
+    protected Message sendTextMessage(String text) {
+        Update update = getMessageUpdate();
+        when(update.getMessage().getText()).thenReturn(text);
+        bot.onUpdateReceived(update);
+        return update.getMessage();
     }
 
     protected Message sendPhotoMessage() {

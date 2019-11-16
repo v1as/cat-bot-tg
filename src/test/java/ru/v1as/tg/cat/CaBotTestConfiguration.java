@@ -3,10 +3,14 @@ package ru.v1as.tg.cat;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.ActiveProfiles;
 import ru.v1as.tg.cat.callbacks.TgCallbackProcessor;
 import ru.v1as.tg.cat.commands.TgCommandProcessorByName;
+import ru.v1as.tg.cat.config.JpaConfiguration;
+import ru.v1as.tg.cat.jpa.dao.ChatDao;
+import ru.v1as.tg.cat.jpa.dao.UserDao;
 import ru.v1as.tg.cat.messages.TgMessageProcessor;
 import ru.v1as.tg.cat.service.clock.BotClock;
 import ru.v1as.tg.cat.service.clock.NoopBotClock;
@@ -21,6 +25,7 @@ import ru.v1as.tg.cat.tg.TgSender;
     "ru.v1as.tg.cat.callbacks.phase",
 })
 @ActiveProfiles("test")
+@Import(JpaConfiguration.class)
 public class CaBotTestConfiguration {
 
     @Bean
@@ -36,16 +41,23 @@ public class CaBotTestConfiguration {
 
     @Bean
     public CatBot getCatBot(
-            CatBotData catBotData,
+            TgUpdateBeforeHandler updateBeforeHandler,
             TgCallbackProcessor callbackProcessor,
             TgCommandProcessorByName commandProcessor,
             TgMessageProcessor messageProcessor) {
-        return new CatBot(catBotData, callbackProcessor, commandProcessor, messageProcessor);
+        return new CatBot(
+                updateBeforeHandler, callbackProcessor, commandProcessor, messageProcessor);
     }
 
     @Bean
     @Primary
     public BotClock getClock() {
         return new NoopBotClock();
+    }
+
+    @Bean
+    public DatabaseUpdateBeforeHandler getDatabaseUpdateBeforeHandler(
+            UserDao userDao, ChatDao chatDao) {
+        return new DatabaseUpdateBeforeHandler(userDao, chatDao);
     }
 }

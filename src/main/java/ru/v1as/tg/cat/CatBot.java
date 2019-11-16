@@ -2,7 +2,6 @@ package ru.v1as.tg.cat;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -25,8 +24,7 @@ class CatBot extends AbstractTgBot {
     private final TgMessageProcessor messageProcessor;
 
     public CatBot(
-            @Lazy @Qualifier("databaseUpdateBeforeHandler")
-                    TgUpdateBeforeHandler updateBeforeHandler,
+            @Lazy TgUpdateBeforeHandler updateBeforeHandler,
             @Lazy TgCallbackProcessor callbackProcessor,
             @Lazy TgCommandProcessor commandProcessor,
             @Lazy TgMessageProcessor messageProcessor) {

@@ -25,8 +25,7 @@ import ru.v1as.tg.cat.tg.TgSender;
 public class CuriosCatRequestSchedulerTest extends AbstractCatBotTest {
 
     @Autowired CatBotData catBotData;
-    @Autowired
-    TgSender sender;
+    @Autowired TgSender sender;
     @Autowired JoinCatFollowPhase joinCatPhase;
     CuriosCatRequestScheduler scheduler;
 
@@ -34,8 +33,7 @@ public class CuriosCatRequestSchedulerTest extends AbstractCatBotTest {
     public void init() {
         scheduler = new CuriosCatRequestScheduler(catBotData, joinCatPhase);
         scheduler.init();
-
-        getCatBotData().register(getMessageUpdate());
+        sendTextMessage("init");
     }
 
     @Test

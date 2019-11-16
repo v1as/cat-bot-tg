@@ -13,12 +13,11 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 public class TgCommandRequestTest {
     @Test
     public void parseSimpleCommand() {
-        assertEquals(
-                new TgCommandRequest(null, "command1", null, emptyList()),
-                parse(getMessage("/command1")));
+        Message msg = getMessage("/command1");
+        assertEquals(new TgCommandRequest(msg, "command1", null, emptyList()), parse(msg));
 
-        assertEquals(
-                new TgCommandRequest(null, "c_2", null, emptyList()), parse(getMessage("/c_2")));
+        msg = getMessage("/c_2");
+        assertEquals(new TgCommandRequest(msg, "c_2", null, emptyList()), parse(msg));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -28,16 +27,14 @@ public class TgCommandRequestTest {
 
     @Test
     public void parseCommandWithBotName() {
-        assertEquals(
-                new TgCommandRequest(null, "command", "name", emptyList()),
-                parse(getMessage("/command@name")));
+        final Message msg = getMessage("/command@name");
+        assertEquals(new TgCommandRequest(msg, "command", "name", emptyList()), parse(msg));
     }
 
     @Test
     public void parseCommandWithArgs() {
-        assertEquals(
-                new TgCommandRequest(null, "command", null, of("1", "2", "3")),
-                parse(getMessage("/command 1 2 3")));
+        final Message msg = getMessage("/command 1 2 3");
+        assertEquals(new TgCommandRequest(msg, "command", null, of("1", "2", "3")), parse(msg));
     }
 
     public Message getMessage(String text) {

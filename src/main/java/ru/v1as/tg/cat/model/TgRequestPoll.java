@@ -5,18 +5,17 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
 @Getter
 @RequiredArgsConstructor
 public class TgRequestPoll<T> {
 
-    protected final TgChat chat;
+    protected final Long chatId;
     protected final LocalDateTime created = LocalDateTime.now();
-    boolean finished = false;
-    boolean canceled = false;
+    protected Integer messageId;
+    protected boolean finished = false;
+    protected boolean canceled = false;
     protected T result;
-    protected Message voteMessage;
 
     public void cancel() {
         if (finished) {
@@ -34,15 +33,19 @@ public class TgRequestPoll<T> {
         this.result = result;
     }
 
-    public void setVoteMessage(Message voteMessage) {
-        if (this.voteMessage != null) {
+    public void setMessageId(Integer messageId) {
+        if (this.messageId != null) {
             throw new IllegalStateException("Vote message is already set");
         }
-        this.voteMessage = voteMessage;
+        this.messageId = messageId;
     }
 
-    public Message getVoteMessage() {
-        return voteMessage;
+    public Integer getMessageId() {
+        return messageId;
+    }
+
+    public Long getChatId() {
+        return chatId;
     }
 
     public Duration getAge() {
@@ -62,13 +65,13 @@ public class TgRequestPoll<T> {
             return false;
         }
         TgRequestPoll<?> that = (TgRequestPoll<?>) o;
-        return Objects.equals(chat, that.chat)
+        return Objects.equals(chatId, that.chatId)
                 && Objects.equals(created, that.created)
-                && Objects.equals(voteMessage, that.voteMessage);
+                && Objects.equals(messageId, that.messageId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(chat, created, voteMessage);
+        return Objects.hash(chatId, created, messageId);
     }
 }

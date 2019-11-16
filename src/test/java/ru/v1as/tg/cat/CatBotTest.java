@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 import ru.v1as.tg.cat.model.CatRequest;
+import ru.v1as.tg.cat.tasks.RequestsChecker;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = CaBotTestConfiguration.class)
@@ -66,13 +67,12 @@ public class CatBotTest extends AbstractCatBotTest {
         assertTrue(catRequest.getVotes().values().stream().allMatch(CAT1::equals));
 
         assertFalse(catRequest.isFinished());
-//        new RequestsChecker(sender, getCatBotData(), getCatBotScoreData()).run();
-//        assertTrue(catRequest.isFinished());
-//        popEditMessageText("1x" + EmojiConst.CAT);
+        new RequestsChecker(sender, getCatBotData(), catEventService).run();
+        assertTrue(catRequest.isFinished());
+        popEditMessageText("1x" + EmojiConst.CAT);
     }
 
-
     private CatRequest getCatRequest() {
-        return new CatRequest(getMessageUpdate().getMessage(), getTgUser(), getTgChat());
+        return new CatRequest(getTgUser(), getMessageUpdate().getMessage().getMessageId(), getTgChat().getId());
     }
 }

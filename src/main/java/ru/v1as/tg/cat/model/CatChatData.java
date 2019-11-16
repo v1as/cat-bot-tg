@@ -35,8 +35,8 @@ public class CatChatData extends ChatData {
         return msgIdToCatRequests.values();
     }
 
-    public void registerCuriosCatRequest(CuriosCatRequest request, Integer messageId) {
-        msgIdToCuriosRequest.put(messageId, request);
+    public void registerCuriosCatRequest(CuriosCatRequest request) {
+        msgIdToCuriosRequest.put(request.getMessageId(), request);
     }
 
     public CuriosCatRequest getCuriosCatRequest(Integer msgId) {

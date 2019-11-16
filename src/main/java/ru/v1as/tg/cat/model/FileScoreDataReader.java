@@ -75,13 +75,13 @@ public class FileScoreDataReader {
         Boolean isReal;
 
         ScoreLine(CatRequest request) {
-            this.id = request.getSourceMessage().getMessageId();
+            this.id = request.getSrcMsgId();
             this.userId = request.getOwner().getId();
             this.fullName = request.getOwner().getFullName();
             this.userName = request.getOwner().getUserName();
             this.result = request.getResult();
             this.date = request.getCreated();
-            this.chatId = request.getChat().getId();
+            this.chatId = request.getChatId();
             this.isReal = request.getIsReal();
         }
 

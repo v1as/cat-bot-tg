@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChat;
@@ -32,7 +33,8 @@ import ru.v1as.tg.cat.model.FileScoreDataReader.ScoreLine;
 import ru.v1as.tg.cat.tg.TgSender;
 
 @Slf4j
-@Component
+//@Profile("!test")
+//@Component
 @RequiredArgsConstructor
 public class ScoreLineMigrateToDatabase {
     private final UserDao userDao;

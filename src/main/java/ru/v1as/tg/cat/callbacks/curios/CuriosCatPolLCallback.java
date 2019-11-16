@@ -14,8 +14,8 @@ public class CuriosCatPolLCallback extends LogSentCallback<Message> {
     private final CuriosCatRequest request;
 
     @Override
-    public void onResult(BotApiMethod<Message> method, Message response) {
-        request.setVoteMessage(response);
-        data.registerCuriosCatRequest(request, response.getMessageId());
+    public void onResult(BotApiMethod<Message> method, Message resp) {
+        request.setMessageId(resp.getMessageId());
+        data.registerCuriosCatRequest(request);
     }
 }
