@@ -1,38 +1,29 @@
 package ru.v1as.tg.cat.model;
 
-import static lombok.AccessLevel.PRIVATE;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 import ru.v1as.tg.cat.callbacks.is_cat.RequestAnswerResult;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-@FieldDefaults(level = PRIVATE)
 @Slf4j
+@EqualsAndHashCode(callSuper = true)
 public class CatRequest extends TgRequestPoll<CatRequestVote> {
 
-    final Message sourceMessage;
-    final TgUser owner;
-    final Map<TgUser, CatRequestVote> votes = new ConcurrentHashMap<>();
-    Boolean isReal = false;
-    InlineKeyboardMarkup pollButtons;
+    private final Integer srcMsgId;
+    private final TgUser owner;
+    private final Map<TgUser, CatRequestVote> votes = new ConcurrentHashMap<>();
+    private Boolean isReal = false;
+    private InlineKeyboardMarkup pollButtons;
 
-    public CatRequest(Message sourceMessage, TgUser owner, TgChat chat) {
-        super(chat);
-        this.sourceMessage = sourceMessage;
+    public CatRequest(TgUser owner, Integer srcMsgId, Long chatId) {
+        super(chatId);
+        this.srcMsgId = srcMsgId;
         this.owner = owner;
-        log.info(
-                "Cat poll registered for user '{}' with message {}",
-                owner,
-                sourceMessage.getMessageId());
     }
 
     public RequestAnswerResult vote(TgUser user, CatRequestVote vote) {
@@ -43,11 +34,6 @@ public class CatRequest extends TgRequestPoll<CatRequestVote> {
         if (userId.equals(owner.getId()) && vote.equals(CatRequestVote.NOT_CAT)) {
             return RequestAnswerResult.CANCELED;
         }
-        log.info(
-                "User '{}' just voted: {} for request {}",
-                user,
-                vote,
-                sourceMessage.getMessageId());
         CatRequestVote prevVote = votes.get(user);
         if (owner.getId().equals(userId)) {
             return RequestAnswerResult.FORBIDDEN;
@@ -67,12 +53,10 @@ public class CatRequest extends TgRequestPoll<CatRequestVote> {
 
     public void cancel() {
         super.cancel();
-        log.info("Request for user '{}' is canceled.", owner);
         this.result = CatRequestVote.NOT_CAT;
     }
 
     public void finish(CatRequestVote result) {
         super.finish(result);
-        log.info("Request for user '{}' is finished: {}", owner, result);
     }
 }

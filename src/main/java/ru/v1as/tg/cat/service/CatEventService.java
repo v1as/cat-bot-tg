@@ -27,8 +27,8 @@ public class CatEventService {
     private final UserDao userDao;
     private final ChatDao chatDao;
 
-    public void saveCuriosCat(TgUser user, TgChat chat, Message voteMessage) {
-        final CatUserEvent event = buildCatEvent(chat, user, voteMessage);
+    public void saveCuriosCat(TgUser user, TgChat chat, Integer messageId) {
+        final CatUserEvent event = buildCatEvent(messageId, chat.getId(), user.getId());
         event.setCatType(CURIOS_CAT);
         event.setResult(CAT1);
         catUserEventDao.save(event);
@@ -36,27 +36,28 @@ public class CatEventService {
 
     public void saveCuriosCatQuest(
             TgUser user, TgChat chat, Message voteMessage, CatRequestVote result, String quest) {
-        final CatUserEvent event = buildCatEvent(chat, user, voteMessage);
+        final CatUserEvent event =
+                buildCatEvent(voteMessage.getMessageId(), chat.getId(), user.getId());
         event.setCatType(CURIOS_CAT);
         event.setResult(result);
         event.setQuestName(quest);
         catUserEventDao.save(event);
     }
 
-    public void poll(TgChat chat, TgUser user, Message voteMessage, CatRequestVote vote) {
-        final CatUserEvent event = buildCatEvent(chat, user, voteMessage);
+    public void poll(CatRequestVote vote, Integer messageId, Long chatId, Integer userId) {
+        final CatUserEvent event = buildCatEvent(messageId, chatId, userId);
         event.setCatType(REAL);
         event.setResult(vote);
         catUserEventDao.save(event);
     }
 
-    private CatUserEvent buildCatEvent(TgChat chat, TgUser user, Message voteMessage) {
-        final UserEntity userEntity = userDao.getOne(user.getId());
-        final ChatEntity chatEntity = chatDao.getOne(chat.getId());
+    private CatUserEvent buildCatEvent(Integer messageId, Long chatId, Integer userId) {
+        final UserEntity userEntity = userDao.getOne(userId);
+        final ChatEntity chatEntity = chatDao.getOne(chatId);
         final CatUserEvent event = new CatUserEvent();
         event.setChat(chatEntity);
         event.setUser(userEntity);
-        event.setMessageId(voteMessage.getMessageId());
+        event.setMessageId(messageId);
         return event;
     }
 }

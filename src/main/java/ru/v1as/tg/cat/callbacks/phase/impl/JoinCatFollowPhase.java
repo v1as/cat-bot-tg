@@ -137,7 +137,7 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
         final TgUser user = choice.getUser();
         final TgChat chat = getPhaseContext().getChat();
         final Message message = getPhaseContext().message;
-        catEventService.saveCuriosCat(user, chat, message);
+        catEventService.saveCuriosCat(user, chat, message.getMessageId());
     }
 
     public void open(TgChat chat) {

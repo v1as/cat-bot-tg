@@ -15,7 +15,7 @@ public class IsCatPollCallback extends LogSentCallback<Message> {
 
     @Override
     public void onResult(BotApiMethod<Message> method, Message response) {
-        request.setVoteMessage(response);
+        request.setMessageId(response.getMessageId());
         data.registerCatRequest(request, response.getMessageId());
     }
 }

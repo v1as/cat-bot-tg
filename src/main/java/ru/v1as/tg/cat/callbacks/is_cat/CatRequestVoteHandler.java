@@ -9,12 +9,13 @@ import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.NOT_CAT;
 import static ru.v1as.tg.cat.callbacks.is_cat.RequestAnswerResult.CANCELED;
 import static ru.v1as.tg.cat.callbacks.is_cat.RequestAnswerResult.FINISHED;
 import static ru.v1as.tg.cat.tg.KeyboardUtils.clearButtons;
-import static ru.v1as.tg.cat.tg.KeyboardUtils.deleteMsg;
 import static ru.v1as.tg.cat.tg.KeyboardUtils.getUpdateButtonsMsg;
 import static ru.v1as.tg.cat.tg.KeyboardUtils.inlineKeyboardMarkup;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -26,6 +27,7 @@ import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.service.CatEventService;
 import ru.v1as.tg.cat.tg.TgSender;
 
+@Slf4j
 @Component
 public class CatRequestVoteHandler implements TgCallBackHandler<CatRequestVote> {
 
@@ -63,23 +65,28 @@ public class CatRequestVoteHandler implements TgCallBackHandler<CatRequestVote> 
     @Override
     public void handle(CatRequestVote vote, TgChat chat, TgUser user, CallbackQuery callbackQuery) {
         Message msg = callbackQuery.getMessage();
-        CatRequest request = data.getChatData(chat.getId()).getCatRequest(msg.getMessageId());
-        if (request == null || vote == null) {
+        final Integer msgId = msg.getMessageId();
+        CatRequest req = data.getChatData(chat).getCatRequest(msgId);
+        if (req == null || vote == null) {
             sender.executeTg(clearButtons(msg));
             return;
         }
-        RequestAnswerResult voted = request.vote(user, vote);
+        RequestAnswerResult voted = req.vote(user, vote);
+        log.info("User '{}' just voted: {} for request {}", user, vote, msgId);
         sender.executeTg(getVoteAnswerMsg(callbackQuery, voted));
         if (FINISHED.equals(voted)) {
             sender.executeTg(clearButtons(msg));
         } else if (CANCELED.equals(voted)) {
-            request.cancel();
-            catEventService.poll(chat, user, request.getVoteMessage(), NOT_CAT);
-            sender.executeTg(deleteMsg(request.getVoteMessage()));
+            req.cancel();
+            log.info("Request for user '{}' is canceled.", user.getUsernameOrFullName());
+            final Integer messageId = req.getMessageId();
+            final Long chatId = req.getChatId();
+            catEventService.poll(NOT_CAT, messageId, chatId, user.getId());
+            sender.executeTg(new DeleteMessage(chatId, messageId));
         } else {
-            InlineKeyboardMarkup pollButtons = getCatePollButtons(request);
-            if (!request.getPollButtons().equals(pollButtons)) {
-                request.setPollButtons(pollButtons);
+            InlineKeyboardMarkup pollButtons = getCatePollButtons(req);
+            if (!req.getPollButtons().equals(pollButtons)) {
+                req.setPollButtons(pollButtons);
                 sender.executeTg(getUpdateButtonsMsg(msg, pollButtons));
             }
         }
