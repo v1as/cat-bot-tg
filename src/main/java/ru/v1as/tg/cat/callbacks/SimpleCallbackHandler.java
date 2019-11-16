@@ -18,5 +18,4 @@ public abstract class SimpleCallbackHandler implements TgCallBackHandler<String>
         Preconditions.checkArgument(data.equals(value));
         return data;
     }
-
 }

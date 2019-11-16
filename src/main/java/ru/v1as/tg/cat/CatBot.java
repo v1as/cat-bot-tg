@@ -13,10 +13,11 @@ import ru.v1as.tg.cat.commands.TgCommandRequest;
 import ru.v1as.tg.cat.messages.TgMessageProcessor;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
+import ru.v1as.tg.cat.tg.MainUpdateProcessor;
 
 @Getter
 @Component
-class CatBot extends AbstractTgBot {
+class CatBot extends MainUpdateProcessor {
 
     private final TgUpdateBeforeHandler updateBeforeHandler;
     private final TgCallbackProcessor callbackProcessor;
@@ -53,10 +54,5 @@ class CatBot extends AbstractTgBot {
     @Override
     protected void onUpdateMessage(Message message, TgChat chat, TgUser user) {
         messageProcessor.process(message, chat, user);
-    }
-
-    @Override
-    public String getBotUsername() {
-        return "Котобот";
     }
 }

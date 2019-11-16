@@ -14,6 +14,4 @@ public class TgChatWrapper implements TgChat {
     public static TgChat wrap(Chat chat) {
         return new TgChatWrapper(chat);
     }
-
-
 }

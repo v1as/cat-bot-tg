@@ -40,14 +40,14 @@ public class CuriosCatVoteHandler extends SimpleCallbackHandler {
         CuriosCatRequest request =
                 chatData.getCuriosCatRequest(callbackQuery.getMessage().getMessageId());
         if (request == null) {
-            sender.executeTg(deleteMsg(callbackQuery.getMessage()));
+            sender.execute(deleteMsg(callbackQuery.getMessage()));
             return;
         }
         request.finish(user.getUsernameOrFullName());
         log.info("Request for user '{}' is finished.", user);
         final Integer reqMsgId = request.getMessageId();
-        sender.executeTg(new DeleteMessage(chat.getId(), reqMsgId));
-        sender.executeTg(
+        sender.execute(new DeleteMessage(chat.getId(), reqMsgId));
+        sender.execute(
                 new SendMessage()
                         .setChatId(chat.getId())
                         .setText(

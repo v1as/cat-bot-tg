@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 import ru.v1as.tg.cat.model.CatRequest;
@@ -70,7 +69,7 @@ public class RequestsChecker {
                         req.getMessageId(),
                         req.getChatId(),
                         req.getOwner().getId());
-                sender.executeTg(
+                sender.execute(
                         new EditMessageText()
                                 .setChatId(req.getChatId())
                                 .setMessageId(req.getMessageId())

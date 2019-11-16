@@ -7,7 +7,6 @@ import org.glassfish.jersey.internal.util.Producer;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.updateshandlers.SentCallback;
 import ru.v1as.tg.cat.tg.TgSender;
 
@@ -23,25 +22,19 @@ public class TestAbsSender implements TgSender {
                     T extends Serializable,
                     Method extends BotApiMethod<T>,
                     Callback extends SentCallback<T>>
-            void executeTgAsync(Method method, Callback callback) {
+            void executeAsync(Method method, Callback callback) {
         methods.add(method);
-
         callback.onResult(method, (T) messageProducer.call());
     }
 
     @Override
-    public <T extends Serializable, Method extends BotApiMethod<T>> T executeTg(Method method) {
+    public <T extends Serializable, Method extends BotApiMethod<T>> T execute(Method method) {
         methods.add(method);
         return null;
     }
 
     @Override
-    public void setSender(AbsSender sender) {
-        // nothing to do
-    }
-
-    @Override
-    public Message executeTg(SendDocument sendDocument) {
+    public Message executeDoc(SendDocument sendDocument) {
         documents.add(sendDocument);
         return (Message) messageProducer.call();
     }

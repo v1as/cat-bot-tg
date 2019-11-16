@@ -18,7 +18,7 @@ public class ClearButtonsCallbackHandler implements DefaultTgCallbackHandler {
     @Override
     public void handle(TgChat chat, TgUser user, CallbackQuery callbackQuery) {
         Message msg = callbackQuery.getMessage();
-        sender.executeTg(
+        sender.execute(
                 new EditMessageReplyMarkup()
                         .setMessageId(msg.getMessageId())
                         .setChatId(msg.getChatId()));

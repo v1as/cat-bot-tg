@@ -1,6 +1,6 @@
 package ru.v1as.tg.cat.commands.impl;
 
-import static ru.v1as.tg.cat.Const.onlyForAdminCheck;
+import static ru.v1as.tg.cat.service.Const.onlyForAdminCheck;
 
 import java.io.File;
 import lombok.RequiredArgsConstructor;
@@ -35,12 +35,12 @@ public class SqlDatabaseDumpCommandHandler implements CommandHandler {
             SendDocument document = new SendDocument();
             document.setChatId(chat.getId());
             document.setDocument(dumpFile);
-            sender.executeTg(document);
+            sender.executeDoc(document);
             if (!dumpFile.delete()) {
-                sender.executeTg(new SendMessage(chat.getId(), "Файл не удалось удалить"));
+                sender.execute(new SendMessage(chat.getId(), "Файл не удалось удалить"));
             }
         } else {
-            sender.executeTg(new SendMessage(chat.getId(), "Ошибка создания файла"));
+            sender.execute(new SendMessage(chat.getId(), "Ошибка создания файла"));
         }
     }
 }

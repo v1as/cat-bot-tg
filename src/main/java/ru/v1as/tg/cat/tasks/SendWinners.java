@@ -49,7 +49,7 @@ public class SendWinners {
                 for (String s : result) {
                     text.append(s).append('\n');
                 }
-                sender.executeTg(
+                sender.execute(
                         new SendMessage().setChatId(chat.getChatId()).setText(text.toString()));
                 log.info("Winners data '{}' was sent to chat {}", text, chat);
             } catch (Exception ex) {

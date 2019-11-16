@@ -5,7 +5,7 @@ import static ru.v1as.tg.cat.callbacks.phase.poll.PollChoiceType.LINK;
 import java.util.UUID;
 import java.util.function.Consumer;
 import lombok.Value;
-import ru.v1as.tg.cat.Const;
+import ru.v1as.tg.cat.service.Const;
 
 @Value
 public class PollChoice {
@@ -23,5 +23,4 @@ public class PollChoice {
         return new PollChoice(
                 uuid, LINK, text, String.format(START_URL_FORMAT, Const.getBotName(), uuid), null);
     }
-
 }

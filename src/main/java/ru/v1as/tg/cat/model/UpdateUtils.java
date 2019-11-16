@@ -1,12 +1,8 @@
 package ru.v1as.tg.cat.model;
 
-import static org.apache.http.util.TextUtils.isEmpty;
 import static ru.v1as.tg.cat.model.TgChatWrapper.wrap;
 import static ru.v1as.tg.cat.model.TgUserWrapper.wrap;
 
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.experimental.UtilityClass;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -38,5 +34,4 @@ public class UpdateUtils {
         }
         return from != null ? wrap(from) : null;
     }
-
 }

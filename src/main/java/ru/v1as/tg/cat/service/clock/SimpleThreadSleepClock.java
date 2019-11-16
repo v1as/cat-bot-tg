@@ -13,5 +13,4 @@ public class SimpleThreadSleepClock implements BotClock {
     public void wait(int milliseconds) {
         Thread.sleep(milliseconds);
     }
-
 }

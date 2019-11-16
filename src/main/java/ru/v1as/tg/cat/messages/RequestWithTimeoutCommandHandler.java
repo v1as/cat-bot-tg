@@ -6,9 +6,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.EqualsAndHashCode;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import ru.v1as.tg.cat.messages.TgMessageProcessor.InterruptMessageProcessing;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
-import ru.v1as.tg.cat.messages.TgMessageProcessor.InterruptMessageProcessing;
 
 public abstract class RequestWithTimeoutCommandHandler implements MessageHandler {
 

@@ -1,12 +1,18 @@
-package ru.v1as.tg.cat;
+package ru.v1as.tg.cat.service;
 
 import static org.springframework.util.StringUtils.isEmpty;
 
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import ru.v1as.tg.cat.model.TgUser;
 
+@Slf4j
+@Component
 public class Const {
 
     public static final String LINE = "\n";
@@ -21,25 +27,10 @@ public class Const {
         return botName;
     }
 
-    public static Set<String> getAdminUsername() {
-        if (adminUserNames == null) {
-            throw new IllegalStateException("This variable is not init yet.");
-        }
-        return adminUserNames;
-    }
-
-    public static void setBotName(String botName) {
+    @Value("${tg.bot.username:}")
+    public void setBotName(String botName) {
         if (Const.botName == null) {
             Const.botName = botName;
-        } else {
-            throw new IllegalStateException("This variable is already defined");
-        }
-    }
-
-    public static void setAdminUserName(String admins) {
-        if (Const.adminUserNames == null) {
-            Const.adminUserNames =
-                    Arrays.stream(admins.split("[;,\\s]")).collect(Collectors.toSet());
         } else {
             throw new IllegalStateException("This variable is already defined");
         }
@@ -51,7 +42,17 @@ public class Const {
         }
     }
 
-    public static void setBotToken(String botToken) {
+    public static String getUrlFileDocument(String filePath) {
+        return String.format("https://api.telegram.org/file/bot%s/%s", botToken, filePath);
+    }
+
+    @PostConstruct
+    public void init() {
+        log.info("Initialized");
+    }
+
+    @Value("${tg.bot.token}")
+    public void setBotToken(String botToken) {
         if (Const.botToken == null) {
             Const.botToken = botToken;
         } else {
@@ -59,13 +60,15 @@ public class Const {
         }
     }
 
-    public static String getBotToken() {
-        return botToken;
+    @Value("${tg.bot.admin_username:}")
+    public void setAdminUserName(String admins) {
+        if (Const.adminUserNames == null) {
+            Const.adminUserNames =
+                    Arrays.stream(admins.split("[;,\\s]")).collect(Collectors.toSet());
+        } else {
+            throw new IllegalStateException("This variable is already defined");
+        }
     }
 
     public static class OnlyForAdmins extends RuntimeException {}
-
-    public static String getUrlFileDocument(String filePath) {
-        return String.format("https://api.telegram.org/file/bot%s/%s", botToken, filePath);
-    }
 }

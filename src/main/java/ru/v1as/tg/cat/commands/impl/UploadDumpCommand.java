@@ -1,15 +1,15 @@
 package ru.v1as.tg.cat.commands.impl;
 
-import static ru.v1as.tg.cat.Const.onlyForAdminCheck;
+import static ru.v1as.tg.cat.service.Const.onlyForAdminCheck;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import ru.v1as.tg.cat.commands.CommandHandler;
 import ru.v1as.tg.cat.commands.TgCommandRequest;
+import ru.v1as.tg.cat.messages.DumpDocumentMessageHandler;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
-import ru.v1as.tg.cat.messages.DumpDocumentMessageHandler;
 import ru.v1as.tg.cat.tg.TgSender;
 
 @Component
@@ -30,9 +30,7 @@ public class UploadDumpCommand implements CommandHandler {
         onlyForAdminCheck(user);
         dumpDocumentMessageHandler.addRequest(
                 command.getMessage(),
-                () ->
-                        sender.executeTg(
-                                new SendMessage(chat.getId(), "Не дождался дамп файла.")));
-        sender.executeTg(new SendMessage(chat.getId(), "Теперь пришлите dump.sql файл"));
+                () -> sender.execute(new SendMessage(chat.getId(), "Не дождался дамп файла.")));
+        sender.execute(new SendMessage(chat.getId(), "Теперь пришлите dump.sql файл"));
     }
 }
