@@ -4,5 +4,5 @@ public interface RandomChoice<T> {
 
     T get();
 
-    Integer size();
+    int size();
 }

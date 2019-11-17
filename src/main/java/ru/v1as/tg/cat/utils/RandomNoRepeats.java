@@ -31,7 +31,7 @@ public class RandomNoRepeats<T> implements RandomChoice<T> {
     }
 
     @Override
-    public Integer size() {
+    public int size() {
         return values.size() + oldValues.size();
     }
 }
