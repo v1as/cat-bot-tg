@@ -65,5 +65,9 @@ public abstract class ArgumentCallbackCommand implements CommandHandler {
         TgChat chat;
         TgUser user;
         String argument;
+
+        public Integer getUserId() {
+            return user != null ? user.getId() : null;
+        }
     }
 }

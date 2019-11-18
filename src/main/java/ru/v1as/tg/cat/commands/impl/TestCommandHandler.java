@@ -5,6 +5,7 @@ import static ru.v1as.tg.cat.service.Const.onlyForAdminCheck;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import ru.v1as.tg.cat.callbacks.phase.impl.JoinCatFollowPhase;
 import ru.v1as.tg.cat.commands.CommandHandler;
 import ru.v1as.tg.cat.commands.TgCommandRequest;
@@ -30,6 +31,7 @@ public class TestCommandHandler implements CommandHandler {
         onlyForAdminCheck(user);
 
         testPhase.open(chat);
+        sender.execute(new DeleteMessage(chat.getId(), command.getMessageId()));
         log.info("Test phase started...");
     }
 }
