@@ -5,12 +5,9 @@ import static ru.v1as.tg.cat.utils.RandomUtils.random;
 
 import com.google.common.collect.ImmutableList;
 import java.time.Duration;
-import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -29,8 +26,6 @@ import ru.v1as.tg.cat.commands.impl.StartCommand;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.service.CatEventService;
-import ru.v1as.tg.cat.utils.RandomChoice;
-import ru.v1as.tg.cat.utils.RandomNoRepeats;
 
 @Slf4j
 @Component
@@ -41,25 +36,10 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
             ImmutableList.of(
                     "Прости, но, похоже, тебя опередили.",
                     "Сожалею, но кто-то оказался быстрее тебя.");
-
-    private ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(1);
-
     private final StartCommand startCommand;
-    private final List<AbstractCuriosCatPhase> nextPhases;
-    private RandomChoice<AbstractCuriosCatPhase> nextPhaseChoice;
     private final CatEventService catEventService;
-
-    @PostConstruct
-    public void init() {
-        nextPhaseChoice = new RandomNoRepeats<>(nextPhases);
-        log.info(
-                "Curios cat quests amount: '{}' and values: {}",
-                nextPhases.size(),
-                nextPhases.stream()
-                        .map(Object::getClass)
-                        .map(Class::getSimpleName)
-                        .collect(Collectors.joining("; ", "[", "]")));
-    }
+    private final CuriosCatQuestProducer curiosCatQuestProducer;
+    private ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(1);
 
     @Override
     protected void open() {
@@ -124,7 +104,7 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
     private void goToCat(CallbackCommandContext data) {
         close();
         Context ctx = getPhaseContext();
-        AbstractCuriosCatPhase nextPhase = nextPhaseChoice.get();
+        AbstractCuriosCatPhase nextPhase = curiosCatQuestProducer.get(data.getUserId());
         nextPhase.open(data.getChat(), ctx.getChat(), data.getUser(), ctx.message);
     }
 

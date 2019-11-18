@@ -108,6 +108,10 @@ public abstract class AbstractCuriosCatPhase extends AbstractPhase<CuriosCatCont
         close();
     }
 
+    public String getName() {
+        return getClass().getSimpleName();
+    }
+
     @Getter
     class CuriosCatContext extends PhaseContext {
 

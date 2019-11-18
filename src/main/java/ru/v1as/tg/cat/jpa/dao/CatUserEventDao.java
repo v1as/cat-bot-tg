@@ -8,4 +8,6 @@ import ru.v1as.tg.cat.jpa.entities.events.CatUserEvent;
 public interface CatUserEventDao extends JpaRepository<CatUserEvent, Long> {
 
     List<CatUserEvent> findByChatIdAndDateGreaterThan(Long chatId, LocalDateTime after);
+
+    List<CatUserEvent> findByUserId(Integer userId);
 }

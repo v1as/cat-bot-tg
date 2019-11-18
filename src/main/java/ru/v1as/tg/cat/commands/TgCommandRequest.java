@@ -51,4 +51,8 @@ public class TgCommandRequest {
         checkArgument(index >= 0, "Argument index should be not negative");
         return arguments.size() > index ? arguments.get(index) : null;
     }
+
+    public Integer getMessageId() {
+        return message != null ? message.getMessageId() : null;
+    }
 }
