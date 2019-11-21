@@ -14,6 +14,11 @@ public class MonthScoreCommandHandler extends GlobalScoreCommandHandler {
     }
 
     @Override
+    public String getCommandDescription() {
+        return "Вывести счёт за текущий месяц";
+    }
+
+    @Override
     public LocalDateTime getDateAfter() {
         return LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
     }

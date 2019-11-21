@@ -13,7 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.v1as.tg.cat.jpa.dao.ChatDao;
+import ru.v1as.tg.cat.jpa.dao.ChatDetailsDao;
 import ru.v1as.tg.cat.jpa.dao.UserDao;
+import ru.v1as.tg.cat.jpa.entities.chat.ChatDetailsEntity;
 import ru.v1as.tg.cat.jpa.entities.chat.ChatEntity;
 import ru.v1as.tg.cat.jpa.entities.user.UserEntity;
 import ru.v1as.tg.cat.model.TgChat;
@@ -25,6 +27,7 @@ public class DatabaseUpdateBeforeHandler implements TgUpdateBeforeHandler {
 
     private final UserDao userDao;
     private final ChatDao chatDao;
+    private final ChatDetailsDao chatDetailsDao;
     private Map<Integer, UserEntity> users = emptyMap();
     private Map<Long, ChatEntity> chats = emptyMap();
 
@@ -47,11 +50,14 @@ public class DatabaseUpdateBeforeHandler implements TgUpdateBeforeHandler {
 
     private void updateChatEntity(TgChat chat) {
         ChatEntity chatEntity = chats.get(chat.getId());
+        ChatDetailsEntity chatDetails = null;
         boolean chatToSave;
         if (chatEntity == null) {
             chatEntity =
                     new ChatEntity(
                             chat.getId(), chat.getTitle(), chat.getDescription(), -1, emptyList());
+            chatDetails = new ChatDetailsEntity();
+            chatDetails.setChat(chatEntity);
             // todo update amount
             chatToSave = true;
         } else {
@@ -59,6 +65,9 @@ public class DatabaseUpdateBeforeHandler implements TgUpdateBeforeHandler {
         }
         if (chatToSave) {
             chatDao.save(chatEntity);
+        }
+        if (chatDetails != null) {
+            chatDetailsDao.save(chatDetails);
         }
     }
 

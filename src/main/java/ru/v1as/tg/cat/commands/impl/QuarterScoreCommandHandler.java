@@ -12,6 +12,11 @@ public class QuarterScoreCommandHandler extends GlobalScoreCommandHandler {
     }
 
     @Override
+    public String getCommandDescription() {
+        return "Вывести счёт за текущий квартал";
+    }
+
+    @Override
     public LocalDateTime getDateAfter() {
         LocalDateTime now = LocalDateTime.now();
         int year = now.getYear();

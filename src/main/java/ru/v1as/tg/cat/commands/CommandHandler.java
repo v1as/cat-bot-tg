@@ -8,4 +8,8 @@ public interface CommandHandler {
     String getCommandName();
 
     void handle(TgCommandRequest command, TgChat chat, TgUser user);
+
+    default String getCommandDescription() {
+        return null;
+    }
 }
