@@ -12,6 +12,11 @@ public class SeasonScoreCommandHandler extends GlobalScoreCommandHandler {
     }
 
     @Override
+    public String getCommandDescription() {
+        return "Вывести счёт за текущий сезон (год)";
+    }
+
+    @Override
     public LocalDateTime getDateAfter() {
         int year = LocalDateTime.now().getYear();
         return LocalDateTime.of(year, 1, 1, 0, 0, 0, 0);

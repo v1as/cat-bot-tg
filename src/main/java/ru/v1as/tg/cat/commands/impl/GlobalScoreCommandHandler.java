@@ -24,6 +24,11 @@ public class GlobalScoreCommandHandler implements CommandHandler {
     @Autowired private TgSender sender;
 
     @Override
+    public String getCommandDescription() {
+        return "Вывести счёт за всё время";
+    }
+
+    @Override
     public String getCommandName() {
         return "global_score";
     }

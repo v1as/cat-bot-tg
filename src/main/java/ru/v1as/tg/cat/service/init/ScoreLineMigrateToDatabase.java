@@ -22,7 +22,9 @@ import org.telegram.telegrambots.meta.api.objects.ChatMember;
 import org.telegram.telegrambots.meta.api.objects.User;
 import ru.v1as.tg.cat.jpa.dao.CatUserEventDao;
 import ru.v1as.tg.cat.jpa.dao.ChatDao;
+import ru.v1as.tg.cat.jpa.dao.ChatDetailsDao;
 import ru.v1as.tg.cat.jpa.dao.UserDao;
+import ru.v1as.tg.cat.jpa.entities.chat.ChatDetailsEntity;
 import ru.v1as.tg.cat.jpa.entities.chat.ChatEntity;
 import ru.v1as.tg.cat.jpa.entities.events.CatUserEvent;
 import ru.v1as.tg.cat.jpa.entities.user.UserEntity;
@@ -37,9 +39,10 @@ import ru.v1as.tg.cat.tg.TgSender;
 public class ScoreLineMigrateToDatabase {
     private final UserDao userDao;
     private final ChatDao chatDao;
+    private final ChatDetailsDao chatDetailsDao;
     private final CatUserEventDao catUserEventDao;
-    private FileScoreDataReader scoreData = new FileScoreDataReader();
     private final TgSender sender;
+    private FileScoreDataReader scoreData = new FileScoreDataReader();
 
     //    @PostConstruct
     public void init() {
@@ -163,6 +166,16 @@ public class ScoreLineMigrateToDatabase {
             events.add(event);
         }
         catUserEventDao.saveAll(events);
+
+        chatDetailsDao.saveAll(
+                id2Chat.values().stream()
+                        .map(
+                                c -> {
+                                    final ChatDetailsEntity details = new ChatDetailsEntity();
+                                    details.setChat(c);
+                                    return details;
+                                })
+                        .collect(Collectors.toList()));
 
         System.out.println("chatDao" + chatDao.findAll());
         System.out.println("userDao" + userDao.findAll());

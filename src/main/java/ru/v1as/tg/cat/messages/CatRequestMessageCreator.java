@@ -9,6 +9,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVoteHandler;
 import ru.v1as.tg.cat.callbacks.is_cat.IsCatPollCallback;
+import ru.v1as.tg.cat.jpa.dao.ChatDetailsDao;
+import ru.v1as.tg.cat.jpa.entities.chat.ChatDetailsEntity;
 import ru.v1as.tg.cat.model.CatChatData;
 import ru.v1as.tg.cat.model.CatRequest;
 import ru.v1as.tg.cat.model.TgChat;
@@ -22,10 +24,15 @@ public class CatRequestMessageCreator implements MessageHandler {
 
     private final CatBotData data;
     private final TgSender sender;
+    private final ChatDetailsDao chatDetailsDao;
 
     @Override
     public void handle(Message msg, TgChat chat, TgUser user) {
         if (isInvalidIncomeMessage(msg)) {
+            return;
+        }
+        final ChatDetailsEntity chatDetails = chatDetailsDao.findByChatId(chat.getId());
+        if (!chatDetails.isCatPollEnabled()) {
             return;
         }
         CatChatData chatData = data.getChatData(chat);
