@@ -8,10 +8,12 @@ import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT3;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.NOT_CAT;
 import static ru.v1as.tg.cat.callbacks.is_cat.RequestAnswerResult.CANCELED;
 import static ru.v1as.tg.cat.callbacks.is_cat.RequestAnswerResult.FINISHED;
+import static ru.v1as.tg.cat.callbacks.is_cat.RequestAnswerResult.VOTED;
 import static ru.v1as.tg.cat.tg.KeyboardUtils.clearButtons;
 import static ru.v1as.tg.cat.tg.KeyboardUtils.getUpdateButtonsMsg;
 import static ru.v1as.tg.cat.tg.KeyboardUtils.inlineKeyboardMarkup;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
@@ -25,22 +27,18 @@ import ru.v1as.tg.cat.model.CatRequest;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.service.CatEventService;
+import ru.v1as.tg.cat.service.init.ResourceService;
 import ru.v1as.tg.cat.tg.TgSender;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class CatRequestVoteHandler implements TgCallBackHandler<CatRequestVote> {
 
     private final CatBotData data;
     private final TgSender sender;
-    private final CatEventService catEventService;
-
-    public CatRequestVoteHandler(
-            CatBotData data, TgSender sender, CatEventService catEventService) {
-        this.data = data;
-        this.sender = sender;
-        this.catEventService = catEventService;
-    }
+    private final CatEventService catService;
+    private final ResourceService resourceService;
 
     public static InlineKeyboardMarkup getCatePollButtons(CatRequest catRequest) {
         return inlineKeyboardMarkup(
@@ -81,15 +79,25 @@ public class CatRequestVoteHandler implements TgCallBackHandler<CatRequestVote> 
             log.info("Request for user '{}' is canceled.", user.getUsernameOrFullName());
             final Integer messageId = req.getMessageId();
             final Long chatId = req.getChatId();
-            catEventService.poll(NOT_CAT, messageId, chatId, user.getId());
+            catService.saveRealCatPoll(NOT_CAT, messageId, chatId, user.getId());
             sender.execute(new DeleteMessage(chatId, messageId));
         } else {
+            if (VOTED.equals(voted) && req.checkVotesEnoughToFinish()) {
+                req.finish(vote);
+                saveFinishedPoll(vote, req);
+            }
             InlineKeyboardMarkup pollButtons = getCatePollButtons(req);
             if (!req.getPollButtons().equals(pollButtons)) {
                 req.setPollButtons(pollButtons);
                 sender.execute(getUpdateButtonsMsg(msg, pollButtons));
             }
         }
+    }
+
+    private void saveFinishedPoll(CatRequestVote vote, CatRequest req) {
+        log.info("Request for user '{}' is finished with result '{}'.", req.getOwner(), vote);
+        catService.saveRealCatPoll(
+                req.getResult(), req.getMessageId(), req.getChatId(), req.getOwner().getId());
     }
 
     private AnswerCallbackQuery getVoteAnswerMsg(

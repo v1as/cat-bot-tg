@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.v1as.tg.cat.jpa.entities.chat.ChatEntity;
@@ -19,8 +20,7 @@ import ru.v1as.tg.cat.jpa.entities.user.UserEntity;
 @Data
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
-@NoArgsConstructor
-public class UserEvent {
+public abstract class UserEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     protected Long id;
