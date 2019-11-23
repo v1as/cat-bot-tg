@@ -44,7 +44,7 @@ public class CatEventService {
         catUserEventDao.save(event);
     }
 
-    public void poll(CatRequestVote vote, Integer messageId, Long chatId, Integer userId) {
+    public void saveRealCatPoll(CatRequestVote vote, Integer messageId, Long chatId, Integer userId) {
         final CatUserEvent event = buildCatEvent(messageId, chatId, userId);
         event.setCatType(REAL);
         event.setResult(vote);

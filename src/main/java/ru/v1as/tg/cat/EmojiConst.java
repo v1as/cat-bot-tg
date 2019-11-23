@@ -11,4 +11,5 @@ public class EmojiConst {
     public static final String COLLISION = "\uD83D\uDCA5";
     public static final String WINK = "\uD83D\uDE09";
     public static final String SMIRK_CAT = "\uD83D\uDE3C";
+    public static final String MONEY_BAG = "\uD83D\uDCB0";
 }
