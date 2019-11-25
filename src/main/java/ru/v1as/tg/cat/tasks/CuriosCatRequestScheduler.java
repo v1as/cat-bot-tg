@@ -1,5 +1,6 @@
 package ru.v1as.tg.cat.tasks;
 
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -9,10 +10,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.callbacks.phase.impl.JoinCatFollowPhase;
-import ru.v1as.tg.cat.model.CatChatData;
-import ru.v1as.tg.cat.model.ChatData;
+import ru.v1as.tg.cat.jpa.dao.ChatDao;
+import ru.v1as.tg.cat.jpa.entities.chat.ChatEntity;
 
 @Slf4j
 @Setter
@@ -20,12 +20,10 @@ import ru.v1as.tg.cat.model.ChatData;
 @RequiredArgsConstructor
 public class CuriosCatRequestScheduler {
 
-    private ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(1);
-
-    private final CatBotData data;
     private final JoinCatFollowPhase joinCatFollowPhase;
-
+    private final ChatDao chatDao;
     private final Random random = new Random();
+    private ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(1);
     private boolean firstTime = true;
     private int delayRange = 60;
     private int delayMin = 30;
@@ -46,22 +44,18 @@ public class CuriosCatRequestScheduler {
             return;
         }
 
-        final CatChatData[] chats =
-                data.getChats().stream().filter(ChatData::isPublic).toArray(CatChatData[]::new);
-        for (CatChatData chat : chats) {
-            if (chat.isPrivate()) {
-                continue;
-            }
+        final List<ChatEntity> chats = chatDao.findAll();
+        for (ChatEntity chat : chats) {
             try {
                 double randomResult = random.nextDouble();
                 if (randomResult < chance) {
                     log.info("Curios cat is sending to chat {}", chat);
-                    joinCatFollowPhase.open(chat.getChat());
+                    joinCatFollowPhase.open(chat);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        log.info("Curios cat was executed for {} chats", chats.length);
+        log.info("Curios cat was executed for {} chats", chats.size());
     }
 }

@@ -1,14 +1,9 @@
 package ru.v1as.tg.cat;
 
 import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
-import static java.util.function.Function.identity;
 import static ru.v1as.tg.cat.model.UpdateUtils.getChat;
 import static ru.v1as.tg.cat.model.UpdateUtils.getUser;
 
-import java.util.Map;
-import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -28,14 +23,6 @@ public class DatabaseUpdateBeforeHandler implements TgUpdateBeforeHandler {
     private final UserDao userDao;
     private final ChatDao chatDao;
     private final ChatDetailsDao chatDetailsDao;
-    private Map<Integer, UserEntity> users = emptyMap();
-    private Map<Long, ChatEntity> chats = emptyMap();
-
-    @PostConstruct
-    public void init() {
-        users = userDao.findAll().stream().collect(Collectors.toMap(UserEntity::getId, identity()));
-        chats = chatDao.findAll().stream().collect(Collectors.toMap(ChatEntity::getId, identity()));
-    }
 
     @Override
     public void register(Update update) {
@@ -49,7 +36,7 @@ public class DatabaseUpdateBeforeHandler implements TgUpdateBeforeHandler {
     }
 
     private void updateChatEntity(TgChat chat) {
-        ChatEntity chatEntity = chats.get(chat.getId());
+        ChatEntity chatEntity = chatDao.findById(chat.getId()).orElse(null);
         ChatDetailsEntity chatDetails = null;
         boolean chatToSave;
         if (chatEntity == null) {
@@ -57,7 +44,9 @@ public class DatabaseUpdateBeforeHandler implements TgUpdateBeforeHandler {
                     new ChatEntity(
                             chat.getId(), chat.getTitle(), chat.getDescription(), -1, emptyList());
             chatDetails = new ChatDetailsEntity();
+            chatDetails.setId(chat.getId());
             chatDetails.setChat(chatEntity);
+            chatDetails.setCatPollEnabled(false);
             // todo update amount
             chatToSave = true;
         } else {
@@ -73,7 +62,7 @@ public class DatabaseUpdateBeforeHandler implements TgUpdateBeforeHandler {
 
     private void updateUserEntity(TgChat chat, TgUser user) {
         boolean userToSave;
-        UserEntity userEntity = users.get(user.getId());
+        UserEntity userEntity = userDao.findById(user.getId()).orElse(null);
         if (null == userEntity) {
             userEntity =
                     new UserEntity(

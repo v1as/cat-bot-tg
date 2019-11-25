@@ -18,6 +18,7 @@ import ru.v1as.tg.cat.AbstractCatBotTest;
 import ru.v1as.tg.cat.CaBotTestConfiguration;
 import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.callbacks.phase.impl.JoinCatFollowPhase;
+import ru.v1as.tg.cat.jpa.dao.ChatDao;
 import ru.v1as.tg.cat.tg.TgSender;
 
 @RunWith(SpringRunner.class)
@@ -28,12 +29,14 @@ public class CuriosCatRequestSchedulerTest extends AbstractCatBotTest {
     @Autowired TgSender sender;
     @Autowired JoinCatFollowPhase joinCatPhase;
     CuriosCatRequestScheduler scheduler;
+    @Autowired ChatDao chatDao;
 
     @Before
     public void init() {
-        scheduler = new CuriosCatRequestScheduler(catBotData, joinCatPhase);
+        scheduler = new CuriosCatRequestScheduler(joinCatPhase, chatDao);
         scheduler.init();
-        sendTextMessage("init");
+        sendCommand("/enable_polls");
+        clearMethodsQueue();
     }
 
     @Test
@@ -44,6 +47,7 @@ public class CuriosCatRequestSchedulerTest extends AbstractCatBotTest {
 
         popSendMessage("Любопытный кот гуляет рядом");
         sendCallback(lastMsgId, "curiosCat");
+        printQueueMessages();
         popSendMessage("Любопытный Кот убежал к @User0   \uD83D\uDC08");
         popDeleteMessage();
     }

@@ -173,6 +173,7 @@ public class ScoreLineMigrateToDatabase {
                                 c -> {
                                     final ChatDetailsEntity details = new ChatDetailsEntity();
                                     details.setChat(c);
+                                    details.setCatPollEnabled(false);
                                     return details;
                                 })
                         .collect(Collectors.toList()));

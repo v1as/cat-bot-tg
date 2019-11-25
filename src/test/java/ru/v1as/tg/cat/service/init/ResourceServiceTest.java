@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.v1as.tg.cat.config.JpaConfiguration;
 import ru.v1as.tg.cat.jpa.dao.ResourceDao;
-import ru.v1as.tg.cat.jpa.dao.ResourceEventDao;
 import ru.v1as.tg.cat.jpa.entities.resource.ResourceEntity;
 import ru.v1as.tg.cat.service.init.ResourceServiceTest.ResourceServiceTestConf;
 
@@ -31,9 +30,8 @@ public class ResourceServiceTest {
     @Import(JpaConfiguration.class)
     public static class ResourceServiceTestConf {
         @Bean
-        public ResourceService getResourceService(
-                ResourceDao resourceDao, ResourceEventDao resourceEventDao) {
-            return new ResourceService(resourceDao, resourceEventDao);
+        public ResourceService getResourceService(ResourceDao resourceDao) {
+            return new ResourceService(resourceDao);
         }
     }
 }

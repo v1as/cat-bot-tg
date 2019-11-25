@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -79,25 +80,29 @@ public class CatRequestVoteHandler implements TgCallBackHandler<CatRequestVote> 
             log.info("Request for user '{}' is canceled.", user.getUsernameOrFullName());
             final Integer messageId = req.getMessageId();
             final Long chatId = req.getChatId();
-            catService.saveRealCatPoll(NOT_CAT, messageId, chatId, user.getId());
+            catService.saveRealCatPoll(req);
             sender.execute(new DeleteMessage(chatId, messageId));
-        } else {
-            if (VOTED.equals(voted) && req.checkVotesEnoughToFinish()) {
-                req.finish(vote);
+        } else if (VOTED.equals(voted)) {
+            if (req.checkVotesEnoughToFinish()) {
                 saveFinishedPoll(vote, req);
-            }
-            InlineKeyboardMarkup pollButtons = getCatePollButtons(req);
-            if (!req.getPollButtons().equals(pollButtons)) {
-                req.setPollButtons(pollButtons);
-                sender.execute(getUpdateButtonsMsg(msg, pollButtons));
+                sender.execute(
+                        new EditMessageText()
+                                .setChatId(req.getChatId())
+                                .setMessageId(req.getMessageId())
+                                .setText(req.getResult().getAmount() + "x" + CAT));
+            } else {
+                InlineKeyboardMarkup pollButtons = getCatePollButtons(req);
+                if (!req.getPollButtons().equals(pollButtons)) {
+                    req.setPollButtons(pollButtons);
+                    sender.execute(getUpdateButtonsMsg(msg, pollButtons));
+                }
             }
         }
     }
 
     private void saveFinishedPoll(CatRequestVote vote, CatRequest req) {
         log.info("Request for user '{}' is finished with result '{}'.", req.getOwner(), vote);
-        catService.saveRealCatPoll(
-                req.getResult(), req.getMessageId(), req.getChatId(), req.getOwner().getId());
+        catService.saveRealCatPoll(req);
     }
 
     private AnswerCallbackQuery getVoteAnswerMsg(

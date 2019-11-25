@@ -1,24 +1,30 @@
 package ru.v1as.tg.cat;
 
 import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT1;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.NOT_CAT;
 
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 import ru.v1as.tg.cat.model.CatRequest;
-import ru.v1as.tg.cat.tasks.RequestsChecker;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = CaBotTestConfiguration.class)
+@Slf4j
 public class CatBotTest extends AbstractCatBotTest {
 
+    @Before
+    @SneakyThrows
+    public void init() {
+        sendCommand("/enable_polls");
+        clearMethodsQueue();
+    }
+
     @Test
+    @Transactional
     public void testUserPollHimSelfForbidden() {
         sendPhotoMessage();
         popSendMessage("Это кот?");
@@ -62,17 +68,9 @@ public class CatBotTest extends AbstractCatBotTest {
         switchToFourthUser();
         sendCallback(pollMsdId, CAT1.getCallback());
         popAnswerCallbackQuery("Голос учтён");
-        popEditMessageReplyMarkup();
         assertEquals(3, catRequest.getVotes().size());
         assertTrue(catRequest.getVotes().values().stream().allMatch(CAT1::equals));
-
-        assertFalse(catRequest.isFinished());
-        new RequestsChecker(sender, getCatBotData(), catEventService).run();
-        assertTrue(catRequest.isFinished());
+        assertTrue(catRequest.isClosed());
         popEditMessageText("1x" + EmojiConst.CAT);
-    }
-
-    private CatRequest getCatRequest() {
-        return new CatRequest(getTgUser(), getMessageUpdate().getMessage().getMessageId(), getTgChat().getId());
     }
 }

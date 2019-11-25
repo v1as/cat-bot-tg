@@ -25,12 +25,6 @@ public class CatChatData extends ChatData {
         msgIdToCatRequests.put(messageId, request);
     }
 
-    public List<CatRequest> getNotFinishedCatRequests() {
-        return this.msgIdToCatRequests.values().stream()
-                .filter(r -> !r.isFinished())
-                .collect(Collectors.toList());
-    }
-
     public Collection<CatRequest> getCatRequests() {
         return msgIdToCatRequests.values();
     }

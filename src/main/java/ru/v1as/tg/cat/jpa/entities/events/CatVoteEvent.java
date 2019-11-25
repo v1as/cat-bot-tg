@@ -5,7 +5,6 @@ import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 
@@ -13,9 +12,8 @@ import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @DiscriminatorValue("CAT_VOTE")
-@NoArgsConstructor
 @ToString(callSuper = true)
-public class CatVoteUserEvent extends UserEvent {
+public class CatVoteEvent extends UserEvent {
     private Integer messageId;
     @Enumerated private CatRequestVote vote;
 }
