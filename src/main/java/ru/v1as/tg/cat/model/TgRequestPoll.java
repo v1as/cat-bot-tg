@@ -1,5 +1,9 @@
 package ru.v1as.tg.cat.model;
 
+import static ru.v1as.tg.cat.model.TgRequestPoll.State.CANCELED;
+import static ru.v1as.tg.cat.model.TgRequestPoll.State.CLOSED;
+import static ru.v1as.tg.cat.model.TgRequestPoll.State.OPENED;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -13,24 +17,29 @@ public class TgRequestPoll<T> {
     protected final Long chatId;
     protected final LocalDateTime created = LocalDateTime.now();
     protected Integer messageId;
-    protected boolean finished = false;
-    protected boolean canceled = false;
+    protected State state;
     protected T result;
 
     public void cancel() {
-        if (finished) {
+        if (!state.equals(OPENED)) {
             throw new IllegalStateException("This request is already closed");
         }
-        this.canceled = true;
-        this.finished = true;
+        this.state = CANCELED;
     }
 
-    public void finish(T result) {
-        if (finished) {
+    public void close(T result) {
+        if (!state.equals(OPENED)) {
             throw new IllegalStateException("This request is already closed");
         }
-        this.finished = true;
-        this.result = result;
+        this.state = CLOSED;
+    }
+
+    public boolean isClosed() {
+        return CLOSED.equals(state);
+    }
+
+    public Integer getMessageId() {
+        return messageId;
     }
 
     public void setMessageId(Integer messageId) {
@@ -38,10 +47,6 @@ public class TgRequestPoll<T> {
             throw new IllegalStateException("Vote message is already set");
         }
         this.messageId = messageId;
-    }
-
-    public Integer getMessageId() {
-        return messageId;
     }
 
     public Long getChatId() {
@@ -53,7 +58,7 @@ public class TgRequestPoll<T> {
     }
 
     public boolean isOpen() {
-        return !canceled && !finished;
+        return OPENED.equals(state);
     }
 
     @Override
@@ -73,5 +78,11 @@ public class TgRequestPoll<T> {
     @Override
     public int hashCode() {
         return Objects.hash(chatId, created, messageId);
+    }
+
+    protected enum State {
+        OPENED,
+        CANCELED,
+        CLOSED
     }
 }

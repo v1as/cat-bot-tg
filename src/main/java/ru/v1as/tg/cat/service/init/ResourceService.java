@@ -11,7 +11,6 @@ import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.v1as.tg.cat.jpa.dao.ResourceDao;
-import ru.v1as.tg.cat.jpa.dao.ResourceEventDao;
 import ru.v1as.tg.cat.jpa.entities.resource.ResourceEntity;
 
 @Component
@@ -22,7 +21,6 @@ public class ResourceService {
     public static final List<ResourceEntity> KNOWN_RESOURCES =
             ImmutableList.<ResourceEntity>builder().add(MONEY).build();
     private final ResourceDao resourceDao;
-    private final ResourceEventDao resourceEventDao;
 
     @PostConstruct
     public void init() {

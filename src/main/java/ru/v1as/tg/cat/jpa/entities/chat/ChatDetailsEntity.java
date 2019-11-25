@@ -15,5 +15,5 @@ public class ChatDetailsEntity {
 
     @Id private Long id;
     @OneToOne private ChatEntity chat;
-    private boolean isCatPollEnabled = false;
+    private boolean isCatPollEnabled;
 }

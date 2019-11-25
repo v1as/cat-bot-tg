@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import junit.framework.AssertionFailedError;
 import org.junit.After;
 import org.junit.Before;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
@@ -29,13 +30,17 @@ import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgChatWrapper;
 import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.service.CatEventService;
+import ru.v1as.tg.cat.tg.TgUpdateProcessor;
+import ru.v1as.tg.cat.utils.AssertMessage;
 
-public class TgBotTest {
+public abstract class TgBotTest implements TgTestInvoker {
+
+    private final Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass());
 
     @Autowired protected TestAbsSender sender;
-    @Autowired protected TgBot bot;
     @Autowired protected CatBotData catBotData;
     @Autowired protected CatEventService catEventService;
+    @Autowired protected TgUpdateProcessor updateProcessor;
 
     protected Integer lastMsgId = 0;
     protected Integer lastCallbackQueryId = 0;
@@ -100,26 +105,35 @@ public class TgBotTest {
         return message;
     }
 
+    protected Message sendCommand(String text) {
+        Update update = getMessageUpdate();
+        when(update.getMessage().getText()).thenReturn(text);
+        when(update.getMessage().isCommand()).thenReturn(true);
+        updateProcessor.onUpdateReceived(update);
+        return update.getMessage();
+    }
+
     protected Message sendTextMessage(String text) {
         Update update = getMessageUpdate();
         when(update.getMessage().getText()).thenReturn(text);
-        bot.onUpdateReceived(update);
+        updateProcessor.onUpdateReceived(update);
         return update.getMessage();
     }
 
     protected Message sendPhotoMessage() {
         Update update = getMessageUpdate();
         when(update.getMessage().hasPhoto()).thenReturn(true);
-        bot.onUpdateReceived(update);
+        updateProcessor.onUpdateReceived(update);
         return update.getMessage();
     }
 
-    protected void sendCallback(Integer msgId, String data) {
+    @Override
+    public void sendCallback(Integer msgId, String data) {
         Update update = getCallbackUpdate(msgId, data);
-        bot.onUpdateReceived(update);
+        updateProcessor.onUpdateReceived(update);
     }
 
-    private Update getCallbackUpdate(Integer msgId, String data) {
+    public Update getCallbackUpdate(Integer msgId, String data) {
         Update update = mock(Update.class);
         when(update.hasCallbackQuery()).thenReturn(true);
         CallbackQuery callbackQuery = getCallbackQuery(msgId, data);
@@ -189,6 +203,10 @@ public class TgBotTest {
         return pop;
     }
 
+    protected void printQueueMessages() {
+        log.info(sender.getMethods().toString());
+    }
+
     private String getMethodsStr(LinkedList<BotApiMethod<?>> methods) {
         return methods.stream()
                 .map(Object::getClass)
@@ -202,10 +220,10 @@ public class TgBotTest {
         return message;
     }
 
-    protected SendMessage popSendMessage(String text) {
+    protected AssertMessage popSendMessage(String text) {
         SendMessage message = popSendMessage();
         assertEquals(text, message.getText());
-        return message;
+        return new AssertMessage(this, message); // todo !!!!
     }
 
     protected AnswerCallbackQuery popAnswerCallbackQuery() {

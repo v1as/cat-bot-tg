@@ -9,7 +9,6 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import org.junit.Test;
 import ru.v1as.tg.cat.callbacks.phase.curios_cat.AbstractCuriosCatPhase;
 import ru.v1as.tg.cat.jpa.dao.CatUserEventDao;
@@ -64,10 +63,13 @@ public class CuriosCatQuestProducerTest {
         return dao;
     }
 
-    @RequiredArgsConstructor
     private static class TestPhase extends AbstractCuriosCatPhase {
 
         private final String testName;
+
+        TestPhase(String testName) {
+            this.testName = testName;
+        }
 
         @Override
         protected void open() {}

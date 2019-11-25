@@ -6,8 +6,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import ru.v1as.tg.cat.jpa.entities.chat.ChatEntity;
 import ru.v1as.tg.cat.jpa.entities.events.UserEvent;
@@ -15,9 +15,9 @@ import ru.v1as.tg.cat.jpa.entities.user.UserEntity;
 
 @Data
 @Entity
-@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-public class ResourceEventEntity extends UserEvent {
+public class ResourceEvent extends UserEvent {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -27,7 +27,7 @@ public class ResourceEventEntity extends UserEvent {
     private BigDecimal delta;
     @ManyToOne private UserEvent event;
 
-    public ResourceEventEntity(
+    public ResourceEvent(
             ResourceEntity resource,
             BigDecimal delta,
             UserEvent event,

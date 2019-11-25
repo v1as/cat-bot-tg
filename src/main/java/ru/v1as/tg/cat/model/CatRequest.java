@@ -2,6 +2,8 @@ package ru.v1as.tg.cat.model;
 
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
+import static ru.v1as.tg.cat.model.TgRequestPoll.State.CLOSED;
+import static ru.v1as.tg.cat.model.TgRequestPoll.State.OPENED;
 
 import java.util.Comparator;
 import java.util.Map;
@@ -34,7 +36,7 @@ public class CatRequest extends TgRequestPoll<CatRequestVote> {
 
     public RequestAnswerResult vote(TgUser user, CatRequestVote vote) {
         Integer userId = user.getId();
-        if (finished || canceled) {
+        if (!OPENED.equals(state)) {
             return RequestAnswerResult.FINISHED;
         }
         if (userId.equals(owner.getId()) && vote.equals(CatRequestVote.NOT_CAT)) {
@@ -68,7 +70,7 @@ public class CatRequest extends TgRequestPoll<CatRequestVote> {
         }
         if (voteValue.isPresent()) {
             CatRequestVote vote = voteValue.get();
-            finish(vote);
+            close(vote);
         }
         return voteValue.isPresent();
     }
@@ -83,7 +85,8 @@ public class CatRequest extends TgRequestPoll<CatRequestVote> {
         this.result = CatRequestVote.NOT_CAT;
     }
 
-    public void finish(CatRequestVote result) {
-        super.finish(result);
+    public void close(CatRequestVote result) {
+        super.close(result);
     }
+
 }

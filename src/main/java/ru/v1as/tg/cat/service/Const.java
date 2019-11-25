@@ -29,11 +29,7 @@ public class Const {
 
     @Value("${tg.bot.username:}")
     public void setBotName(String botName) {
-        if (Const.botName == null) {
-            Const.botName = botName;
-        } else {
-            throw new IllegalStateException("This variable is already defined");
-        }
+        Const.botName = botName;
     }
 
     public static void onlyForAdminCheck(TgUser user) {
@@ -53,21 +49,12 @@ public class Const {
 
     @Value("${tg.bot.token}")
     public void setBotToken(String botToken) {
-        if (Const.botToken == null) {
-            Const.botToken = botToken;
-        } else {
-            throw new IllegalStateException("This variable is already defined");
-        }
+        Const.botToken = botToken;
     }
 
     @Value("${tg.bot.admin_username:}")
     public void setAdminUserName(String admins) {
-        if (Const.adminUserNames == null) {
-            Const.adminUserNames =
-                    Arrays.stream(admins.split("[;,\\s]")).collect(Collectors.toSet());
-        } else {
-            throw new IllegalStateException("This variable is already defined");
-        }
+        Const.adminUserNames = Arrays.stream(admins.split("[;,\\s]")).collect(Collectors.toSet());
     }
 
     public static class OnlyForAdmins extends RuntimeException {}

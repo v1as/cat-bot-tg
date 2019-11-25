@@ -45,6 +45,7 @@ public class TestAbsSender implements TgSender {
 
     public void clear() {
         methods.clear();
+        documents.clear();
     }
 
     public int getMethodsAmount() {
