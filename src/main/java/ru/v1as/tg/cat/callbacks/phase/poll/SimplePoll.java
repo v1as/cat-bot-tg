@@ -18,8 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -39,13 +37,13 @@ import ru.v1as.tg.cat.callbacks.phase.poll.interceptor.ChoiceAroundInterceptor;
 import ru.v1as.tg.cat.callbacks.phase.poll.interceptor.NoopChoiceAroundInterceptor;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
+import ru.v1as.tg.cat.service.clock.BotClock;
 import ru.v1as.tg.cat.tg.TgSender;
 
 @Slf4j
 public class SimplePoll {
 
-    private static final ScheduledExecutorService EXECUTOR = new ScheduledThreadPoolExecutor(1);
-
+    private BotClock botClock;
     private TgSender sender;
     private TgCallbackProcessor callbackProcessor;
 
@@ -156,7 +154,7 @@ public class SimplePoll {
 
     private void timeoutProcess() {
         if (timeoutConfiguration != null) {
-            EXECUTOR.schedule(
+            botClock.schedule(
                     () -> {
                         if (state.equals(SENT)) {
 
@@ -260,6 +258,10 @@ public class SimplePoll {
     public SimplePoll removeOnClose(boolean value) {
         this.removeOnClose = value;
         return this;
+    }
+
+    public void setBotClock(BotClock botClock) {
+        this.botClock = botClock;
     }
 
     public void setSender(TgSender sender) {

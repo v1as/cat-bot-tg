@@ -2,7 +2,6 @@ package ru.v1as.tg.cat.model;
 
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
-import static ru.v1as.tg.cat.model.TgRequestPoll.State.CLOSED;
 import static ru.v1as.tg.cat.model.TgRequestPoll.State.OPENED;
 
 import java.util.Comparator;
@@ -32,6 +31,7 @@ public class CatRequest extends TgRequestPoll<CatRequestVote> {
         super(chatId);
         this.srcMsgId = srcMsgId;
         this.owner = owner;
+        this.state = OPENED;
     }
 
     public RequestAnswerResult vote(TgUser user, CatRequestVote vote) {
@@ -88,5 +88,4 @@ public class CatRequest extends TgRequestPoll<CatRequestVote> {
     public void close(CatRequestVote result) {
         super.close(result);
     }
-
 }

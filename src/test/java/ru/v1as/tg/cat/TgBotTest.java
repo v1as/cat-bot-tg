@@ -8,7 +8,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static ru.v1as.tg.cat.model.TgUserWrapper.wrap;
 
-import java.util.LinkedList;
+import java.io.Serializable;
+import java.util.Deque;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import junit.framework.AssertionFailedError;
 import org.junit.After;
@@ -31,7 +33,8 @@ import ru.v1as.tg.cat.model.TgChatWrapper;
 import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.service.CatEventService;
 import ru.v1as.tg.cat.tg.TgUpdateProcessor;
-import ru.v1as.tg.cat.utils.AssertMessage;
+import ru.v1as.tg.cat.utils.AssertEditMessage;
+import ru.v1as.tg.cat.utils.AssertSendMessage;
 
 public abstract class TgBotTest implements TgTestInvoker {
 
@@ -62,7 +65,7 @@ public abstract class TgBotTest implements TgTestInvoker {
     @After
     public void after() {
         if (0 != sender.getMethodsAmount()) {
-            fail("There are unexptected methods" + sender.getMethods());
+            fail("There are unexptected methods" + sender.getMethodCalls());
         }
     }
 
@@ -186,44 +189,59 @@ public abstract class TgBotTest implements TgTestInvoker {
         return 0L;
     }
 
-    private <T extends BotApiMethod> T popMethod(Class<T> clazz) {
-        T pop =
-                sender.getMethods().stream()
-                        .filter(clazz::isInstance)
-                        .map(clazz::cast)
+    @SuppressWarnings("unchecked")
+    private <P extends Serializable, T extends BotApiMethod<P>> T popMethod(Class<T> clazz) {
+        final MethodCall methodCall =
+                sender.getMethodCalls().stream()
+                        .filter(obj -> clazz.isInstance(obj.getRequest()))
                         .findFirst()
-                        .orElseThrow(
-                                () ->
-                                        new AssertionFailedError(
-                                                String.format(
-                                                        "Wrong type expected: '%s' but [%s]",
-                                                        clazz.getSimpleName(),
-                                                        getMethodsStr(sender.getMethods()))));
-        assertTrue(sender.getMethods().remove(pop));
-        return pop;
+                        .orElseThrow(getAssertionFailedErrorSupplier(clazz));
+        assertTrue(sender.getMethodCalls().remove(methodCall));
+        return (T) methodCall.getRequest();
+    }
+
+    private Supplier<AssertionFailedError> getAssertionFailedErrorSupplier(Class clazz) {
+        return () ->
+                new AssertionFailedError(
+                        String.format(
+                                "Wrong type expected: '%s' but [%s]",
+                                clazz.getSimpleName(), sender.getMethodCalls()));
+    }
+
+    @SuppressWarnings("unchecked")
+    private <P extends Serializable, T extends BotApiMethod<P>> MethodCall<P> popMethodCall(
+            Class<T> clazz) {
+        final MethodCall methodCall =
+                sender.getMethodCalls().stream()
+                        .filter(obj -> clazz.isInstance(obj.getRequest()))
+                        .findFirst()
+                        .orElseThrow(getAssertionFailedErrorSupplier(clazz));
+        assertTrue(sender.getMethodCalls().remove(methodCall));
+        return (MethodCall<P>) methodCall;
     }
 
     protected void printQueueMessages() {
-        log.info(sender.getMethods().toString());
+        log.info(sender.getMethodCalls().toString());
     }
 
-    private String getMethodsStr(LinkedList<BotApiMethod<?>> methods) {
+    private String getMethodsStr(Deque<MethodCall> methods) {
         return methods.stream()
                 .map(Object::getClass)
                 .map(Class::getSimpleName)
                 .collect(Collectors.joining(", "));
     }
 
-    protected SendMessage popSendMessage() {
-        SendMessage message = popMethod(SendMessage.class);
+    protected AssertEditMessage popEditMessage() {
+        final EditMessageText message = popMethodCall(EditMessageText.class).getRequest();
         assertEquals(getChatId().toString(), message.getChatId());
-        return message;
+        return new AssertEditMessage(message);
     }
 
-    protected AssertMessage popSendMessage(String text) {
-        SendMessage message = popSendMessage();
-        assertEquals(text, message.getText());
-        return new AssertMessage(this, message); // todo !!!!
+    protected AssertSendMessage popSendMessage() {
+        final MethodCall<Message> call = popMethodCall(SendMessage.class);
+        SendMessage sendMessage = call.getRequest();
+        assertEquals(getChatId().toString(), sendMessage.getChatId());
+        return new AssertSendMessage(this, sendMessage, call.getResponse());
     }
 
     protected AnswerCallbackQuery popAnswerCallbackQuery() {

@@ -14,7 +14,7 @@ import ru.v1as.tg.cat.jpa.dao.ChatDetailsDao;
 import ru.v1as.tg.cat.jpa.dao.UserDao;
 import ru.v1as.tg.cat.messages.TgMessageProcessor;
 import ru.v1as.tg.cat.service.clock.BotClock;
-import ru.v1as.tg.cat.service.clock.NoopBotClock;
+import ru.v1as.tg.cat.service.clock.TestBotClock;
 import ru.v1as.tg.cat.tg.TgSender;
 
 @Configuration
@@ -53,7 +53,7 @@ public class CaBotTestConfiguration {
     @Bean
     @Primary
     public BotClock getClock() {
-        return new NoopBotClock();
+        return new TestBotClock();
     }
 
     @Bean

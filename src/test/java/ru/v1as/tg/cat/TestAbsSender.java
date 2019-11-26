@@ -1,6 +1,7 @@
 package ru.v1as.tg.cat;
 
 import java.io.Serializable;
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import org.glassfish.jersey.internal.util.Producer;
@@ -12,7 +13,7 @@ import ru.v1as.tg.cat.tg.TgSender;
 
 public class TestAbsSender implements TgSender {
 
-    protected LinkedList<BotApiMethod<?>> methods = new LinkedList<>();
+    protected LinkedList<MethodCall> items = new LinkedList<>();
     protected Producer<? extends Serializable> messageProducer = () -> null;
     private List<SendDocument> documents = new LinkedList<>();
 
@@ -23,13 +24,14 @@ public class TestAbsSender implements TgSender {
                     Method extends BotApiMethod<T>,
                     Callback extends SentCallback<T>>
             void executeAsync(Method method, Callback callback) {
-        methods.add(method);
-        callback.onResult(method, (T) messageProducer.call());
+        final T response = (T) messageProducer.call();
+        items.add(new MethodCall(method, response));
+        callback.onResult(method, response);
     }
 
     @Override
     public <T extends Serializable, Method extends BotApiMethod<T>> T execute(Method method) {
-        methods.add(method);
+        items.add(new MethodCall(method, null));
         return null;
     }
 
@@ -44,15 +46,15 @@ public class TestAbsSender implements TgSender {
     }
 
     public void clear() {
-        methods.clear();
+        items.clear();
         documents.clear();
     }
 
     public int getMethodsAmount() {
-        return methods.size();
+        return items.size();
     }
 
-    public LinkedList<BotApiMethod<?>> getMethods() {
-        return methods;
+    public Deque<MethodCall> getMethodCalls() {
+        return items;
     }
 }

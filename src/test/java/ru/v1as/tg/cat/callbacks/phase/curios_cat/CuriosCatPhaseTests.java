@@ -8,11 +8,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import ru.v1as.tg.cat.TgBotTest;
 import ru.v1as.tg.cat.CaBotTestConfiguration;
 import ru.v1as.tg.cat.callbacks.phase.curios_cat.CuriosCatPhaseTests.CuriosConfigurationTest;
 import ru.v1as.tg.cat.tg.TgSender;
+import ru.v1as.tg.cat.utils.AssertSendMessage;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {CaBotTestConfiguration.class, CuriosConfigurationTest.class})
@@ -32,7 +32,7 @@ public class CuriosCatPhaseTests extends TgBotTest {
 
     private void testPhase(AbstractCuriosCatPhase phase) {
         phase.open(getTgChat(), getTgChat(), getTgUser(), getMessage());
-        SendMessage message = popSendMessage();
+        final AssertSendMessage message = popSendMessage();
         System.out.println(message);
     }
 
