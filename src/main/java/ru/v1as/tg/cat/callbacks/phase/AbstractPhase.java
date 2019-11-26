@@ -22,12 +22,12 @@ import ru.v1as.tg.cat.tg.TgSender;
 public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> {
 
     private final Logger log = getLogger(this.getClass());
-
-    @Autowired protected TgSender sender;
-    @Autowired private TgCallbackProcessor callbackProcessor;
-    @Autowired protected BotClock clock;
-
     private final ThreadLocal<T> phaseContext = new ThreadLocal<>();
+
+    @Autowired protected BotClock botClock;
+    @Autowired protected TgSender sender;
+    @Autowired protected BotClock clock;
+    @Autowired private TgCallbackProcessor callbackProcessor;
 
     protected void message(TgUser userData, String text) {
         sender.execute(new SendMessage(userData.getId().longValue(), text));
@@ -46,6 +46,7 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
         T phase = phaseContext.get();
         SimplePoll poll = phase.poll(text);
         poll.setSender(sender);
+        poll.setBotClock(botClock);
         poll.setCallbackProcessor(callbackProcessor);
         poll.closeTextBuilder(new UpdateWithChoiceTextBuilder());
         poll.choiceAroundInterceptor(getChoiceAroundInterceptor(poll, phaseContext));

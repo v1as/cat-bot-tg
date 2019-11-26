@@ -7,6 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,12 +20,14 @@ import ru.v1as.tg.cat.CaBotTestConfiguration;
 import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.callbacks.phase.impl.JoinCatFollowPhase;
 import ru.v1as.tg.cat.jpa.dao.ChatDao;
+import ru.v1as.tg.cat.service.clock.TestBotClock;
 import ru.v1as.tg.cat.tg.TgSender;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = CaBotTestConfiguration.class)
 public class CuriosCatRequestSchedulerTest extends AbstractCatBotTest {
 
+    @Autowired TestBotClock clock;
     @Autowired CatBotData catBotData;
     @Autowired TgSender sender;
     @Autowired JoinCatFollowPhase joinCatPhase;
@@ -45,10 +48,11 @@ public class CuriosCatRequestSchedulerTest extends AbstractCatBotTest {
         scheduler.setFirstTime(false);
         scheduler.run();
 
-        popSendMessage("Любопытный кот гуляет рядом");
-        sendCallback(lastMsgId, "curiosCat");
-        printQueueMessages();
-        popSendMessage("Любопытный Кот убежал к @User0   \uD83D\uDC08");
+        popSendMessage().assertText("Любопытный кот гуляет рядом").findCallback("Кот").send();
+        popEditMessage().assertContainText("не пойдёт");
+        clock.skip(11, TimeUnit.SECONDS);
+
+        popSendMessage().assertText("Любопытный Кот убежал к @User0   \uD83D\uDC08");
         popDeleteMessage();
     }
 
@@ -62,7 +66,7 @@ public class CuriosCatRequestSchedulerTest extends AbstractCatBotTest {
         verify(executor, times(2)).schedule(closeRequests.capture(), anyLong(), any());
         closeRequests.getAllValues().get(1).run();
 
-        popSendMessage("Любопытный кот гуляет рядом");
+        popSendMessage().assertText("Любопытный кот гуляет рядом");
         popDeleteMessage();
     }
 }

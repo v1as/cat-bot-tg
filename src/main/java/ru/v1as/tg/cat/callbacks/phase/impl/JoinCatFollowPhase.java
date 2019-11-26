@@ -5,8 +5,6 @@ import static ru.v1as.tg.cat.utils.RandomUtils.random;
 
 import com.google.common.collect.ImmutableList;
 import java.time.Duration;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +24,7 @@ import ru.v1as.tg.cat.commands.impl.StartCommand;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.service.CatEventService;
+import ru.v1as.tg.cat.service.clock.BotClock;
 
 @Slf4j
 @Component
@@ -39,7 +38,7 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
     private final StartCommand startCommand;
     private final CatEventService catEventService;
     private final CuriosCatQuestProducer curiosCatQuestProducer;
-    private ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(1);
+    private final BotClock botClock;
 
     @Override
     protected void open() {
@@ -69,8 +68,7 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
         Context ctx = getPhaseContext();
         startCommand.drop(ctx.startCommandArgument);
         startCommand.register(ctx.startCommandArgument, contextWrap(this::youAreLate));
-        executorService.schedule(
-                () -> startCommand.drop(ctx.startCommandArgument), 1, TimeUnit.MINUTES);
+        botClock.schedule(() -> startCommand.drop(ctx.startCommandArgument), 1, TimeUnit.MINUTES);
     }
 
     private void scheduleSayCat(ChooseContext choice) {
@@ -89,7 +87,7 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
                         "Похоже, %s не пойдёт за Любопытным Котом, может кто-то другой сможет?",
                         choice.getUser().getUsernameOrFullName());
         editMessageText(ctx.message, text);
-        executorService.schedule(contextWrap(() -> sayCat(choice)), 10, TimeUnit.SECONDS);
+        botClock.schedule(contextWrap(() -> sayCat(choice)), 10, TimeUnit.SECONDS);
     }
 
     private void sayCat(ChooseContext ctx) {
