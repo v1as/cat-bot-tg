@@ -32,6 +32,7 @@ public class TgRequestPoll<T> {
             throw new IllegalStateException("This request is already closed");
         }
         this.state = CLOSED;
+        this.result = result;
     }
 
     public boolean isClosed() {

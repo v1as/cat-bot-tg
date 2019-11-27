@@ -1,6 +1,7 @@
 package ru.v1as.tg.cat.callbacks.phase.impl;
 
 import static java.time.temporal.ChronoUnit.MINUTES;
+import static ru.v1as.tg.cat.EmojiConst.CAT;
 import static ru.v1as.tg.cat.utils.RandomUtils.random;
 
 import com.google.common.collect.ImmutableList;
@@ -53,7 +54,7 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
                 .closeOnChoose(false)
                 .closeTextBuilder(new UpdateWithChoiceTextBuilder())
                 .removeOnClose(true)
-                .choice(EmojiConst.CAT + " Кот!", this::scheduleSayCat)
+                .choice(CAT + " Кот!", this::scheduleSayCat)
                 .choice(followTheCat)
                 .onSend(msg -> ctx.message = msg)
                 .timeout(removeAfter5Min)
@@ -95,7 +96,7 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
         log.info("Trying to sat cat for user '{}'", user);
         getPhaseContext().checkNotClose();
         saveCatRequest(ctx);
-        message("Любопытный кот убежал к " + user);
+        message(String.format("Любопытный Кот убежал к %s %s", user, CAT));
         close();
     }
 

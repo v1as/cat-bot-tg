@@ -21,6 +21,7 @@ import ru.v1as.tg.cat.tg.TgSender;
 @ComponentScan({
     "ru.v1as.tg.cat.messages",
     "ru.v1as.tg.cat.callbacks",
+    "ru.v1as.tg.cat.tasks",
     "ru.v1as.tg.cat.commands",
     "ru.v1as.tg.cat.service",
     "ru.v1as.tg.cat.callbacks.phase",
@@ -57,6 +58,7 @@ public class CaBotTestConfiguration {
     }
 
     @Bean
+    @Primary
     public DatabaseUpdateBeforeHandler getDatabaseUpdateBeforeHandler(
             UserDao userDao, ChatDao chatDao, ChatDetailsDao chatDetailsDao) {
         return new DatabaseUpdateBeforeHandler(userDao, chatDao, chatDetailsDao);
