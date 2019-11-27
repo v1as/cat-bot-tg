@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 import org.springframework.stereotype.Component;
 import ru.v1as.tg.cat.EmojiConst;
 import ru.v1as.tg.cat.callbacks.phase.poll.ChooseContext;
-import ru.v1as.tg.cat.utils.RandomChoiceWithWeight;
+import ru.v1as.tg.cat.model.random.RandomRequest;
 
 @Component
 public class KittenOnTheTree extends AbstractCuriosCatPhase {
@@ -54,10 +54,10 @@ public class KittenOnTheTree extends AbstractCuriosCatPhase {
 
     private void helpKitten(ChooseContext chooseContext) {
         final Consumer<ChooseContext> nextChoice =
-                new RandomChoiceWithWeight<Consumer<ChooseContext>>()
-                        .add(this::successHelp, 70)
-                        .add(this::failHelp, 30)
-                        .get();
+                random(
+                        new RandomRequest<Consumer<ChooseContext>>()
+                                .add(this::successHelp, 70)
+                                .add(this::failHelp, 30));
         messages(
                 "Что же, придётся лезть на дерево.",
                 "Довольно неуклюже и более чем самонадеянно вы карабкаетесь на дерево.",

@@ -15,7 +15,9 @@ import ru.v1as.tg.cat.callbacks.phase.poll.UpdateWithChoiceTextBuilder;
 import ru.v1as.tg.cat.callbacks.phase.poll.interceptor.PhaseContextChoiceAroundInterceptor;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
+import ru.v1as.tg.cat.model.random.RandomRequest;
 import ru.v1as.tg.cat.service.clock.BotClock;
+import ru.v1as.tg.cat.service.random.RandomChoice;
 import ru.v1as.tg.cat.tg.TgSender;
 
 @RequiredArgsConstructor
@@ -28,6 +30,7 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
     @Autowired protected TgSender sender;
     @Autowired protected BotClock clock;
     @Autowired private TgCallbackProcessor callbackProcessor;
+    @Autowired private RandomChoice randomChoice;
 
     protected void message(TgUser userData, String text) {
         sender.execute(new SendMessage(userData.getId().longValue(), text));
@@ -56,6 +59,18 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
     protected PhaseContextChoiceAroundInterceptor<T> getChoiceAroundInterceptor(
             SimplePoll poll, ThreadLocal<T> phaseContext) {
         return new PhaseContextChoiceAroundInterceptor<>(phaseContext);
+    }
+
+    protected <R> R random(RandomRequest<R> randomRequest) {
+        return randomChoice.get(randomRequest);
+    }
+
+    protected <R> R random(R... values) {
+        return random(new RandomRequest<R>().addAll(values));
+    }
+
+    protected <R> R random(Iterable<R> values) {
+        return random(new RandomRequest<R>().addAll(values));
     }
 
     protected void messages(String... texts) {

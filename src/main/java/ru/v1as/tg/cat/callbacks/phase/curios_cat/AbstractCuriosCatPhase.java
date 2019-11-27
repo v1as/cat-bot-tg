@@ -32,6 +32,7 @@ public abstract class AbstractCuriosCatPhase extends AbstractPhase<CuriosCatCont
     @Autowired protected CatBotData data;
     @Autowired protected CatEventService catEventService;
     @Autowired protected BotClock botClock;
+
     protected final PollTimeoutConfiguration TIMEOUT_LEAVE_CAT =
             new PollTimeoutConfiguration(Duration.of(30, SECONDS))
                     .removeMsg(true)

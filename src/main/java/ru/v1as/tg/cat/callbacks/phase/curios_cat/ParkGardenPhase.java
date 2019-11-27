@@ -1,25 +1,23 @@
 package ru.v1as.tg.cat.callbacks.phase.curios_cat;
 
-import com.google.common.collect.ImmutableList;
 import org.springframework.stereotype.Component;
 import ru.v1as.tg.cat.EmojiConst;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 import ru.v1as.tg.cat.callbacks.phase.poll.ChooseContext;
-import ru.v1as.tg.cat.utils.RandomChoice;
-import ru.v1as.tg.cat.utils.RandomNoRepeats;
+import ru.v1as.tg.cat.model.random.RandomRequest;
 
 @Component
 public class ParkGardenPhase extends AbstractCuriosCatPhase {
 
-    private RandomChoice<String> chillingMessages =
-            new RandomNoRepeats<>(
-                    ImmutableList.of(
+    private RandomRequest<String> chillingMessages =
+            new RandomRequest<String>()
+                    .addAll(
                             "Коту немного подустал и решил устроиться рядом с вами на лавочке, свернувшись клубочком",
                             "На этот раз кота заинтересовал одуванчик",
                             "Кот с любопытством уставился на птицу на дереве",
                             "Мимо проходит ребёнок с маленьким щенком. Вы с котом провожаете их взглядом.",
                             "Кот лениво играет со своим хвостом.",
-                            "Так бывает? Кот потёрся о вашу ногу."));
+                            "Так бывает? Кот потёрся о вашу ногу.");
 
     @Override
     protected void open() {
@@ -58,7 +56,7 @@ public class ParkGardenPhase extends AbstractCuriosCatPhase {
                     "Он кивнул вам на прощанье и исчез.");
             catchUpCatAndClose(CatRequestVote.CAT1);
         } else {
-            message(chillingMessages.get());
+            message(random(chillingMessages));
             poll("Что будем делать?")
                     .choice("Отдыхать", this::rest)
                     .choice("Кот!" + EmojiConst.CAT, this::goodBye)
