@@ -2,6 +2,7 @@ package ru.v1as.tg.cat.callbacks.phase.impl;
 
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static ru.v1as.tg.cat.EmojiConst.CAT;
+import static ru.v1as.tg.cat.EmojiConst.MONEY_BAG;
 import static ru.v1as.tg.cat.utils.RandomUtils.random;
 
 import com.google.common.collect.ImmutableList;
@@ -49,7 +50,7 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
                         .removeMsg(true)
                         .onTimeout(this::close);
         Context ctx = getPhaseContext();
-        poll("Любопытный кот гуляет рядом")
+        poll("Любопытный Кот гуляет рядом")
                 .closeOnChoose(false)
                 .closeTextBuilder(new UpdateWithChoiceTextBuilder())
                 .removeOnClose(true)
@@ -95,7 +96,7 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
         log.info("Trying to sat cat for user '{}'", user);
         getPhaseContext().checkNotClose();
         saveCatRequest(ctx);
-        message(String.format("Любопытный Кот убежал к %s %s", user, CAT));
+        message(String.format("Любопытный Кот убежал к %s  %s  (+3%s)", user, CAT, MONEY_BAG));
         close();
     }
 

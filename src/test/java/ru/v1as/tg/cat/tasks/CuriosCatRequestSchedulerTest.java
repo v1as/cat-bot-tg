@@ -31,11 +31,11 @@ public class CuriosCatRequestSchedulerTest extends AbstractCatBotTest {
         scheduler.setFirstTime(false);
         scheduler.run();
 
-        popSendMessage().assertText("Любопытный кот гуляет рядом").findCallback("Кот").send();
+        popSendMessage().assertText("Любопытный Кот гуляет рядом").findCallback("Кот").send();
         popEditMessage().assertContainText("не пойдёт");
         clock.skip(11, TimeUnit.SECONDS);
 
-        popSendMessage().assertText("Любопытный Кот убежал к @User0 \uD83D\uDC08");
+        popSendMessage().assertContainText("Любопытный Кот убежал к @User0");
         popDeleteMessage();
     }
 
@@ -44,7 +44,7 @@ public class CuriosCatRequestSchedulerTest extends AbstractCatBotTest {
         scheduler.setChance(1);
         scheduler.run();
 
-        popSendMessage().assertText("Любопытный кот гуляет рядом");
+        popSendMessage().assertText("Любопытный Кот гуляет рядом");
         clock.skip(5 + 1, TimeUnit.MINUTES);
 
         popDeleteMessage();

@@ -17,15 +17,15 @@ public abstract class AbstractCatBotTestWithPoll extends AbstractCatBotTest {
 
         switchToSecondUser();
         message.findCallback("x3").send();
-        popAnswerCallbackQuery().assertText("Голос учтён");
+        popAnswerCallbackQuery().assertContainText("Голос учтён");
 
         switchToThirdUser();
         message.findCallback("x3").send();
-        popAnswerCallbackQuery().assertText("Голос учтён");
+        popAnswerCallbackQuery().assertContainText("Голос учтён");
 
         switchToFourthUser();
         message.findCallback("x3").send();
-        popAnswerCallbackQuery().assertText("Голос учтён");
+        popAnswerCallbackQuery().assertContainText("Голос учтён");
 
         popEditMessageText().assertText("3x" + EmojiConst.CAT);
 

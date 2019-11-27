@@ -47,7 +47,7 @@ public class CatBotTest extends AbstractCatBotTest {
 
         switchToSecondUser();
         sendCallback(pollMsdId, CAT1.getCallback());
-        popAnswerCallbackQuery().assertText("Голос учтён");
+        popAnswerCallbackQuery().assertContainText("Голос учтён");
         popEditMessageReplyMarkup();
 
         CatRequestVote vote = catRequest.getVotes().entrySet().iterator().next().getValue();
@@ -55,14 +55,14 @@ public class CatBotTest extends AbstractCatBotTest {
 
         switchToThirdUser();
         sendCallback(pollMsdId, CAT1.getCallback());
-        popAnswerCallbackQuery().assertText("Голос учтён");
+        popAnswerCallbackQuery().assertContainText("Голос учтён");
         popEditMessageReplyMarkup();
         assertEquals(2, catRequest.getVotes().size());
         assertTrue(catRequest.getVotes().values().stream().allMatch(CAT1::equals));
 
         switchToFourthUser();
         sendCallback(pollMsdId, CAT1.getCallback());
-        popAnswerCallbackQuery().assertText("Голос учтён");
+        popAnswerCallbackQuery().assertContainText("Голос учтён");
         assertEquals(3, catRequest.getVotes().size());
         assertTrue(catRequest.getVotes().values().stream().allMatch(CAT1::equals));
         assertTrue(catRequest.isClosed());

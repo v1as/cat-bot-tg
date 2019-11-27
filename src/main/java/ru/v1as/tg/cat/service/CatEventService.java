@@ -33,7 +33,7 @@ import ru.v1as.tg.cat.model.TgUser;
 @RequiredArgsConstructor
 public class CatEventService {
 
-    private static final BigDecimal CAT_REWARD = new BigDecimal(3);
+    public static final BigDecimal CAT_REWARD = new BigDecimal(3);
     private final UserEventDao userEventDao;
     private final UserDao userDao;
     private final ChatDao chatDao;
