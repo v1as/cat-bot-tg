@@ -54,5 +54,4 @@ public class HungryCatPhase extends AbstractCuriosCatPhase {
                 "Видимо, кот был не так уж и голоден.");
         catchUpCatAndClose(NOT_CAT);
     }
-
 }

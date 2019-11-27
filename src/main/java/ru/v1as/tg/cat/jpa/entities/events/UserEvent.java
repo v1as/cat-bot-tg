@@ -10,9 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import ru.v1as.tg.cat.jpa.entities.chat.ChatEntity;
 import ru.v1as.tg.cat.jpa.entities.user.UserEntity;
 

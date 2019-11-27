@@ -2,7 +2,7 @@ package ru.v1as.tg.cat.commands.impl;
 
 import org.junit.Test;
 
-public class QuarterScoreCommandHandlerTest extends AbstractScoreCommandHandlerTest {
+public class QuarterScoreCommandHandlerTest extends AbstractCatBotTestWithPoll {
 
     @Test
     public void shouldSendEmptyScoreData() {

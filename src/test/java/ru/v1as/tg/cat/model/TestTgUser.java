@@ -36,5 +36,4 @@ public class TestTgUser implements TgUser {
     public String getLanguageCode() {
         return null;
     }
-
 }

@@ -1,9 +1,9 @@
 package ru.v1as.tg.cat;
 
-import static java.util.Collections.emptyList;
 import static ru.v1as.tg.cat.model.UpdateUtils.getChat;
 import static ru.v1as.tg.cat.model.UpdateUtils.getUser;
 
+import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -32,25 +32,31 @@ public class DatabaseUpdateBeforeHandler implements TgUpdateBeforeHandler {
             return;
         }
         updateUserEntity(chat, user);
-        updateChatEntity(chat);
+        updateChatEntity(chat, user);
     }
 
-    private void updateChatEntity(TgChat chat) {
+    private void updateChatEntity(TgChat chat, TgUser user) {
         ChatEntity chatEntity = chatDao.findById(chat.getId()).orElse(null);
+        UserEntity userEntity = userDao.findById(user.getId()).orElse(null);
         ChatDetailsEntity chatDetails = null;
         boolean chatToSave;
         if (chatEntity == null) {
             chatEntity =
                     new ChatEntity(
-                            chat.getId(), chat.getTitle(), chat.getDescription(), -1, emptyList());
+                            chat.getId(),
+                            chat.getTitle(),
+                            chat.getDescription(),
+                            -1,
+                            new ArrayList<>());
             chatDetails = new ChatDetailsEntity();
             chatDetails.setId(chat.getId());
             chatDetails.setChat(chatEntity);
             chatDetails.setCatPollEnabled(false);
             // todo update amount
             chatToSave = true;
+            chatEntity.getUsers().add(userEntity);
         } else {
-            chatToSave = chatEntity.update(chat);
+            chatToSave = chatEntity.update(chat, userEntity);
         }
         if (chatToSave) {
             chatDao.save(chatEntity);

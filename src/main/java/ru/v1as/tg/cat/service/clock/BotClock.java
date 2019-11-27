@@ -7,5 +7,4 @@ public interface BotClock {
     void wait(int milliseconds);
 
     void schedule(Runnable o, long amount, TimeUnit minutes);
-
 }

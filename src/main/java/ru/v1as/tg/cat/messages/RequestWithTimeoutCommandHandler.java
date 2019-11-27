@@ -46,10 +46,10 @@ public abstract class RequestWithTimeoutCommandHandler implements MessageHandler
 
     @EqualsAndHashCode(of = {"userId", "chatId"})
     private static class LoadDumpRequest {
-        private LocalDateTime created = LocalDateTime.now();
         private final Integer userId;
         private final Long chatId;
         private final Runnable onTimeout;
+        private LocalDateTime created = LocalDateTime.now();
 
         private LoadDumpRequest(Message msg, Runnable onTimeout) {
             this.userId = msg.getFrom().getId();

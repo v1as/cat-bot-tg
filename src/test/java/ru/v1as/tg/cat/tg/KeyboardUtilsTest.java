@@ -42,5 +42,4 @@ public class KeyboardUtilsTest {
         assertEquals("name3", buttons.get(2).getText());
         assertEquals("data3", buttons.get(2).getCallbackData());
     }
-
 }

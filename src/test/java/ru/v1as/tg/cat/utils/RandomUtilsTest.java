@@ -12,6 +12,6 @@ public class RandomUtilsTest {
     public void name() {
         assertEquals("a", random("a", "a", "a", "a"));
         assertEquals("a", random(Arrays.asList("a", "a", "a", "a")));
-        assertEquals("a", random(new String[] {"a", "a", "a", "a"}));
+        assertEquals("a", random("a", "a", "a", "a"));
     }
 }

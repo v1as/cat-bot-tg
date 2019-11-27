@@ -38,5 +38,4 @@ public class EnablePollsCommand implements CommandHandler {
             sender.message(chat, "Создание опросов теперь включено");
         }
     }
-
 }

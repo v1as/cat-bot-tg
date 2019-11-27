@@ -2,7 +2,7 @@ package ru.v1as.tg.cat.commands.impl;
 
 import org.junit.Test;
 
-public class GlobalScoreCommandHandlerTest extends AbstractScoreCommandHandlerTest {
+public class GlobalScoreCommandHandlerTest extends AbstractCatBotTestWithPoll {
 
     @Test
     public void shouldSendEmptyScoreData() {
@@ -13,5 +13,4 @@ public class GlobalScoreCommandHandlerTest extends AbstractScoreCommandHandlerTe
         sendCommand("/global_score");
         popSendMessage().assertContainText("@User0: 3");
     }
-
 }

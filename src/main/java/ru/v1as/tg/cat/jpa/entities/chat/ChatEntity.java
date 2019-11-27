@@ -3,6 +3,7 @@ package ru.v1as.tg.cat.jpa.entities.chat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -35,7 +36,7 @@ public class ChatEntity implements TgChat {
         return users;
     }
 
-    public boolean update(TgChat chat) {
+    public boolean update(TgChat chat, UserEntity user) {
         boolean changed = false;
         if (Objects.equals(title, chat.getTitle())) {
             title = chat.getTitle();
@@ -43,6 +44,13 @@ public class ChatEntity implements TgChat {
         }
         if (Objects.equals(description, chat.getDescription())) {
             description = chat.getDescription();
+            changed = true;
+        }
+        if (!this.getUsers().stream()
+                .map(UserEntity::getId)
+                .collect(Collectors.toSet())
+                .contains(user.getId())) {
+            this.getUsers().add(user);
             changed = true;
         }
         return changed;
