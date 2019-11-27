@@ -1,7 +1,6 @@
 package ru.v1as.tg.cat.callbacks.phase.impl;
 
 import static org.springframework.util.StringUtils.isEmpty;
-import static ru.v1as.tg.cat.utils.RandomUtils.random;
 
 import java.util.List;
 import java.util.Map;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Component;
 import ru.v1as.tg.cat.callbacks.phase.curios_cat.AbstractCuriosCatPhase;
 import ru.v1as.tg.cat.jpa.dao.CatUserEventDao;
 import ru.v1as.tg.cat.jpa.entities.events.CatUserEvent;
+import ru.v1as.tg.cat.service.random.RandomChoice;
 
 @Slf4j
 @Component
@@ -22,6 +22,7 @@ public class CuriosCatQuestProducer {
 
     private final List<AbstractCuriosCatPhase> nextPhases;
     private final CatUserEventDao catUserEventDao;
+    private final RandomChoice randomChoice;
 
     @PostConstruct
     public void init() {
@@ -55,6 +56,6 @@ public class CuriosCatQuestProducer {
                         : nextPhases.stream()
                                 .filter(q -> rareQuestName.contains(q.getName()))
                                 .collect(Collectors.toList());
-        return random(quests);
+        return randomChoice.random(quests);
     }
 }

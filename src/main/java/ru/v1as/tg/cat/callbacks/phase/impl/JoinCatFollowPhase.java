@@ -3,7 +3,6 @@ package ru.v1as.tg.cat.callbacks.phase.impl;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static ru.v1as.tg.cat.EmojiConst.CAT;
 import static ru.v1as.tg.cat.EmojiConst.MONEY_BAG;
-import static ru.v1as.tg.cat.utils.RandomUtils.random;
 
 import com.google.common.collect.ImmutableList;
 import java.time.Duration;

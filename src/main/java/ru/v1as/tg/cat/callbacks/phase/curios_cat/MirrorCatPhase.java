@@ -2,7 +2,6 @@ package ru.v1as.tg.cat.callbacks.phase.curios_cat;
 
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT2;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.NOT_CAT;
-import static ru.v1as.tg.cat.utils.RandomUtils.random;
 
 import org.springframework.stereotype.Component;
 import ru.v1as.tg.cat.callbacks.phase.poll.ChooseContext;

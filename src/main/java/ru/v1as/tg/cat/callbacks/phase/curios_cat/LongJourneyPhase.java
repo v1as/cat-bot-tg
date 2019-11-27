@@ -1,7 +1,5 @@
 package ru.v1as.tg.cat.callbacks.phase.curios_cat;
 
-import static ru.v1as.tg.cat.utils.RandomUtils.random;
-
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import org.springframework.stereotype.Component;
