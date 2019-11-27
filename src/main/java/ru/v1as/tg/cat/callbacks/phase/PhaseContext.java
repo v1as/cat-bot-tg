@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.v1as.tg.cat.callbacks.phase.poll.SimplePoll;
 import ru.v1as.tg.cat.model.TgChat;
-import ru.v1as.tg.cat.service.clock.BotClock;
 
 @RequiredArgsConstructor
 @Slf4j

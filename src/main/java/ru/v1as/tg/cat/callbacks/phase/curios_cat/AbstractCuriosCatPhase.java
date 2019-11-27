@@ -27,14 +27,13 @@ import ru.v1as.tg.cat.service.clock.BotClock;
 
 public abstract class AbstractCuriosCatPhase extends AbstractPhase<CuriosCatContext> {
 
+    @Autowired protected CatBotData data;
+    @Autowired protected CatEventService catEventService;
+    @Autowired protected BotClock botClock;
     protected final PollTimeoutConfiguration TIMEOUT_LEAVE_CAT =
             new PollTimeoutConfiguration(Duration.of(30, SECONDS))
                     .removeMsg(true)
                     .onTimeout(() -> this.catchUpCatAndClose(NOT_CAT));
-
-    @Autowired protected CatBotData data;
-    @Autowired protected CatEventService catEventService;
-    @Autowired protected BotClock botClock;
 
     public CuriosCatContext buildContext(
             TgChat chat, TgChat publicChat, TgUser user, Message message) {

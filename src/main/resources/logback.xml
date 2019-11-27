@@ -1,17 +1,17 @@
 <configuration>
 
-  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+  <appender class="ch.qos.logback.core.ConsoleAppender" name="STDOUT">
     <encoder>
       <pattern>%date %level [%thread] %logger{10}: %msg%n</pattern>
     </encoder>
   </appender>
 
-  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-    <file>cat_bot.log</file>
-
+  <appender class="ch.qos.logback.core.FileAppender" name="FILE">
     <encoder>
       <pattern>%date %level [%thread] %logger{10}: %msg%n</pattern>
     </encoder>
+
+    <file>cat_bot.log</file>
   </appender>
 
 

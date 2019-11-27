@@ -13,5 +13,4 @@ public class AssertAnswerCallbackQuery {
         Assert.assertEquals(text, answerCallbackQuery.getText());
         return this;
     }
-
 }

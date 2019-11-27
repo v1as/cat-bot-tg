@@ -9,10 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import ru.v1as.tg.cat.service.Const.OnlyForAdmins;
 import ru.v1as.tg.cat.commands.TgCommandRequest;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
+import ru.v1as.tg.cat.service.Const.OnlyForAdmins;
 
 @Slf4j
 public abstract class MainUpdateProcessor implements TgUpdateProcessor {

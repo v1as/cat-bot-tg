@@ -271,5 +271,4 @@ public abstract class TgBotTest implements TgTestInvoker {
         assertEquals(getChatId().toString(), editMessageText.getChatId());
         return new AssertEditMessageText(editMessageText);
     }
-
 }

@@ -4,9 +4,11 @@ import ru.v1as.tg.cat.AbstractCatBotTest;
 import ru.v1as.tg.cat.EmojiConst;
 import ru.v1as.tg.cat.utils.AssertSendMessage;
 
-public abstract class AbstractScoreCommandHandlerTest extends AbstractCatBotTest {
+public abstract class AbstractCatBotTestWithPoll extends AbstractCatBotTest {
 
     public void processPoll() {
+        switchToFirstUser();
+
         sendCommand("/enable_polls");
         clearMethodsQueue();
 
@@ -28,5 +30,7 @@ public abstract class AbstractScoreCommandHandlerTest extends AbstractCatBotTest
         popEditMessageText().assertText("3x" + EmojiConst.CAT);
 
         clearMethodsQueue();
+
+        switchToFirstUser();
     }
 }

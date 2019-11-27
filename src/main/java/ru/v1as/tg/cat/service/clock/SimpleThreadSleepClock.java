@@ -23,5 +23,4 @@ public class SimpleThreadSleepClock implements BotClock {
     public void schedule(Runnable o, long amount, TimeUnit minutes) {
         executor.schedule(o, amount, minutes);
     }
-
 }

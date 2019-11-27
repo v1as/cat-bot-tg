@@ -9,7 +9,7 @@ public class RandomUtils {
     private static final Random RAND = new Random();
 
     public static <T> T random(List<T> values) {
-        return (T) values.get(RAND.nextInt(values.size()));
+        return values.get(RAND.nextInt(values.size()));
     }
 
     @SuppressWarnings("unchecked")
@@ -18,7 +18,7 @@ public class RandomUtils {
             ImmutableList valueList = ImmutableList.copyOf((Iterable) values[0]);
             return (T) valueList.get(RAND.nextInt(valueList.size()));
         } else {
-            return (T) values[RAND.nextInt(values.length)];
+            return values[RAND.nextInt(values.length)];
         }
     }
 }

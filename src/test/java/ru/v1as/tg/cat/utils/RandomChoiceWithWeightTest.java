@@ -23,5 +23,4 @@ public class RandomChoiceWithWeightTest {
         final String value = random.get();
         assertTrue("first".equals(value) || "second".equals(value));
     }
-
 }

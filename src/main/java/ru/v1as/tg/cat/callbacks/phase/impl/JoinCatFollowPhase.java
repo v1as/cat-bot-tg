@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import ru.v1as.tg.cat.EmojiConst;
 import ru.v1as.tg.cat.callbacks.phase.AbstractPhase;
 import ru.v1as.tg.cat.callbacks.phase.PhaseContext;
 import ru.v1as.tg.cat.callbacks.phase.PollTimeoutConfiguration;

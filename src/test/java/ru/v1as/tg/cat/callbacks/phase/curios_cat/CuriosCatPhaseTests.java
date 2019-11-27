@@ -8,8 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.v1as.tg.cat.TgBotTest;
 import ru.v1as.tg.cat.CaBotTestConfiguration;
+import ru.v1as.tg.cat.TgBotTest;
 import ru.v1as.tg.cat.callbacks.phase.curios_cat.CuriosCatPhaseTests.CuriosConfigurationTest;
 import ru.v1as.tg.cat.tg.TgSender;
 import ru.v1as.tg.cat.utils.AssertSendMessage;
@@ -19,8 +19,7 @@ import ru.v1as.tg.cat.utils.AssertSendMessage;
 public class CuriosCatPhaseTests extends TgBotTest {
 
     @Autowired List<AbstractCuriosCatPhase> phases;
-    @Autowired
-    TgSender sender;
+    @Autowired TgSender sender;
 
     @Test
     public void test1() {
