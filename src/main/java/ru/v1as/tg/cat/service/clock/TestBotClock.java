@@ -1,5 +1,6 @@
 package ru.v1as.tg.cat.service.clock;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
@@ -22,21 +23,35 @@ public class TestBotClock implements BotClock {
 
     @Override
     public void schedule(Runnable runnable, long delay, TimeUnit unit) {
-        synchronized (this) {
-            tasks.add(new Task(runnable, unit.toNanos(delay));
+        synchronized (tasks) {
+            tasks.add(new Task(runnable, unit.toNanos(delay)));
         }
     }
 
     public void skip(long delay, TimeUnit timeUnit) {
-        synchronized (this) {
-            final long nanos = timeUnit.toNanos(delay);
-            Task todo = null;
-            do {
-                final Optional<Task> task =
-                        tasks.stream().filter(t -> t.getNanos() < nanos).findFirst();
-                //todo
-            } while (todo != null);
+        final long nanos = timeUnit.toNanos(delay);
+        Optional<Task> todo;
+        Set<Task> oldTask;
+        synchronized (tasks) {
+            oldTask = new HashSet<>(tasks);
+            tasks.forEach(t -> t.skip(nanos));
         }
+        do {
+            synchronized (tasks) {
+                todo = tasks.stream().filter(t -> t.getNanos() < 0).findFirst();
+            }
+            if (todo.isPresent()) {
+                final Task todoTask = todo.get();
+                todoTask.run();
+                synchronized (tasks) {
+                    tasks.remove(todoTask);
+                    tasks.stream()
+                            .filter(t -> !oldTask.contains(t))
+                            .forEach(t -> t.skip(todoTask.getNanos() * -1));
+                }
+            }
+
+        } while (todo.isPresent());
     }
 
     @Data
@@ -49,10 +64,13 @@ public class TestBotClock implements BotClock {
             this.runnable.run();
         }
 
+        void skip(long deltaNanos) {
+            this.nanos -= deltaNanos;
+        }
+
         @Override
         public int compareTo(Task o) {
             return Long.compare(this.getNanos(), o.getNanos());
         }
     }
-
 }

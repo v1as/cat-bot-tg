@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 import ru.v1as.tg.cat.model.CatRequest;
+import ru.v1as.tg.cat.utils.AssertSendMessage;
 
 @Slf4j
 public class CatBotTest extends AbstractCatBotTest {
@@ -35,10 +36,7 @@ public class CatBotTest extends AbstractCatBotTest {
     @Test
     public void testUserCancelHimSelf() {
         sendPhotoMessage();
-        popSendMessage()
-            .assertText("Это кот?")
-            .findCallback(EmojiConst.HEAVY_MULTIPLY)
-            .send();
+        popSendMessage().assertText("Это кот?").findCallback(EmojiConst.HEAVY_MULTIPLY).send();
         popAnswerCallbackQuery("Вы закрыли голосование");
         popDeleteMessage().getMessageId();
     }
