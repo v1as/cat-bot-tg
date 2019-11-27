@@ -1,7 +1,9 @@
 package ru.v1as.tg.cat.callbacks.phase.curios_cat;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
+import static ru.v1as.tg.cat.EmojiConst.MONEY_BAG;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.NOT_CAT;
+import static ru.v1as.tg.cat.service.CatEventService.CAT_REWARD;
 import static ru.v1as.tg.cat.utils.TimeoutUtils.getMsForTextReading;
 
 import java.time.Duration;
@@ -101,6 +103,10 @@ public abstract class AbstractCuriosCatPhase extends AbstractPhase<CuriosCatCont
         } else if (result == NOT_CAT) {
             message = "Любопытный кот сбегает от игрока ";
         }
+        String reward =
+                result.getAmount() > 0
+                        ? "(+" + result.getAmount() * CAT_REWARD.intValue() + MONEY_BAG + ")"
+                        : "";
         message(publicChat, message + user.getUsernameOrFullName());
         catEventService.saveCuriosCatQuest(
                 user, publicChat, ctx.message, result, getClass().getSimpleName());
