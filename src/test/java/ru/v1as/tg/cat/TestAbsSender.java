@@ -30,6 +30,7 @@ public class TestAbsSender implements TgSender {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T extends Serializable, Method extends BotApiMethod<T>> T execute(Method method) {
         items.add(new MethodCall(method, null));
         return null;

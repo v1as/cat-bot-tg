@@ -1,6 +1,5 @@
 package ru.v1as.tg.cat;
 
-import static junit.framework.Assert.fail;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -33,7 +32,9 @@ import ru.v1as.tg.cat.model.TgChatWrapper;
 import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.service.CatEventService;
 import ru.v1as.tg.cat.tg.TgUpdateProcessor;
+import ru.v1as.tg.cat.utils.AssertAnswerCallbackQuery;
 import ru.v1as.tg.cat.utils.AssertEditMessage;
+import ru.v1as.tg.cat.utils.AssertEditMessageText;
 import ru.v1as.tg.cat.utils.AssertSendMessage;
 
 public abstract class TgBotTest implements TgTestInvoker {
@@ -64,9 +65,10 @@ public abstract class TgBotTest implements TgTestInvoker {
 
     @After
     public void after() {
-        if (0 != sender.getMethodsAmount()) {
-            fail("There are unexptected methods" + sender.getMethodCalls());
-        }
+        assertEquals(
+                "There are unexpected methods" + sender.getMethodCalls(),
+                0,
+                sender.getMethodsAmount());
     }
 
     protected void switchToFirstUser() {
@@ -244,16 +246,10 @@ public abstract class TgBotTest implements TgTestInvoker {
         return new AssertSendMessage(this, sendMessage, call.getResponse());
     }
 
-    protected AnswerCallbackQuery popAnswerCallbackQuery() {
+    protected AssertAnswerCallbackQuery popAnswerCallbackQuery() {
         AnswerCallbackQuery query = popMethod(AnswerCallbackQuery.class);
         assertEquals(lastCallbackQueryId.toString(), query.getCallbackQueryId());
-        return query;
-    }
-
-    protected AnswerCallbackQuery popAnswerCallbackQuery(String text) {
-        AnswerCallbackQuery answerCallbackQuery = popAnswerCallbackQuery();
-        assertEquals(text, answerCallbackQuery.getText());
-        return answerCallbackQuery;
+        return new AssertAnswerCallbackQuery(query);
     }
 
     protected DeleteMessage popDeleteMessage() {
@@ -270,16 +266,10 @@ public abstract class TgBotTest implements TgTestInvoker {
         return markup;
     }
 
-    protected EditMessageText popEditMessageText() {
+    protected AssertEditMessageText popEditMessageText() {
         EditMessageText editMessageText = popMethod(EditMessageText.class);
         assertEquals(getChatId().toString(), editMessageText.getChatId());
-        assertNotNull(editMessageText.getMessageId());
-        return editMessageText;
+        return new AssertEditMessageText(editMessageText);
     }
 
-    protected EditMessageText popEditMessageText(String text) {
-        EditMessageText editMessageText = popEditMessageText();
-        assertEquals(text, editMessageText.getText());
-        return editMessageText;
-    }
 }

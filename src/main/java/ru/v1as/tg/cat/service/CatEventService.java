@@ -78,8 +78,8 @@ public class CatEventService {
         events.add(event);
         final int cats = req.getResult().getAmount();
         if (cats > 0) {
-            for (Entry<TgUser, CatRequestVote> vote : req.getVotes().entrySet()) {
-                final UserEntity voter = userDao.getOne(vote.getKey().getId());
+            for (Entry<Integer, CatRequestVote> vote : req.getVotes().entrySet()) {
+                final UserEntity voter = userDao.getOne(vote.getKey());
                 final CatVoteEvent voteEvent = new CatVoteEvent();
                 voteEvent.setMessageId(req.getMessageId());
                 voteEvent.setChat(chat);

@@ -1,8 +1,10 @@
 package ru.v1as.tg.cat.utils;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Collection;
 import lombok.RequiredArgsConstructor;
-import org.junit.Assert;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -15,7 +17,15 @@ public class AssertSendMessage {
     private final Message message;
 
     public AssertSendMessage assertText(String text) {
-        Assert.assertEquals(text, sendMessage.getText());
+        assertEquals(text, sendMessage.getText());
+        return this;
+    }
+
+    public AssertSendMessage assertContainText(String value) {
+        final String assertMessage =
+                String.format(
+                        "Expect contain value '%s' but was '%s'", value, sendMessage.getText());
+        assertTrue(assertMessage, sendMessage.getText().contains(value));
         return this;
     }
 
