@@ -18,7 +18,7 @@ public class MethodCall<T extends Serializable> {
     public String toString() {
         return "MethodCall{"
                 + "request="
-                + (request != null ? request.getClass().getSimpleName() : "")
+                + (request != null ? request.toString() : "")
                 + ", response="
                 + (response != null ? response.getClass().getSimpleName() : "")
                 + '}';

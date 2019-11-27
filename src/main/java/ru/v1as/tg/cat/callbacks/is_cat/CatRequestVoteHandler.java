@@ -76,14 +76,13 @@ public class CatRequestVoteHandler implements TgCallBackHandler<CatRequestVote> 
         if (FINISHED.equals(voted)) {
             sender.execute(clearButtons(msg));
         } else if (CANCELED.equals(voted)) {
-            req.cancel();
             log.info("Request for user '{}' is canceled.", user.getUsernameOrFullName());
             final Integer messageId = req.getMessageId();
             final Long chatId = req.getChatId();
             catService.saveRealCatPoll(req);
             sender.execute(new DeleteMessage(chatId, messageId));
         } else if (VOTED.equals(voted)) {
-            if (req.checkVotesEnoughToFinish()) {
+            if (req.isClosed()) {
                 saveFinishedPoll(vote, req);
                 sender.execute(
                         new EditMessageText()

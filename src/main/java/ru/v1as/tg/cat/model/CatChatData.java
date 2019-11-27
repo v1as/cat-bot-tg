@@ -11,7 +11,6 @@ import lombok.Getter;
 public class CatChatData extends ChatData {
 
     final Map<Integer, CatRequest> msgIdToCatRequests = new HashMap<>();
-    final Map<Integer, CuriosCatRequest> msgIdToCuriosRequest = new HashMap<>();
 
     public CatChatData(TgChat chat) {
         super(chat, chat.isUserChat());
@@ -29,11 +28,4 @@ public class CatChatData extends ChatData {
         return msgIdToCatRequests.values();
     }
 
-    public void registerCuriosCatRequest(CuriosCatRequest request) {
-        msgIdToCuriosRequest.put(request.getMessageId(), request);
-    }
-
-    public CuriosCatRequest getCuriosCatRequest(Integer msgId) {
-        return msgIdToCuriosRequest.get(msgId);
-    }
 }

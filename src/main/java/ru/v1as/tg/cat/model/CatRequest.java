@@ -23,7 +23,7 @@ public class CatRequest extends TgRequestPoll<CatRequestVote> {
 
     private final Integer srcMsgId;
     private final TgUser owner;
-    private final Map<TgUser, CatRequestVote> votes = new ConcurrentHashMap<>();
+    private final Map<Integer, CatRequestVote> votes = new ConcurrentHashMap<>();
     private Boolean isReal = false;
     private InlineKeyboardMarkup pollButtons;
 
@@ -40,21 +40,24 @@ public class CatRequest extends TgRequestPoll<CatRequestVote> {
             return RequestAnswerResult.FINISHED;
         }
         if (userId.equals(owner.getId()) && vote.equals(CatRequestVote.NOT_CAT)) {
+            this.cancel();
             return RequestAnswerResult.CANCELED;
         }
-        CatRequestVote prevVote = votes.get(user);
+        CatRequestVote prevVote = votes.get(userId);
         if (owner.getId().equals(userId)) {
             return RequestAnswerResult.FORBIDDEN;
         } else if (vote.equals(prevVote)) {
             return RequestAnswerResult.SAME;
-        } else if (null == votes.put(user, vote)) {
+        } else if (null == votes.put(userId, vote)) {
+            checkVotesEnoughToFinish();
             return RequestAnswerResult.VOTED;
         } else {
+            checkVotesEnoughToFinish();
             return RequestAnswerResult.CHANGED;
         }
     }
 
-    public boolean checkVotesEnoughToFinish() {
+    private void checkVotesEnoughToFinish() {
         Map<CatRequestVote, Long> votes =
                 getVotes().entrySet().stream().collect(groupingBy(Entry::getValue, counting()));
         Optional<CatRequestVote> voteValue = Optional.empty();
@@ -72,7 +75,6 @@ public class CatRequest extends TgRequestPoll<CatRequestVote> {
             CatRequestVote vote = voteValue.get();
             close(vote);
         }
-        return voteValue.isPresent();
     }
 
     public String getVotesButtonPrefix(CatRequestVote cat1) {

@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class TgRequestPoll<T> {
+public abstract class TgRequestPoll<T> {
 
     protected final Long chatId;
     protected final LocalDateTime created = LocalDateTime.now();
