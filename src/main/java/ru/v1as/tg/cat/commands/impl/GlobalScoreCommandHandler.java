@@ -35,6 +35,10 @@ public class GlobalScoreCommandHandler implements CommandHandler {
 
     @Override
     public void handle(TgCommandRequest command, TgChat chat, TgUser user) {
+        if (chat.isUserChat()) {
+            sender.message(chat, "Эту комманду можно выполнять только в групповом чате.");
+            return;
+        }
         String text =
                 scoreData
                         .getWinnersStream(chat.getId(), getDateAfter())

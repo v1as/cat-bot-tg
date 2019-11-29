@@ -36,7 +36,7 @@ public class TgCommandProcessorByName implements TgCommandProcessor {
         CommandHandler commandHandler = commandToHandler.get(command.getName());
         if (commandHandler != null) {
             log.info(
-                    "Command '{}' just come from user '{}' in chat '{}'.  It will be processed by handler: '{}'",
+                    "Command '{}' just come from {} in {}.  It will be processed by handler: '{}'",
                     commandHandler.getCommandName(),
                     user,
                     chat,

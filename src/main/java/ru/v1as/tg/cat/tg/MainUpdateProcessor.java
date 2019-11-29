@@ -32,12 +32,16 @@ public abstract class MainUpdateProcessor implements TgUpdateProcessor {
                 before(update);
                 if (update.hasMessage() && update.getMessage().isCommand()) {
                     final Message msg = update.getMessage();
-                    log.info("Command '{}' received.", msg.getText());
+                    log.debug("Command '{}' received from {} in {}.", msg.getText(), user, chat);
                     onUpdateCommand(TgCommandRequest.parse(msg), chat, user);
                 } else if (update.hasMessage()) {
                     onUpdateMessage(update.getMessage(), chat, user);
                 } else if (update.hasCallbackQuery()) {
-                    log.info("Callback received '{}'", update.getCallbackQuery().getData());
+                    log.debug(
+                            "Callback received '{}' from {} in {}",
+                            update.getCallbackQuery().getData(),
+                            user,
+                            chat);
                     onUpdateCallbackQuery(update.getCallbackQuery(), chat, user);
                 } else {
                     log.debug("Unsupported update type: " + update);

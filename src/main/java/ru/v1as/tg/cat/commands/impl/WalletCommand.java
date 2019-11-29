@@ -51,7 +51,9 @@ public class WalletCommand implements CommandHandler {
             }
         }
         final String message;
-        if (chatToMoney.size() == 1) {
+        if (chatToMoney.size() == 0) {
+            message = "0 " + MONEY_BAG;
+        } else if (chatToMoney.size() == 1) {
             message = chatToMoney.values().iterator().next().toString() + " " + MONEY_BAG;
         } else {
             message =

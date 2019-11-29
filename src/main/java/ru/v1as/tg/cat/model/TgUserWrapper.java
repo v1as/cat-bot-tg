@@ -14,4 +14,10 @@ public class TgUserWrapper implements TgUser {
     public static TgUser wrap(User user) {
         return new TgUserWrapper(user);
     }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "User(%s:%s:%s)", this.getUserName(), this.getFullName(), this.getId());
+    }
 }
