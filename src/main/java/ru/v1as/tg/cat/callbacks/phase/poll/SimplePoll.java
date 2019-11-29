@@ -192,7 +192,7 @@ public class SimplePoll {
             public void handle(
                     String value, TgChat chat, TgUser user, CallbackQuery callbackQuery) {
                 choose = choices.get(callbackQuery.getData());
-                log.info("User '{}' just choose '{}'", user, choose.getText());
+                log.info("{} just choose '{}' in {}", user, choose.getText(), chat);
                 if (closeOnChoose) {
                     close();
                 }

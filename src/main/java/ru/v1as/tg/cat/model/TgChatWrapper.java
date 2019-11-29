@@ -14,4 +14,9 @@ public class TgChatWrapper implements TgChat {
     public static TgChat wrap(Chat chat) {
         return new TgChatWrapper(chat);
     }
+
+    @Override
+    public String toString() {
+        return String.format("Chat(%s:%s)", getTitle(), getId());
+    }
 }

@@ -29,6 +29,10 @@ public class EnablePollsCommand implements CommandHandler {
 
     @Override
     public void handle(TgCommandRequest command, TgChat chat, TgUser user) {
+        if (chat.isUserChat()) {
+            sender.message(chat, "Эту комманду можно выполнять только в групповом чате.");
+            return;
+        }
         final ChatDetailsEntity details = chatDetailsDao.findByChatId(chat.getId());
         if (details.isCatPollEnabled()) {
             sender.message(chat, "Создание опросов уже включено");

@@ -13,6 +13,7 @@ import ru.v1as.tg.cat.jpa.dao.ChatDao;
 import ru.v1as.tg.cat.jpa.dao.ChatDetailsDao;
 import ru.v1as.tg.cat.jpa.dao.UserDao;
 import ru.v1as.tg.cat.messages.TgMessageProcessor;
+import ru.v1as.tg.cat.service.ChatService;
 import ru.v1as.tg.cat.service.clock.BotClock;
 import ru.v1as.tg.cat.service.clock.TestBotClock;
 import ru.v1as.tg.cat.tg.TgSender;
@@ -60,7 +61,10 @@ public class CaBotTestConfiguration {
     @Bean
     @Primary
     public DatabaseUpdateBeforeHandler getDatabaseUpdateBeforeHandler(
-            UserDao userDao, ChatDao chatDao, ChatDetailsDao chatDetailsDao) {
-        return new DatabaseUpdateBeforeHandler(userDao, chatDao, chatDetailsDao);
+            UserDao userDao,
+            ChatDao chatDao,
+            ChatDetailsDao chatDetailsDao,
+            ChatService chatService) {
+        return new DatabaseUpdateBeforeHandler(userDao, chatDao, chatDetailsDao, chatService);
     }
 }

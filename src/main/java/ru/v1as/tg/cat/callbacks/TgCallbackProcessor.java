@@ -31,7 +31,7 @@ public class TgCallbackProcessor {
             }
         }
         prefixToHandler.put(parserPrefix, handler);
-        log.info(
+        log.debug(
                 "Callback handler '{}' registered with prefix '{}'",
                 handler.getClass(),
                 handler.getPrefix());

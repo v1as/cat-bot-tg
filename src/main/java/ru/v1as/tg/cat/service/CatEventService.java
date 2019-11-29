@@ -62,7 +62,8 @@ public class CatEventService {
         event.setResult(result);
         event.setQuestName(quest);
         userEventDao.save(event);
-        userEventDao.save(new ResourceEvent(MONEY, CAT_REWARD, event, owner, chatEntity));
+        final BigDecimal catsRewards = CAT_REWARD.multiply(new BigDecimal(result.getAmount()));
+        userEventDao.save(new ResourceEvent(MONEY, catsRewards, event, owner, chatEntity));
     }
 
     public void saveRealCatPoll(CatRequest req) {

@@ -28,6 +28,10 @@ public class TestCommandHandler implements CommandHandler {
 
     @Override
     public void handle(TgCommandRequest command, TgChat chat, TgUser user) {
+        if (chat.isUserChat()) {
+            sender.message(chat, "Эту комманду можно выполнять только в групповом чате.");
+            return;
+        }
         onlyForAdminCheck(user);
 
         testPhase.open(chat);

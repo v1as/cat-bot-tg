@@ -3,7 +3,10 @@ package ru.v1as.tg.cat.service.init;
 import static java.util.function.Function.identity;
 import static ru.v1as.tg.cat.jpa.entities.events.CatEventType.CURIOS_CAT;
 import static ru.v1as.tg.cat.jpa.entities.events.CatEventType.REAL;
+import static ru.v1as.tg.cat.service.CatEventService.CAT_REWARD;
+import static ru.v1as.tg.cat.service.init.ResourceService.MONEY;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -20,13 +23,17 @@ import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChatMem
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.ChatMember;
 import org.telegram.telegrambots.meta.api.objects.User;
+import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 import ru.v1as.tg.cat.jpa.dao.CatUserEventDao;
 import ru.v1as.tg.cat.jpa.dao.ChatDao;
 import ru.v1as.tg.cat.jpa.dao.ChatDetailsDao;
 import ru.v1as.tg.cat.jpa.dao.UserDao;
+import ru.v1as.tg.cat.jpa.dao.UserEventDao;
 import ru.v1as.tg.cat.jpa.entities.chat.ChatDetailsEntity;
 import ru.v1as.tg.cat.jpa.entities.chat.ChatEntity;
 import ru.v1as.tg.cat.jpa.entities.events.CatUserEvent;
+import ru.v1as.tg.cat.jpa.entities.events.UserEvent;
+import ru.v1as.tg.cat.jpa.entities.resource.ResourceEvent;
 import ru.v1as.tg.cat.jpa.entities.user.UserEntity;
 import ru.v1as.tg.cat.model.FileScoreDataReader;
 import ru.v1as.tg.cat.model.FileScoreDataReader.ScoreLine;
@@ -40,7 +47,7 @@ public class ScoreLineMigrateToDatabase {
     private final UserDao userDao;
     private final ChatDao chatDao;
     private final ChatDetailsDao chatDetailsDao;
-    private final CatUserEventDao catUserEventDao;
+    private final UserEventDao userEventDao;
     private final TgSender sender;
     private FileScoreDataReader scoreData = new FileScoreDataReader();
 
@@ -48,7 +55,7 @@ public class ScoreLineMigrateToDatabase {
     public void init() {
         System.out.println("chatDao" + chatDao.findAll());
         System.out.println("userDao" + userDao.findAll());
-        System.out.println("catUserEventDao" + catUserEventDao.count());
+        System.out.println("catUserEventDao" + userEventDao.count());
     }
 
     @PostConstruct
@@ -97,19 +104,18 @@ public class ScoreLineMigrateToDatabase {
                     final ChatEntity publicChatEntity = id2Chat.get(chatId);
                     publicChatEntity.setTitle(chat.getTitle());
                     publicChatEntity.setDescription(chat.getDescription());
-                    try {
-                        final Integer amount =
-                                sender.execute(new GetChatMembersCount().setChatId(chatId));
-                        publicChatEntity.setMembersAmount(amount);
-                    } catch (Exception e) {
-                        log.error(
-                                "Error with chat  {} members amount loading, error: {}",
-                                chatId,
-                                e.getMessage());
-                    }
+//                    try {
+//                        final Integer amount =
+//                                sender.execute(new GetChatMembersCount().setChatId(chatId));
+//                        publicChatEntity.setMembersAmount(amount);
+//                    } catch (Exception e) {
+//                        log.error(
+//                                "Error with chat  {} members amount loading, error: {}",
+//                                chatId,
+//                                e.getMessage());
+//                    }
                     log.info("Loaded public chat {}", publicChatEntity);
                 }
-
             } catch (Exception e) {
                 log.error("Error with chat {} loading, error {}", chatId, e.getMessage());
                 toRemoveChatIds.add(chatId);
@@ -154,19 +160,24 @@ public class ScoreLineMigrateToDatabase {
         userDao.saveAll(id2User.values());
         chatDao.saveAll(id2Chat.values());
 
-        List<CatUserEvent> events = new ArrayList<>();
+        List<UserEvent> events = new ArrayList<>();
         for (ScoreLine line : lines) {
             CatUserEvent event = new CatUserEvent();
-            event.setUser(id2User.get(line.getUserId()));
-            event.setChat(id2Chat.get(line.getChatId()));
-            event.setResult(line.getResult());
+            final CatRequestVote cats = line.getResult();
+            final UserEntity owner = id2User.get(line.getUserId());
+            final ChatEntity chat = id2Chat.get(line.getChatId());
+            event.setUser(owner);
+            event.setChat(chat);
+            event.setResult(cats);
             event.setCatType(line.getIsReal() ? REAL : CURIOS_CAT);
             event.setMessageId(line.getId());
             event.setDate(line.getDate());
+
+            final BigDecimal catsRewards = CAT_REWARD.multiply(new BigDecimal(cats.getAmount()));
+            events.add(new ResourceEvent(MONEY, catsRewards, event, owner, chat));
             events.add(event);
         }
-        catUserEventDao.saveAll(events);
-
+        userEventDao.saveAll(events);
         chatDetailsDao.saveAll(
                 id2Chat.values().stream()
                         .map(
@@ -180,6 +191,6 @@ public class ScoreLineMigrateToDatabase {
 
         System.out.println("chatDao" + chatDao.findAll());
         System.out.println("userDao" + userDao.findAll());
-        System.out.println("catUserEventDao" + catUserEventDao.count());
+        System.out.println("catUserEventDao" + userEventDao.count());
     }
 }

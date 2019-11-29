@@ -1,6 +1,7 @@
 package ru.v1as.tg.cat.jpa.entities.chat;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -24,7 +25,7 @@ public class ChatEntity implements TgChat {
     @Id private Long id;
     private String title;
     private String description;
-    private Integer membersAmount;
+    private Date updated;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private List<UserEntity> users;
@@ -52,6 +53,9 @@ public class ChatEntity implements TgChat {
                 .contains(user.getId())) {
             this.getUsers().add(user);
             changed = true;
+        }
+        if (changed) {
+            updated = new Date();
         }
         return changed;
     }
