@@ -6,7 +6,6 @@ import static ru.v1as.tg.cat.jpa.entities.events.CatEventType.REAL;
 import static ru.v1as.tg.cat.service.init.ResourceService.MONEY;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -39,27 +38,19 @@ public class CatEventService {
     private final ChatDao chatDao;
 
     public void saveCuriosCat(TgUser user, TgChat chat, Integer messageId) {
-        final CatUserEvent event = new CatUserEvent();
         final ChatEntity chatEntity = chatDao.getOne(chat.getId());
         final UserEntity owner = userDao.getOne(user.getId());
-        event.setChat(chatEntity);
-        event.setUser(owner);
-        event.setMessageId(messageId);
-        event.setCatType(CURIOS_CAT);
-        event.setResult(CAT1);
+        final CatUserEvent event = new CatUserEvent(chatEntity, owner, messageId, CURIOS_CAT, CAT1);
         userEventDao.save(event);
         userEventDao.save(new ResourceEvent(MONEY, CAT_REWARD, event, owner, chatEntity));
     }
 
     public void saveCuriosCatQuest(
             TgUser user, TgChat chat, Message voteMessage, CatRequestVote result, String quest) {
-        final CatUserEvent event = new CatUserEvent();
         final UserEntity owner = userDao.getOne(user.getId());
         final ChatEntity chatEntity = chatDao.getOne(chat.getId());
-        event.setUser(owner);
-        event.setMessageId(voteMessage.getMessageId());
-        event.setCatType(CURIOS_CAT);
-        event.setResult(result);
+        final CatUserEvent event =
+                new CatUserEvent(chatEntity, owner, voteMessage.getMessageId(), CURIOS_CAT, result);
         event.setQuestName(quest);
         userEventDao.save(event);
         final BigDecimal catsRewards = CAT_REWARD.multiply(new BigDecimal(result.getAmount()));
@@ -68,24 +59,17 @@ public class CatEventService {
 
     public void saveRealCatPoll(CatRequest req) {
         List<UserEvent> events = new ArrayList<>();
-        final CatUserEvent event = new CatUserEvent();
         final ChatEntity chat = chatDao.getOne(req.getChatId());
         final UserEntity owner = userDao.getOne(req.getOwner().getId());
-        event.setUser(owner);
-        event.setMessageId(req.getMessageId());
-        event.setChat(chat);
-        event.setCatType(REAL);
-        event.setResult(req.getResult());
+        final CatUserEvent event =
+                new CatUserEvent(chat, owner, req.getMessageId(), REAL, req.getResult());
         events.add(event);
         final int cats = req.getResult().getAmount();
         if (cats > 0) {
             for (Entry<Integer, CatRequestVote> vote : req.getVotes().entrySet()) {
                 final UserEntity voter = userDao.getOne(vote.getKey());
-                final CatVoteEvent voteEvent = new CatVoteEvent();
-                voteEvent.setMessageId(req.getMessageId());
-                voteEvent.setChat(chat);
-                voteEvent.setUser(voter);
-                voteEvent.setDate(LocalDateTime.now());
+                final CatVoteEvent voteEvent =
+                        new CatVoteEvent(chat, voter, event, vote.getValue());
                 events.add(voteEvent);
                 events.add(new ResourceEvent(MONEY, BigDecimal.ONE, voteEvent, voter, chat));
             }

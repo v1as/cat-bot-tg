@@ -1,6 +1,7 @@
 package ru.v1as.tg.cat.jpa.entities.events;
 
 import java.time.LocalDateTime;
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
@@ -23,7 +24,12 @@ public abstract class UserEvent {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     protected Long id;
 
-    @ManyToOne protected ChatEntity chat;
-    @ManyToOne protected UserEntity user;
+    @ManyToOne(optional = false)
+    protected ChatEntity chat;
+
+    @ManyToOne(optional = false)
+    protected UserEntity user;
+
+    @Column(nullable = false)
     protected LocalDateTime date;
 }

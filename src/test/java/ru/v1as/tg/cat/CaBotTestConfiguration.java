@@ -27,7 +27,6 @@ import ru.v1as.tg.cat.tg.TgSender;
     "ru.v1as.tg.cat.service",
     "ru.v1as.tg.cat.callbacks.phase",
 })
-@ActiveProfiles("test")
 @Import(JpaConfiguration.class)
 public class CaBotTestConfiguration {
 
@@ -57,6 +56,8 @@ public class CaBotTestConfiguration {
     public BotClock getClock() {
         return new TestBotClock();
     }
+
+
 
     @Bean
     @Primary

@@ -1,6 +1,7 @@
 package ru.v1as.tg.cat.jpa.entities.resource;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -23,9 +24,13 @@ public class ResourceEvent extends UserEvent {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @ManyToOne private ResourceEntity resource;
+    @ManyToOne(optional = false)
+    private ResourceEntity resource;
+
     private BigDecimal delta;
-    @ManyToOne private UserEvent event;
+
+    @ManyToOne(optional = false)
+    private UserEvent event;
 
     public ResourceEvent(
             ResourceEntity resource,
@@ -38,5 +43,6 @@ public class ResourceEvent extends UserEvent {
         this.event = event;
         this.user = user;
         this.chat = chatEntity;
+        this.date = LocalDateTime.now();
     }
 }

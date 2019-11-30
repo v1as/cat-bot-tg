@@ -5,10 +5,10 @@ import lombok.Getter;
 
 @Getter
 public enum CatRequestVote {
+    NOT_CAT(0, "crv0"),
     CAT1(1, "crv1"),
     CAT2(2, "crv2"),
-    CAT3(3, "crv3"),
-    NOT_CAT(0, "crv0");
+    CAT3(3, "crv3");
 
     public static String PREFIX = "crv";
 

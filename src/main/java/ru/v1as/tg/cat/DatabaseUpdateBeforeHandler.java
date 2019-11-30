@@ -60,6 +60,7 @@ public class DatabaseUpdateBeforeHandler implements TgUpdateBeforeHandler {
             chatDetails.setId(chat.getId());
             chatDetails.setChat(chatEntity);
             chatDetails.setCatPollEnabled(false);
+            chatDetails.setMembersAmount(-1);
             chatToSave = true;
             chatEntity.getUsers().add(userEntity);
         } else {

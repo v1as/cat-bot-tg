@@ -1,11 +1,12 @@
 package ru.v1as.tg.cat.messages;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
@@ -45,8 +46,10 @@ public class DumpDocumentMessageHandler extends RequestWithTimeoutCommandHandler
                             chat.getId(), "Пришлите файл, который оканчивается на '.sql'."));
             return false;
         }
-        InputStream is = getDumpFileInputStream(document);
-        final File file = downloadFileFromInputStream(is);
+        File file;
+        try (InputStream is = getDumpFileInputStream(document)) {
+            file = downloadFileFromInputStream(is);
+        }
         try {
             dumpService.deleteAllAndLoadDump(file.getAbsolutePath());
         } finally {
@@ -65,12 +68,15 @@ public class DumpDocumentMessageHandler extends RequestWithTimeoutCommandHandler
     }
 
     private File downloadFileFromInputStream(InputStream is) throws IOException {
-        byte[] buffer = new byte[is.available()];
-        final int read = is.read(buffer);
-        log.debug("Read {}", read);
         final Path path = Paths.get(String.format("cat_database_%s.sql", new Date().getTime()));
         final File file = path.toFile();
-        Files.write(path, buffer);
+        try (OutputStream outStream = new FileOutputStream(file)) {
+            byte[] buffer = new byte[8 * 1024];
+            int bytesRead;
+            while ((bytesRead = is.read(buffer)) != -1) {
+                outStream.write(buffer, 0, bytesRead);
+            }
+        }
         return file;
     }
 
