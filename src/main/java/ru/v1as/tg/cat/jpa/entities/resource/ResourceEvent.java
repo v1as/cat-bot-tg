@@ -10,12 +10,14 @@ import javax.persistence.ManyToOne;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import ru.v1as.tg.cat.jpa.entities.chat.ChatEntity;
 import ru.v1as.tg.cat.jpa.entities.events.UserEvent;
 import ru.v1as.tg.cat.jpa.entities.user.UserEntity;
 
 @Data
 @Entity
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 public class ResourceEvent extends UserEvent {

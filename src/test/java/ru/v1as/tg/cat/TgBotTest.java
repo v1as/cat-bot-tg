@@ -13,7 +13,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import junit.framework.AssertionFailedError;
 import org.junit.After;
-import org.junit.Before;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
@@ -30,7 +29,6 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgChatWrapper;
 import ru.v1as.tg.cat.model.TgUser;
-import ru.v1as.tg.cat.service.CatEventService;
 import ru.v1as.tg.cat.tg.TgUpdateProcessor;
 import ru.v1as.tg.cat.utils.AssertAnswerCallbackQuery;
 import ru.v1as.tg.cat.utils.AssertEditMessage;
@@ -39,52 +37,52 @@ import ru.v1as.tg.cat.utils.AssertSendMessage;
 
 public abstract class TgBotTest implements TgTestInvoker {
 
+    public static final int USER_1_ID = 0;
+    public static final int USER_2_ID = 1;
+    public static final int USER_3_ID = 2;
+    public static final int USER_4_ID = 3;
     private final Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass());
 
     @Autowired protected TestAbsSender sender;
     @Autowired protected CatBotData catBotData;
-    @Autowired protected CatEventService catEventService;
     @Autowired protected TgUpdateProcessor updateProcessor;
 
     protected Integer lastMsgId = 0;
     protected Integer lastCallbackQueryId = 0;
 
     private int userId = 0;
-
-    @Before
-    public void before() {
-        sender.setMessageProducer(() -> getMessage(++lastMsgId));
-        lastMsgId = 0;
-        lastCallbackQueryId = 0;
-        clearMethodsQueue();
-    }
+    private Chat chat;
 
     protected void clearMethodsQueue() {
         this.sender.clear();
     }
 
+    protected void assertMethodsQueueIsEmpty() {
+        assertEquals(
+                "Method queue is not empty: " + sender.getMethodCalls(),
+                0,
+                this.sender.getMethodsAmount());
+    }
+
     @After
     public void after() {
-        assertEquals(
-                "There are unexpected methods" + sender.getMethodCalls(),
-                0,
-                sender.getMethodsAmount());
+        assertMethodsQueueIsEmpty();
     }
 
     protected void switchToFirstUser() {
-        userId = 0;
+        userId = USER_1_ID;
     }
 
     protected void switchToSecondUser() {
-        userId = 1;
+        userId = USER_2_ID;
     }
 
     protected void switchToThirdUser() {
-        userId = 2;
+        userId = USER_3_ID;
     }
 
     protected void switchToFourthUser() {
-        userId = 3;
+        userId = USER_4_ID;
     }
 
     protected Update getMessageUpdate() {
@@ -106,7 +104,9 @@ public abstract class TgBotTest implements TgTestInvoker {
         User user = getUser();
         when(message.getFrom()).thenReturn(user);
         Chat chat = getChat();
+        Long chatId = getChatId();
         when(message.getChat()).thenReturn(chat);
+        when(message.getChatId()).thenReturn(chatId);
         return message;
     }
 
@@ -180,15 +180,28 @@ public abstract class TgBotTest implements TgTestInvoker {
         return TgChatWrapper.wrap(getChat());
     }
 
+    protected void switchToPublicChat() {
+        this.chat = mockChat(100L, true);
+    }
+
+    protected void switchFirstUserChat() {
+        this.chat = mockChat((long) USER_1_ID, false);
+    }
+
     protected Chat getChat() {
-        Chat chat = mock(Chat.class);
-        when(chat.getId()).thenReturn(getChatId());
-        when(chat.isSuperGroupChat()).thenReturn(true);
         return chat;
     }
 
+    private Chat mockChat(Long chatId, boolean isPublic) {
+        Chat res = mock(Chat.class);
+        when(res.getId()).thenReturn(chatId);
+        when(res.isSuperGroupChat()).thenReturn(isPublic);
+        when(res.isUserChat()).thenReturn(!isPublic);
+        return res;
+    }
+
     protected Long getChatId() {
-        return 0L;
+        return chat.getId();
     }
 
     @SuppressWarnings("unchecked")

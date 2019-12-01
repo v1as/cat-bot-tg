@@ -53,8 +53,11 @@ public class CatEventService {
                 new CatUserEvent(chatEntity, owner, voteMessage.getMessageId(), CURIOS_CAT, result);
         event.setQuestName(quest);
         userEventDao.save(event);
-        final BigDecimal catsRewards = CAT_REWARD.multiply(new BigDecimal(result.getAmount()));
-        userEventDao.save(new ResourceEvent(MONEY, catsRewards, event, owner, chatEntity));
+        int cats = result.getAmount();
+        if (cats > 0) {
+            final BigDecimal catsRewards = CAT_REWARD.multiply(new BigDecimal(cats));
+            userEventDao.save(new ResourceEvent(MONEY, catsRewards, event, owner, chatEntity));
+        }
     }
 
     public void saveRealCatPoll(CatRequest req) {

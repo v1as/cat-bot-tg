@@ -25,13 +25,11 @@ import ru.v1as.tg.cat.callbacks.phase.poll.interceptor.TimeoutPhaseContextChoice
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.service.CatEventService;
-import ru.v1as.tg.cat.service.clock.BotClock;
 
 public abstract class AbstractCuriosCatPhase extends AbstractPhase<CuriosCatContext> {
 
     @Autowired protected CatBotData data;
     @Autowired protected CatEventService catEventService;
-    @Autowired protected BotClock botClock;
 
     protected final PollTimeoutConfiguration TIMEOUT_LEAVE_CAT =
             new PollTimeoutConfiguration(Duration.of(30, SECONDS))
@@ -106,9 +104,9 @@ public abstract class AbstractCuriosCatPhase extends AbstractPhase<CuriosCatCont
         }
         String reward =
                 result.getAmount() > 0
-                        ? "(+" + result.getAmount() * CAT_REWARD.intValue() + MONEY_BAG + ")"
+                        ? " (+" + result.getAmount() * CAT_REWARD.intValue() + MONEY_BAG + ")"
                         : "";
-        message(publicChat, message + user.getUsernameOrFullName());
+        message(publicChat, message + user.getUsernameOrFullName() + reward);
         catEventService.saveCuriosCatQuest(
                 user, publicChat, ctx.message, result, getClass().getSimpleName());
         close();
@@ -119,7 +117,7 @@ public abstract class AbstractCuriosCatPhase extends AbstractPhase<CuriosCatCont
     }
 
     @Getter
-    class CuriosCatContext extends PhaseContext {
+    static class CuriosCatContext extends PhaseContext {
 
         private final TgUser user;
         private final Message message;

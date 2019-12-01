@@ -38,6 +38,14 @@ public class Const {
         }
     }
 
+    public static Set<String> getAdminUserNames() {
+        return adminUserNames;
+    }
+
+    public static void setAdminUserNames(Set<String> adminUserNames) {
+        Const.adminUserNames = adminUserNames;
+    }
+
     public static String getUrlFileDocument(String filePath) {
         return String.format("https://api.telegram.org/file/bot%s/%s", botToken, filePath);
     }

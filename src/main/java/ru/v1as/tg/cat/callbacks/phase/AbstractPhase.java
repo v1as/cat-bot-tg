@@ -82,7 +82,7 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
     protected void message(String text) {
         PhaseContext phaseContext = this.phaseContext.get();
         Long chatId = phaseContext.getChatId();
-        log.info("Sending message '{}' to chat '{}'", text, chatId);
+        log.info("Sending message '{}' to chat '{}'", text, phaseContext.getChat());
         sender.execute(new SendMessage(chatId, text));
     }
 
@@ -107,6 +107,7 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
 
     @Override
     public void close() {
+        log.info("Phase {} is closing...", this.getClass().getSimpleName());
         this.phaseContext.get().close();
     }
 

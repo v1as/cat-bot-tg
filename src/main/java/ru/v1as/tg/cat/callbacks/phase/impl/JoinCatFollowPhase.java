@@ -92,7 +92,7 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
 
     private void sayCat(ChooseContext ctx) {
         String user = ctx.getUser().getUsernameOrFullName();
-        log.info("Trying to sat cat for user '{}'", user);
+        log.info("Trying to say cat for user '{}'", user);
         getPhaseContext().checkNotClose();
         saveCatRequest(ctx);
         message(String.format("Любопытный Кот убежал к %s  %s  (+3%s)", user, CAT, MONEY_BAG));
