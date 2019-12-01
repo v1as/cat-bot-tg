@@ -13,11 +13,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import ru.v1as.tg.cat.jpa.entities.user.UserEntity;
 import ru.v1as.tg.cat.model.TgChat;
 
 @Entity
 @Data
+@ToString(exclude = "users")
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor

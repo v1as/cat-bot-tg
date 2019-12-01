@@ -12,4 +12,8 @@ public class CatBotData extends DbData<CatChatData> {
     public CatBotData() {
         super(CatChatData::new);
     }
+
+    public void clear() {
+        getChats().clear();
+    }
 }

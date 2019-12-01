@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 import ru.v1as.tg.cat.model.CatRequest;
+import ru.v1as.tg.cat.utils.AssertSendMessage;
 
 @Slf4j
 public class CatBotTest extends AbstractCatBotTest {
@@ -41,12 +42,12 @@ public class CatBotTest extends AbstractCatBotTest {
     @Test
     public void testUsersPolling() {
         sendPhotoMessage();
-        popSendMessage().assertText("Это кот?");
+        AssertSendMessage message = popSendMessage().assertText("Это кот?");
         Integer pollMsdId = this.lastMsgId;
         CatRequest catRequest = getOnlyOneCatRequest();
 
         switchToSecondUser();
-        sendCallback(pollMsdId, CAT1.getCallback());
+        message.getCallbacks().get(0).send();
         popAnswerCallbackQuery().assertContainText("Голос учтён");
         popEditMessageReplyMarkup();
 
