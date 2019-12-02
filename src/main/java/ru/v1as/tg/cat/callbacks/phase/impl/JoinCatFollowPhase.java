@@ -23,6 +23,7 @@ import ru.v1as.tg.cat.commands.ArgumentCallbackCommand.CallbackCommandContext;
 import ru.v1as.tg.cat.commands.impl.StartCommand;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
+import ru.v1as.tg.cat.service.BotConfiguration;
 import ru.v1as.tg.cat.service.CatEventService;
 import ru.v1as.tg.cat.service.clock.BotClock;
 
@@ -39,10 +40,12 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
     private final CatEventService catEventService;
     private final CuriosCatQuestProducer curiosCatQuestProducer;
     private final BotClock botClock;
+    private final BotConfiguration conf;
+
 
     @Override
     protected void open() {
-        PollChoice followTheCat = PollChoice.startCommandUrl("Пойти за котом");
+        PollChoice followTheCat = PollChoice.startCommandUrl(conf.getBotName(), "Пойти за котом");
 
         PollTimeoutConfiguration removeAfter5Min =
                 new PollTimeoutConfiguration(Duration.of(5, MINUTES))

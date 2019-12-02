@@ -22,7 +22,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.v1as.tg.cat.jpa.dao.UserDao;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
-import ru.v1as.tg.cat.service.Const;
+import ru.v1as.tg.cat.service.BotConfiguration;
 import ru.v1as.tg.cat.service.init.DumpService;
 import ru.v1as.tg.cat.tg.TgSender;
 
@@ -34,6 +34,7 @@ public class DumpDocumentMessageHandler extends RequestWithTimeoutCommandHandler
     private final TgSender sender;
     private final DumpService dumpService;
     private final UserDao userDao;
+    private final BotConfiguration conf;
 
     @Override
     @SneakyThrows
@@ -82,7 +83,7 @@ public class DumpDocumentMessageHandler extends RequestWithTimeoutCommandHandler
 
     private InputStream getDumpFileInputStream(Document document) throws IOException {
         final GetFile getFile = new GetFile().setFileId(document.getFileId());
-        URL url = new URL(Const.getUrlFileDocument(sender.execute(getFile).getFilePath()));
+        URL url = new URL(conf.getUrlFileDocument(sender.execute(getFile).getFilePath()));
         URLConnection connection = url.openConnection();
         return connection.getInputStream();
     }

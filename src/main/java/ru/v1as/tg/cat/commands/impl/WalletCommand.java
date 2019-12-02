@@ -9,9 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.v1as.tg.cat.commands.CommandHandler;
 import ru.v1as.tg.cat.commands.TgCommandRequest;
 import ru.v1as.tg.cat.jpa.dao.ChatDao;
 import ru.v1as.tg.cat.jpa.dao.ResourceEventDao;
@@ -19,23 +17,21 @@ import ru.v1as.tg.cat.jpa.entities.chat.ChatEntity;
 import ru.v1as.tg.cat.jpa.entities.resource.ResourceEvent;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
-import ru.v1as.tg.cat.tg.TgSender;
 
 @Component
-@RequiredArgsConstructor
-public class WalletCommand implements CommandHandler {
+public class WalletCommand extends AbstractCommand {
 
     private final ResourceEventDao resourceEventDao;
     private final ChatDao chatDao;
-    private final TgSender tgSender;
 
-    @Override
-    public String getCommandName() {
-        return "wallet";
+    public WalletCommand(ResourceEventDao resourceEventDao, ChatDao chatDao) {
+        super(cfg().commandName("wallet"));
+        this.resourceEventDao = resourceEventDao;
+        this.chatDao = chatDao;
     }
 
     @Override
-    public void handle(TgCommandRequest command, TgChat chat, TgUser user) {
+    public void process(TgCommandRequest command, TgChat chat, TgUser user) {
         final List<ChatEntity> chats = chatDao.findByUsersId(user.getId());
         final Map<ChatEntity, BigDecimal> chatToMoney = new HashMap<>();
         for (ChatEntity chatEntity : chats) {
@@ -66,7 +62,7 @@ public class WalletCommand implements CommandHandler {
                             .collect(Collectors.joining("\n"));
         }
         if (!isEmpty(message)) {
-            tgSender.message(chat, message);
+            sender.message(chat, message);
         }
     }
 

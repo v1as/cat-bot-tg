@@ -13,14 +13,14 @@ import ru.v1as.tg.cat.model.TgUser;
 
 @Slf4j
 @Component
-public class Const {
+public class BotConfiguration {
 
     public static final String LINE = "\n";
-    private static String botName;
-    private static Set<String> adminUserNames;
-    private static String botToken;
+    private String botName;
+    private Set<String> adminUserNames;
+    private String botToken;
 
-    public static String getBotName() {
+    public String getBotName() {
         if (botName == null) {
             throw new IllegalStateException("This variable is not init yet.");
         }
@@ -29,24 +29,18 @@ public class Const {
 
     @Value("${tg.bot.username:}")
     public void setBotName(String botName) {
-        Const.botName = botName;
+        this.botName = botName;
     }
 
-    public static void onlyForAdminCheck(TgUser user) {
-        if (isEmpty(user.getUserName()) || !adminUserNames.contains(user.getUserName())) {
-            throw new OnlyForAdmins();
-        }
+    public boolean isBotAdmin(TgUser user) {
+        return !isEmpty(user.getUserName()) && adminUserNames.contains(user.getUserName());
     }
 
-    public static Set<String> getAdminUserNames() {
+    public Set<String> getAdminUserNames() {
         return adminUserNames;
     }
 
-    public static void setAdminUserNames(Set<String> adminUserNames) {
-        Const.adminUserNames = adminUserNames;
-    }
-
-    public static String getUrlFileDocument(String filePath) {
+    public String getUrlFileDocument(String filePath) {
         return String.format("https://api.telegram.org/file/bot%s/%s", botToken, filePath);
     }
 
@@ -57,13 +51,11 @@ public class Const {
 
     @Value("${tg.bot.token}")
     public void setBotToken(String botToken) {
-        Const.botToken = botToken;
+        this.botToken = botToken;
     }
 
     @Value("${tg.bot.admin_username:}")
     public void setAdminUserName(String admins) {
-        Const.adminUserNames = Arrays.stream(admins.split("[;,\\s]")).collect(Collectors.toSet());
+        this.adminUserNames = Arrays.stream(admins.split("[;,\\s]")).collect(Collectors.toSet());
     }
-
-    public static class OnlyForAdmins extends RuntimeException {}
 }

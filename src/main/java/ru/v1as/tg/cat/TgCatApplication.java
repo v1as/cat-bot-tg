@@ -33,5 +33,6 @@ public class TgCatApplication implements ApplicationListener<ApplicationStartedE
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi();
         telegramBotsApi.registerBot(tgBot);
         log.info("Bot registered!");
+        
     }
 }

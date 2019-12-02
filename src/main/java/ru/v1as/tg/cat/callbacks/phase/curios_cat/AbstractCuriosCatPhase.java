@@ -63,7 +63,7 @@ public abstract class AbstractCuriosCatPhase extends AbstractPhase<CuriosCatCont
     protected int getTextLength(SimplePoll poll) {
         int messageLen = poll.text().length();
         int choicesLen =
-                poll.getChoices().values().stream()
+                poll.getChoices().stream()
                         .map(PollChoice::getText)
                         .mapToInt(String::length)
                         .sum();

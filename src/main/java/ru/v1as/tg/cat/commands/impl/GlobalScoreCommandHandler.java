@@ -7,21 +7,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import ru.v1as.tg.cat.commands.CommandHandler;
 import ru.v1as.tg.cat.commands.TgCommandRequest;
 import ru.v1as.tg.cat.model.LongProperty;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.service.ScoreDataService;
-import ru.v1as.tg.cat.tg.TgSender;
 
 @Slf4j
 @Component
-public class GlobalScoreCommandHandler implements CommandHandler {
+public class GlobalScoreCommandHandler extends AbstractCommand {
 
-    public static final LocalDateTime LONG_TIME_AGO = LocalDateTime.now().minusYears(100);
+    private static final LocalDateTime LONG_TIME_AGO = LocalDateTime.now().minusYears(100);
     @Autowired private ScoreDataService scoreData;
-    @Autowired private TgSender sender;
+
+    public GlobalScoreCommandHandler() {
+        super(cfg().onlyPublicChat(true));
+    }
 
     @Override
     public String getCommandDescription() {
@@ -34,11 +35,7 @@ public class GlobalScoreCommandHandler implements CommandHandler {
     }
 
     @Override
-    public void handle(TgCommandRequest command, TgChat chat, TgUser user) {
-        if (chat.isUserChat()) {
-            sender.message(chat, "Эту комманду можно выполнять только в групповом чате.");
-            return;
-        }
+    public void process(TgCommandRequest command, TgChat chat, TgUser user) {
         String text =
                 scoreData
                         .getWinnersStream(chat.getId(), getDateAfter())

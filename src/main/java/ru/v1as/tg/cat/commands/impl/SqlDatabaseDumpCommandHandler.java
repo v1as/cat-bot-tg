@@ -1,13 +1,9 @@
 package ru.v1as.tg.cat.commands.impl;
 
-import static ru.v1as.tg.cat.service.Const.onlyForAdminCheck;
-
 import java.io.File;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import ru.v1as.tg.cat.commands.CommandHandler;
 import ru.v1as.tg.cat.commands.TgCommandRequest;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
@@ -15,20 +11,19 @@ import ru.v1as.tg.cat.service.init.DumpService;
 import ru.v1as.tg.cat.tg.TgSender;
 
 @Component
-@RequiredArgsConstructor
-public class SqlDatabaseDumpCommandHandler implements CommandHandler {
+public class SqlDatabaseDumpCommandHandler extends AbstractCommand {
 
     private final DumpService dumpService;
     private final TgSender sender;
 
-    @Override
-    public String getCommandName() {
-        return "database_dump";
+    public SqlDatabaseDumpCommandHandler(DumpService dumpService, TgSender sender) {
+        super(cfg().onlyPrivateChat(true).onlyBotAdmins(true).commandName("database_dump"));
+        this.dumpService = dumpService;
+        this.sender = sender;
     }
 
     @Override
-    public void handle(TgCommandRequest command, TgChat chat, TgUser user) {
-        onlyForAdminCheck(user);
+    public void process(TgCommandRequest command, TgChat chat, TgUser user) {
         final String fileName = dumpService.write();
         final File dumpFile = new File(fileName);
         if (dumpFile.exists()) {

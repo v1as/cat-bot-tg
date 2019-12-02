@@ -1,7 +1,5 @@
 package ru.v1as.tg.cat.service;
 
-import static ru.v1as.tg.cat.service.Const.getAdminUserNames;
-
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.PostConstruct;
@@ -22,6 +20,8 @@ public class EventAdminSender {
     private final UserDao userDao;
     private final UserEventDao userEventDao;
     private final TgSender tgSender;
+    private final BotConfiguration conf;
+
     private Long lastId;
 
     @PostConstruct
@@ -34,7 +34,7 @@ public class EventAdminSender {
         final List<UserEvent> events = userEventDao.findAllByIdGreaterThan(lastId);
         if (!events.isEmpty()) {
             lastId = events.get(events.size() - 1).getId();
-            for (String adminUserName : getAdminUserNames()) {
+            for (String adminUserName : conf.getAdminUserNames()) {
                 final Optional<UserEntity> admin = userDao.findByUserName(adminUserName);
                 if (admin.isPresent() && admin.get().isPrivateChat()) {
                     final long chatId = admin.get().getId();

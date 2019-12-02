@@ -1,11 +1,7 @@
 package ru.v1as.tg.cat.commands.impl;
 
-import static ru.v1as.tg.cat.service.Const.onlyForAdminCheck;
-
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import ru.v1as.tg.cat.commands.CommandHandler;
 import ru.v1as.tg.cat.commands.TgCommandRequest;
 import ru.v1as.tg.cat.messages.DumpDocumentMessageHandler;
 import ru.v1as.tg.cat.model.TgChat;
@@ -13,21 +9,20 @@ import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.tg.TgSender;
 
 @Component
-@RequiredArgsConstructor
-public class UploadDumpCommand implements CommandHandler {
+public class UploadDumpCommand extends AbstractCommand {
 
-    private static final String NAME = "upload_dump";
     private final DumpDocumentMessageHandler dumpDocumentMessageHandler;
     private final TgSender sender;
 
-    @Override
-    public String getCommandName() {
-        return NAME;
+    public UploadDumpCommand(
+            DumpDocumentMessageHandler dumpDocumentMessageHandler, TgSender sender) {
+        super(cfg().onlyBotAdmins(true).onlyPrivateChat(true).commandName("upload_dump"));
+        this.dumpDocumentMessageHandler = dumpDocumentMessageHandler;
+        this.sender = sender;
     }
 
     @Override
-    public void handle(TgCommandRequest command, TgChat chat, TgUser user) {
-        onlyForAdminCheck(user);
+    public void process(TgCommandRequest command, TgChat chat, TgUser user) {
         dumpDocumentMessageHandler.addRequest(
                 command.getMessage(),
                 () -> sender.execute(new SendMessage(chat.getId(), "Не дождался дамп файла.")));

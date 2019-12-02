@@ -12,6 +12,7 @@ import static ru.v1as.tg.cat.tg.KeyboardUtils.clearButtons;
 import static ru.v1as.tg.cat.tg.KeyboardUtils.deleteMsg;
 import static ru.v1as.tg.cat.tg.KeyboardUtils.editMessageText;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -22,8 +23,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import lombok.NonNull;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -63,17 +66,32 @@ public class SimplePoll {
     private boolean closeOnChoose = true;
     private CloseOnTextBuilder closeOnTextBuilder = new NopeCloseTextBuilder();
     private ChoiceAroundInterceptor choiceAroundInterceptor = new NoopChoiceAroundInterceptor();
+    private Sent sent;
 
     public SimplePoll choice(PollChoice choice) {
+        checkModifiable();
         choices.putIfAbsent(choice.getUuid(), choice);
         return this;
     }
 
-    public Map<String, PollChoice> getChoices() {
-        return choices;
+    private void checkModifiable() {
+        if (!CREATED.equals(state) && !SENT.equals(state)) {
+            throw new IllegalStateException("Wrong poll state: " + state);
+        }
+    }
+
+    private void checkCreated() {
+        if (!CREATED.equals(state)) {
+            throw new IllegalStateException("Wrong poll state: " + state);
+        }
+    }
+
+    public List<PollChoice> getChoices() {
+        return new ArrayList<>(choices.values());
     }
 
     public SimplePoll choice(String text, Consumer<ChooseContext> method) {
+        checkModifiable();
         String callback = generateCallback(text);
         return choice(
                 new PollChoice(
@@ -85,6 +103,7 @@ public class SimplePoll {
     }
 
     public SimplePoll text(String text) {
+        checkModifiable();
         this.text = text;
         return this;
     }
@@ -97,9 +116,10 @@ public class SimplePoll {
         return UUID.randomUUID().toString();
     }
 
-    public SimplePoll reset() {
+    public SimplePoll resetChoices() {
+        checkModifiable();
         choices.clear();
-        throw new RuntimeException("Unsupported operation yet");
+        return this;
     }
 
     public SimplePoll onSend(Consumer<Message> callback) {
@@ -108,15 +128,39 @@ public class SimplePoll {
     }
 
     public SimplePoll send() {
-        this.state = SENDING;
-        SendMessage message = new SendMessage(chatId, text).setReplyMarkup(getKeyboard());
-        String choices =
-                this.choices.values().stream()
-                        .map(PollChoice::getText)
-                        .collect(Collectors.joining("/", "[", "]"));
-        sender.executeAsyncPromise(message, this::pollMessageSent, this::pollMessageFail);
-        log.info("Poll '{}' send to chat '{}'", text + choices, chatId);
+        if (CREATED.equals(state)) {
+            this.state = SENDING;
+            SendMessage message = new SendMessage(chatId, text).setReplyMarkup(getKeyboard());
+            String choices =
+                    this.choices.values().stream()
+                            .map(PollChoice::getText)
+                            .collect(Collectors.joining("/", "[", "]"));
+            this.sent = new Sent(this.text, getChoices());
+            sender.executeAsyncPromise(message, this::pollMessageSent, this::pollMessageFail);
+            log.info("Poll '{}' send to chat '{}'", text + choices, chatId);
+        } else if (SENT.equals(state)) {
+            EditMessageText editMessage =
+                    new EditMessageText()
+                            .setMessageId(this.message.getMessageId())
+                            .setText(this.text)
+                            .setReplyMarkup(getKeyboard());
+            Sent newSent = new Sent(text, getChoices());
+            if (sent.changed(newSent)) {
+                state = SENDING;
+                sender.executeAsyncPromise(
+                        editMessage, this.pollMessageUpdated(newSent), this::pollMessageFail);
+            }
+        } else {
+            throw new IllegalStateException("This poll can't be send because of state: " + state);
+        }
         return this;
+    }
+
+    private <T extends Serializable> Consumer<T> pollMessageUpdated(final Sent newSent) {
+        return (v) -> {
+            this.sent = newSent;
+            this.state = SENT;
+        };
     }
 
     private InlineKeyboardMarkup getKeyboard() {
@@ -230,51 +274,72 @@ public class SimplePoll {
         if (state.equals(SENT)) {
             state = CANCELED;
             sender.execute(deleteMsg(message));
+        } else if (state.equals(CREATED)) {
+            state = CANCELED;
         } else {
             log.error("Can't close poll, illegal state: {}", this);
         }
     }
 
     public SimplePoll closeOnChoose(boolean closeOnChoose) {
+        checkModifiable();
         this.closeOnChoose = closeOnChoose;
         return this;
     }
 
     public SimplePoll closeTextBuilder(@NonNull CloseOnTextBuilder closeOnTextBuilder) {
+        checkModifiable();
         this.closeOnTextBuilder = closeOnTextBuilder;
         return this;
     }
 
     public SimplePoll chatId(Long chatId) {
+        checkCreated();
         this.chatId = chatId;
         return this;
     }
 
     public SimplePoll timeout(PollTimeoutConfiguration timeoutConfiguration) {
+        checkModifiable();
         this.timeoutConfiguration = timeoutConfiguration;
         return this;
     }
 
     public SimplePoll removeOnClose(boolean value) {
+        checkModifiable();
         this.removeOnClose = value;
         return this;
     }
 
     public void setBotClock(BotClock botClock) {
+        checkCreated();
         this.botClock = botClock;
     }
 
     public void setSender(TgSender sender) {
+        checkCreated();
         this.sender = sender;
     }
 
     public void setCallbackProcessor(TgCallbackProcessor callbackProcessor) {
+        checkCreated();
         this.callbackProcessor = callbackProcessor;
     }
 
     public SimplePoll choiceAroundInterceptor(
             @NonNull ChoiceAroundInterceptor choiceAroundInterceptor) {
+        checkCreated();
         this.choiceAroundInterceptor = choiceAroundInterceptor;
         return this;
+    }
+
+    @Value
+    private static class Sent {
+        String text;
+        List<PollChoice> choices;
+
+        boolean changed(Sent sent) {
+            return !Objects.equals(this.text, sent.text) || !Objects.equals(choices, sent.choices);
+        }
     }
 }

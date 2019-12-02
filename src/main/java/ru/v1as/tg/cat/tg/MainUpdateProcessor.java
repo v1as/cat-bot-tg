@@ -12,7 +12,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.v1as.tg.cat.commands.TgCommandRequest;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
-import ru.v1as.tg.cat.service.Const.OnlyForAdmins;
 
 @Slf4j
 public abstract class MainUpdateProcessor implements TgUpdateProcessor {
@@ -47,8 +46,6 @@ public abstract class MainUpdateProcessor implements TgUpdateProcessor {
                     log.debug("Unsupported update type: " + update);
                 }
             }
-        } catch (OnlyForAdmins noAdmin) {
-            log.info("Update '{}' allowed only for admins", update);
         } catch (Exception e) {
             log.error("Something gone wrong ", e);
         }

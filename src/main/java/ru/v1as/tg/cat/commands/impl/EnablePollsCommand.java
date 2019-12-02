@@ -1,8 +1,6 @@
 package ru.v1as.tg.cat.commands.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.v1as.tg.cat.commands.CommandHandler;
 import ru.v1as.tg.cat.commands.TgCommandRequest;
 import ru.v1as.tg.cat.jpa.dao.ChatDetailsDao;
 import ru.v1as.tg.cat.jpa.entities.chat.ChatDetailsEntity;
@@ -11,15 +9,15 @@ import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.tg.TgSender;
 
 @Component
-@RequiredArgsConstructor
-public class EnablePollsCommand implements CommandHandler {
+public class EnablePollsCommand extends AbstractCommand {
 
     private final ChatDetailsDao chatDetailsDao;
     private final TgSender sender;
 
-    @Override
-    public String getCommandName() {
-        return "enable_polls";
+    public EnablePollsCommand(ChatDetailsDao chatDetailsDao, TgSender sender) {
+        super(cfg().onlyPublicChat(true).commandName("enable_polls").onlyAdmin(true));
+        this.chatDetailsDao = chatDetailsDao;
+        this.sender = sender;
     }
 
     @Override
@@ -28,11 +26,7 @@ public class EnablePollsCommand implements CommandHandler {
     }
 
     @Override
-    public void handle(TgCommandRequest command, TgChat chat, TgUser user) {
-        if (chat.isUserChat()) {
-            sender.message(chat, "Эту комманду можно выполнять только в групповом чате.");
-            return;
-        }
+    public void process(TgCommandRequest command, TgChat chat, TgUser user) {
         final ChatDetailsEntity details = chatDetailsDao.findByChatId(chat.getId());
         if (details.isCatPollEnabled()) {
             sender.message(chat, "Создание опросов уже включено");
