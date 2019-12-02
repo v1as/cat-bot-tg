@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ru.v1as.tg.cat.callbacks.phase.poll.SimplePoll;
+import ru.v1as.tg.cat.callbacks.phase.poll.TgInlinePoll;
 import ru.v1as.tg.cat.model.TgChat;
 
 @RequiredArgsConstructor
@@ -12,7 +12,7 @@ import ru.v1as.tg.cat.model.TgChat;
 public class PhaseContext {
 
     private final TgChat chat;
-    private final List<SimplePoll> polls = new ArrayList<>();
+    private final List<TgInlinePoll> polls = new ArrayList<>();
     private boolean finished = false;
 
     public void checkNotClose() {
@@ -22,17 +22,17 @@ public class PhaseContext {
         }
     }
 
-    protected SimplePoll poll(String text) {
+    protected TgInlinePoll poll(String text, Long id) {
         checkNotClose();
-        SimplePoll simplePoll = new SimplePoll();
-        polls.add(simplePoll);
-        return simplePoll.chatId(chat.getId()).text(text);
+        TgInlinePoll inlinePoll = new TgInlinePoll();
+        polls.add(inlinePoll);
+        return inlinePoll.chatId(id).text(text);
     }
 
     public void close() {
         checkNotClose();
         this.finished = true;
-        for (SimplePoll poll : polls) {
+        for (TgInlinePoll poll : polls) {
             try {
                 poll.close();
             } catch (Exception e) {

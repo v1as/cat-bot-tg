@@ -8,6 +8,8 @@ import static ru.v1as.tg.cat.callbacks.phase.poll.State.CREATED;
 import static ru.v1as.tg.cat.callbacks.phase.poll.State.ERROR;
 import static ru.v1as.tg.cat.callbacks.phase.poll.State.SENDING;
 import static ru.v1as.tg.cat.callbacks.phase.poll.State.SENT;
+import static ru.v1as.tg.cat.callbacks.phase.poll.State.UPDATED;
+import static ru.v1as.tg.cat.callbacks.phase.poll.State.UPDATING;
 import static ru.v1as.tg.cat.tg.KeyboardUtils.clearButtons;
 import static ru.v1as.tg.cat.tg.KeyboardUtils.deleteMsg;
 import static ru.v1as.tg.cat.tg.KeyboardUtils.editMessageText;
@@ -44,7 +46,7 @@ import ru.v1as.tg.cat.service.clock.BotClock;
 import ru.v1as.tg.cat.tg.TgSender;
 
 @Slf4j
-public class SimplePoll {
+public class TgInlinePoll {
 
     private BotClock botClock;
     private TgSender sender;
@@ -68,14 +70,14 @@ public class SimplePoll {
     private ChoiceAroundInterceptor choiceAroundInterceptor = new NoopChoiceAroundInterceptor();
     private Sent sent;
 
-    public SimplePoll choice(PollChoice choice) {
+    public TgInlinePoll choice(PollChoice choice) {
         checkModifiable();
         choices.putIfAbsent(choice.getUuid(), choice);
         return this;
     }
 
     private void checkModifiable() {
-        if (!CREATED.equals(state) && !SENT.equals(state)) {
+        if (!CREATED.equals(state) && !SENT.equals(state) && !UPDATED.equals(state)) {
             throw new IllegalStateException("Wrong poll state: " + state);
         }
     }
@@ -90,7 +92,7 @@ public class SimplePoll {
         return new ArrayList<>(choices.values());
     }
 
-    public SimplePoll choice(String text, Consumer<ChooseContext> method) {
+    public TgInlinePoll choice(String text, Consumer<ChooseContext> method) {
         checkModifiable();
         String callback = generateCallback(text);
         return choice(
@@ -102,7 +104,7 @@ public class SimplePoll {
                         ctx -> choiceAroundInterceptor.around(ctx, method)));
     }
 
-    public SimplePoll text(String text) {
+    public TgInlinePoll text(String text) {
         checkModifiable();
         this.text = text;
         return this;
@@ -112,22 +114,23 @@ public class SimplePoll {
         return this.text;
     }
 
-    protected String generateCallback(String text) {
+    private String generateCallback(String text) {
         return UUID.randomUUID().toString();
     }
 
-    public SimplePoll resetChoices() {
+    public TgInlinePoll clearChoices() {
         checkModifiable();
+        this.choices.values().forEach(pollChoice -> callbackProcessor.drop(pollChoice.getUuid()));
         choices.clear();
         return this;
     }
 
-    public SimplePoll onSend(Consumer<Message> callback) {
+    public TgInlinePoll onSend(Consumer<Message> callback) {
         this.onSend = callback;
         return this;
     }
 
-    public SimplePoll send() {
+    public TgInlinePoll send() {
         if (CREATED.equals(state)) {
             this.state = SENDING;
             SendMessage message = new SendMessage(chatId, text).setReplyMarkup(getKeyboard());
@@ -142,11 +145,12 @@ public class SimplePoll {
             EditMessageText editMessage =
                     new EditMessageText()
                             .setMessageId(this.message.getMessageId())
+                            .setChatId(chatId)
                             .setText(this.text)
                             .setReplyMarkup(getKeyboard());
             Sent newSent = new Sent(text, getChoices());
             if (sent.changed(newSent)) {
-                state = SENDING;
+                state = UPDATING;
                 sender.executeAsyncPromise(
                         editMessage, this.pollMessageUpdated(newSent), this::pollMessageFail);
             }
@@ -159,7 +163,7 @@ public class SimplePoll {
     private <T extends Serializable> Consumer<T> pollMessageUpdated(final Sent newSent) {
         return (v) -> {
             this.sent = newSent;
-            this.state = SENT;
+            pollMessageSent(message);
         };
     }
 
@@ -187,13 +191,17 @@ public class SimplePoll {
     }
 
     private void pollMessageSent(Message sent) {
-        this.message = sent;
-        this.state = SENT;
         this.choices
                 .values()
                 .forEach(pollChoice -> callbackProcessor.register(callbackHandler(pollChoice)));
-        processOnSend(sent);
-        timeoutProcess();
+        if (state.equals(SENDING)) {
+            this.message = sent;
+            this.state = SENT;
+            timeoutProcess();
+            processOnSend(sent);
+        } else if (UPDATING.equals(state)) {
+            this.state = UPDATED;
+        }
     }
 
     private void timeoutProcess() {
@@ -254,7 +262,8 @@ public class SimplePoll {
     }
 
     private void close(boolean shouldRemove) {
-        if (state.equals(SENT)) {
+        clearChoices();
+        if (state.equals(SENT) || state.equals(UPDATED)) {
             state = CLOSED;
             if (shouldRemove) {
                 sender.execute(deleteMsg(message));
@@ -271,41 +280,40 @@ public class SimplePoll {
     }
 
     public void cancel() {
-        if (state.equals(SENT)) {
+        clearChoices();
+        if (state.equals(SENT) || state.equals(UPDATED)) {
             state = CANCELED;
             sender.execute(deleteMsg(message));
         } else if (state.equals(CREATED)) {
             state = CANCELED;
-        } else {
-            log.error("Can't close poll, illegal state: {}", this);
         }
     }
 
-    public SimplePoll closeOnChoose(boolean closeOnChoose) {
+    public TgInlinePoll closeOnChoose(boolean closeOnChoose) {
         checkModifiable();
         this.closeOnChoose = closeOnChoose;
         return this;
     }
 
-    public SimplePoll closeTextBuilder(@NonNull CloseOnTextBuilder closeOnTextBuilder) {
+    public TgInlinePoll closeTextBuilder(@NonNull CloseOnTextBuilder closeOnTextBuilder) {
         checkModifiable();
         this.closeOnTextBuilder = closeOnTextBuilder;
         return this;
     }
 
-    public SimplePoll chatId(Long chatId) {
+    public TgInlinePoll chatId(Long chatId) {
         checkCreated();
         this.chatId = chatId;
         return this;
     }
 
-    public SimplePoll timeout(PollTimeoutConfiguration timeoutConfiguration) {
+    public TgInlinePoll timeout(PollTimeoutConfiguration timeoutConfiguration) {
         checkModifiable();
         this.timeoutConfiguration = timeoutConfiguration;
         return this;
     }
 
-    public SimplePoll removeOnClose(boolean value) {
+    public TgInlinePoll removeOnClose(boolean value) {
         checkModifiable();
         this.removeOnClose = value;
         return this;
@@ -326,7 +334,7 @@ public class SimplePoll {
         this.callbackProcessor = callbackProcessor;
     }
 
-    public SimplePoll choiceAroundInterceptor(
+    public TgInlinePoll choiceAroundInterceptor(
             @NonNull ChoiceAroundInterceptor choiceAroundInterceptor) {
         checkCreated();
         this.choiceAroundInterceptor = choiceAroundInterceptor;

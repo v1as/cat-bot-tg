@@ -10,7 +10,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.v1as.tg.cat.callbacks.TgCallbackProcessor;
-import ru.v1as.tg.cat.callbacks.phase.poll.SimplePoll;
+import ru.v1as.tg.cat.callbacks.phase.poll.TgInlinePoll;
 import ru.v1as.tg.cat.callbacks.phase.poll.UpdateWithChoiceTextBuilder;
 import ru.v1as.tg.cat.callbacks.phase.poll.interceptor.PhaseContextChoiceAroundInterceptor;
 import ru.v1as.tg.cat.model.TgChat;
@@ -45,9 +45,13 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
                         .setReplyMarkup(message.getReplyMarkup()));
     }
 
-    protected SimplePoll poll(String text) {
-        T phase = phaseContext.get();
-        SimplePoll poll = phase.poll(text);
+    protected TgInlinePoll poll(String text) {
+        T ctx = phaseContext.get();
+        return poll(text, ctx.getChatId());
+    }
+
+    protected TgInlinePoll poll(String text, Long chatId) {
+        TgInlinePoll poll = phaseContext.get().poll(text, chatId);
         poll.setSender(sender);
         poll.setBotClock(botClock);
         poll.setCallbackProcessor(callbackProcessor);
@@ -57,7 +61,7 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
     }
 
     protected PhaseContextChoiceAroundInterceptor<T> getChoiceAroundInterceptor(
-            SimplePoll poll, ThreadLocal<T> phaseContext) {
+            TgInlinePoll poll, ThreadLocal<T> phaseContext) {
         return new PhaseContextChoiceAroundInterceptor<>(phaseContext);
     }
 

@@ -14,19 +14,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
-import ru.v1as.tg.cat.callbacks.phase.AbstractPhase;
-import ru.v1as.tg.cat.callbacks.phase.PhaseContext;
+import ru.v1as.tg.cat.callbacks.phase.AbstractPublicChatPhase;
 import ru.v1as.tg.cat.callbacks.phase.PollTimeoutConfiguration;
+import ru.v1as.tg.cat.callbacks.phase.PublicChatPhaseContext;
 import ru.v1as.tg.cat.callbacks.phase.curios_cat.AbstractCuriosCatPhase.CuriosCatContext;
 import ru.v1as.tg.cat.callbacks.phase.poll.PollChoice;
-import ru.v1as.tg.cat.callbacks.phase.poll.SimplePoll;
+import ru.v1as.tg.cat.callbacks.phase.poll.TgInlinePoll;
 import ru.v1as.tg.cat.callbacks.phase.poll.interceptor.PhaseContextChoiceAroundInterceptor;
 import ru.v1as.tg.cat.callbacks.phase.poll.interceptor.TimeoutPhaseContextChoiceAroundInterceptor;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.service.CatEventService;
 
-public abstract class AbstractCuriosCatPhase extends AbstractPhase<CuriosCatContext> {
+public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<CuriosCatContext> {
 
     @Autowired protected CatBotData data;
     @Autowired protected CatEventService catEventService;
@@ -36,37 +36,28 @@ public abstract class AbstractCuriosCatPhase extends AbstractPhase<CuriosCatCont
                     .removeMsg(true)
                     .onTimeout(() -> this.catchUpCatAndClose(NOT_CAT));
 
-    public CuriosCatContext buildContext(
-            TgChat chat, TgChat publicChat, TgUser user, Message message) {
-        return new CuriosCatContext(chat, publicChat, user, message);
-    }
-
     public void open(TgChat chat, TgChat publicChat, TgUser user, Message curiosCatMsg) {
-        CuriosCatContext curiosCatContext = buildContext(chat, publicChat, user, curiosCatMsg);
-        this.open(curiosCatContext);
+        this.open(new CuriosCatContext(chat, publicChat, user, curiosCatMsg));
     }
 
     @Override
-    protected SimplePoll poll(String text) {
+    protected TgInlinePoll poll(String text) {
         return super.poll(text).timeout(TIMEOUT_LEAVE_CAT);
     }
 
     @Override
     protected PhaseContextChoiceAroundInterceptor<CuriosCatContext> getChoiceAroundInterceptor(
-            SimplePoll poll, ThreadLocal<CuriosCatContext> phaseContext) {
+            TgInlinePoll poll, ThreadLocal<CuriosCatContext> phaseContext) {
         int pollTextLength = getTextLength(poll);
         int afterPollTimeoutMs = getMsForTextReading(pollTextLength);
         return new TimeoutPhaseContextChoiceAroundInterceptor<>(
                 phaseContext, botClock, afterPollTimeoutMs);
     }
 
-    protected int getTextLength(SimplePoll poll) {
+    protected int getTextLength(TgInlinePoll poll) {
         int messageLen = poll.text().length();
         int choicesLen =
-                poll.getChoices().stream()
-                        .map(PollChoice::getText)
-                        .mapToInt(String::length)
-                        .sum();
+                poll.getChoices().stream().map(PollChoice::getText).mapToInt(String::length).sum();
         return messageLen + choicesLen;
     }
 
@@ -117,18 +108,16 @@ public abstract class AbstractCuriosCatPhase extends AbstractPhase<CuriosCatCont
     }
 
     @Getter
-    static class CuriosCatContext extends PhaseContext {
+    static class CuriosCatContext extends PublicChatPhaseContext {
 
         private final TgUser user;
         private final Message message;
-        private final TgChat publicChat;
         private final Map<String, Object> values = new HashMap<>();
 
         CuriosCatContext(TgChat chat, TgChat publicChat, TgUser user, Message message) {
-            super(chat);
+            super(chat, publicChat);
             this.user = user;
             this.message = message;
-            this.publicChat = publicChat;
         }
 
         public void set(String name, Object value) {

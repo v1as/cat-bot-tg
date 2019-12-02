@@ -4,6 +4,8 @@ public enum State {
     CREATED,
     SENDING,
     SENT,
+    UPDATING,
+    UPDATED,
     ERROR,
     CLOSED,
     CANCELED

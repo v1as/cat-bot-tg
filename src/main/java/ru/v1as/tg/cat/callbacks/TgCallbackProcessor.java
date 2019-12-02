@@ -37,8 +37,8 @@ public class TgCallbackProcessor {
                 handler.getPrefix());
     }
 
-    public void drop(TgCallBackHandler handler) {
-        prefixToHandler.remove(handler.getPrefix());
+    public void drop(String prefix) {
+        prefixToHandler.remove(prefix);
     }
 
     @SuppressWarnings("unchecked")
