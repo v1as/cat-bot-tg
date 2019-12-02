@@ -1,7 +1,12 @@
 package ru.v1as.tg.cat.tasks;
 
+import static java.time.LocalDateTime.now;
+import static java.util.function.Function.identity;
+
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +15,8 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import ru.v1as.tg.cat.MedalsListBuilder;
 import ru.v1as.tg.cat.jpa.dao.ChatDao;
+import ru.v1as.tg.cat.jpa.dao.ChatDetailsDao;
+import ru.v1as.tg.cat.jpa.entities.chat.ChatDetailsEntity;
 import ru.v1as.tg.cat.jpa.entities.chat.ChatEntity;
 import ru.v1as.tg.cat.model.LongProperty;
 import ru.v1as.tg.cat.service.ScoreDataService;
@@ -22,6 +29,7 @@ public class SendWinners {
 
     private final TgSender sender;
     private final ChatDao chatDao;
+    private final ChatDetailsDao chatDetailsDao;
     private final ScoreDataService scoreData;
 
     @PostConstruct
@@ -32,8 +40,16 @@ public class SendWinners {
     @Scheduled(cron = "0 0 10 * * *")
     public void run() {
         log.info("Start sending winners data...");
-        LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
+        LocalDateTime yesterday = now().minusDays(1);
+        final Map<Long, ChatDetailsEntity> id2Details =
+                chatDetailsDao.findAll().stream()
+                        .collect(Collectors.toMap(ChatDetailsEntity::getId, identity()));
         for (ChatEntity chat : chatDao.findAll()) {
+            final ChatDetailsEntity details = id2Details.get(chat.getId());
+            if (!details.isEnabled()) {
+                log.debug("Chat '{}' skipped because of disabled", chat);
+                continue;
+            }
             try {
                 StringBuilder text = new StringBuilder();
                 LongProperty[] topPlayers =

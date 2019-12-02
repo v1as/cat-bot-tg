@@ -5,7 +5,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
-import org.springframework.test.context.ActiveProfiles;
 import ru.v1as.tg.cat.callbacks.TgCallbackProcessor;
 import ru.v1as.tg.cat.commands.TgCommandProcessorByName;
 import ru.v1as.tg.cat.config.JpaConfiguration;
@@ -56,8 +55,6 @@ public class CaBotTestConfiguration {
     public BotClock getClock() {
         return new TestBotClock();
     }
-
-
 
     @Bean
     @Primary

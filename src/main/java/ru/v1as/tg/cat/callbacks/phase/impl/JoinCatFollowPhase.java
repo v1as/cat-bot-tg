@@ -42,7 +42,6 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
     private final BotClock botClock;
     private final BotConfiguration conf;
 
-
     @Override
     protected void open() {
         PollChoice followTheCat = PollChoice.startCommandUrl(conf.getBotName(), "Пойти за котом");

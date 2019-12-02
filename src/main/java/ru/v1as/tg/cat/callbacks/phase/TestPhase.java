@@ -5,12 +5,13 @@ import ru.v1as.tg.cat.callbacks.phase.poll.ChooseContext;
 import ru.v1as.tg.cat.callbacks.phase.poll.TgInlinePoll;
 import ru.v1as.tg.cat.model.TgChat;
 
-//@Component
+// @Component
 public class TestPhase extends AbstractPhase<TestPhaseContext> {
 
     @Override
     protected void open() {
-        getPhaseContext().poll = poll("Приветики!").closeOnChoose(false).choice("Привет", this::hello).send();
+        getPhaseContext().poll =
+                poll("Приветики!").closeOnChoose(false).choice("Привет", this::hello).send();
     }
 
     private void hello(ChooseContext chooseContext) {

@@ -1,5 +1,6 @@
 package ru.v1as.tg.cat.jpa.entities.chat;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -16,7 +17,7 @@ public class ChatDetailsEntity {
 
     @Id private Long id;
 
-    @OneToOne(optional = false)
+    @OneToOne(optional = false, cascade = CascadeType.REFRESH)
     private ChatEntity chat;
 
     @Column(nullable = false)
@@ -24,4 +25,7 @@ public class ChatDetailsEntity {
 
     @Column(nullable = false)
     private Integer membersAmount;
+
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private boolean enabled;
 }

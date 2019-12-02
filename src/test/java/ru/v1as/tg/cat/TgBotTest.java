@@ -32,15 +32,16 @@ import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.tg.TgUpdateProcessor;
 import ru.v1as.tg.cat.utils.AssertAnswerCallbackQuery;
 import ru.v1as.tg.cat.utils.AssertEditMessage;
+import ru.v1as.tg.cat.utils.AssertEditMessageReplyMarkup;
 import ru.v1as.tg.cat.utils.AssertEditMessageText;
 import ru.v1as.tg.cat.utils.AssertSendMessage;
 
 public abstract class TgBotTest implements TgTestInvoker {
 
-    public static final int USER_1_ID = 0;
-    public static final int USER_2_ID = 1;
-    public static final int USER_3_ID = 2;
-    public static final int USER_4_ID = 3;
+    private static final int USER_1_ID = 0;
+    private static final int USER_2_ID = 1;
+    private static final int USER_3_ID = 2;
+    private static final int USER_4_ID = 3;
     private final Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass());
 
     @Autowired protected TestAbsSender sender;
@@ -48,7 +49,7 @@ public abstract class TgBotTest implements TgTestInvoker {
     @Autowired protected TgUpdateProcessor updateProcessor;
 
     protected Integer lastMsgId = 0;
-    protected Integer lastCallbackQueryId = 0;
+    Integer lastCallbackQueryId = 0;
 
     private int userId = 0;
     private Chat chat;
@@ -249,7 +250,14 @@ public abstract class TgBotTest implements TgTestInvoker {
     protected AssertEditMessage popEditMessage() {
         final EditMessageText message = popMethodCall(EditMessageText.class).getRequest();
         assertEquals(getChatId().toString(), message.getChatId());
-        return new AssertEditMessage(message);
+        return new AssertEditMessage(this, message);
+    }
+
+    protected AssertEditMessageReplyMarkup popEditMessageReplyMarkup() {
+        final EditMessageReplyMarkup edit =
+                popMethodCall(EditMessageReplyMarkup.class).getRequest();
+        assertEquals(getChatId().toString(), edit.getChatId());
+        return new AssertEditMessageReplyMarkup(this, edit);
     }
 
     protected AssertSendMessage popSendMessage() {
@@ -270,13 +278,6 @@ public abstract class TgBotTest implements TgTestInvoker {
         assertEquals(deleteMessage.getChatId(), getChatId().toString());
         assertNotNull(deleteMessage.getMessageId());
         return deleteMessage;
-    }
-
-    protected EditMessageReplyMarkup popEditMessageReplyMarkup() {
-        EditMessageReplyMarkup markup = popMethod(EditMessageReplyMarkup.class);
-        assertEquals(getChatId().toString(), markup.getChatId());
-        assertNotNull(markup.getMessageId());
-        return markup;
     }
 
     protected AssertEditMessageText popEditMessageText() {

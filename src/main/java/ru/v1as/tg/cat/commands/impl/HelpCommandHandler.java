@@ -16,16 +16,21 @@ public class HelpCommandHandler extends AbstractCommand {
     private final TgSender sender;
 
     public HelpCommandHandler(List<CommandHandler> commands, TgSender sender) {
-        super(cfg().commandName("help"));
+        super(cfg());
         this.commands = commands;
         this.sender = sender;
+    }
+
+    @Override
+    public String getCommandName() {
+        return "help";
     }
 
     @Override
     public void process(TgCommandRequest command, TgChat chat, TgUser user) {
         final String helpMessage =
                 commands.stream()
-                        .filter(c -> c.getCommandDescription() != null)
+                        .filter(this::filterCommand)
                         .map(
                                 c ->
                                         String.format(
@@ -33,5 +38,9 @@ public class HelpCommandHandler extends AbstractCommand {
                                                 c.getCommandName(), c.getCommandDescription()))
                         .collect(Collectors.joining("\n"));
         sender.message(chat, helpMessage);
+    }
+
+    protected boolean filterCommand(CommandHandler commandHandler) {
+        return commandHandler.getCommandDescription() != null;
     }
 }

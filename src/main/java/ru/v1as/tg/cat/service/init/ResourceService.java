@@ -13,13 +13,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.v1as.tg.cat.jpa.dao.ResourceDao;
 import ru.v1as.tg.cat.jpa.entities.resource.ResourceEntity;
-import ru.v1as.tg.cat.jpa.entities.resource.ResourceType;
 
 @Component
 @RequiredArgsConstructor
 public class ResourceService {
 
-    public static final ResourceEntity MONEY = new ResourceEntity(1L, "Деньги", COUNTABLE, MONEY_BAG);
+    public static final ResourceEntity MONEY =
+            new ResourceEntity(1L, "Деньги", COUNTABLE, MONEY_BAG);
     public static final List<ResourceEntity> KNOWN_RESOURCES =
             ImmutableList.<ResourceEntity>builder().add(MONEY).build();
     private final ResourceDao resourceDao;

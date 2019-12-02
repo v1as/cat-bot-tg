@@ -53,7 +53,7 @@ public class CatRequestMessageCreator implements MessageHandler {
     }
 
     private SendMessage buildIsThatCatMessage(Message message, TgChat chat, CatRequest catRequest) {
-        InlineKeyboardMarkup buttons = CatRequestVoteHandler.getCatePollButtons(catRequest);
+        InlineKeyboardMarkup buttons = CatRequestVoteHandler.getCatPollButtons(catRequest);
         catRequest.setPollButtons(buttons);
         return new SendMessage()
                 .setReplyToMessageId(message.getMessageId())

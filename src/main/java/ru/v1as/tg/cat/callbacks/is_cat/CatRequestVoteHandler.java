@@ -7,6 +7,7 @@ import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT2;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT3;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.NOT_CAT;
 import static ru.v1as.tg.cat.callbacks.is_cat.RequestAnswerResult.CANCELED;
+import static ru.v1as.tg.cat.callbacks.is_cat.RequestAnswerResult.CHANGED;
 import static ru.v1as.tg.cat.callbacks.is_cat.RequestAnswerResult.FINISHED;
 import static ru.v1as.tg.cat.callbacks.is_cat.RequestAnswerResult.VOTED;
 import static ru.v1as.tg.cat.tg.KeyboardUtils.clearButtons;
@@ -28,7 +29,6 @@ import ru.v1as.tg.cat.model.CatRequest;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.service.CatEventService;
-import ru.v1as.tg.cat.service.init.ResourceService;
 import ru.v1as.tg.cat.tg.TgSender;
 
 @Slf4j
@@ -39,9 +39,8 @@ public class CatRequestVoteHandler implements TgCallBackHandler<CatRequestVote> 
     private final CatBotData data;
     private final TgSender sender;
     private final CatEventService catService;
-    private final ResourceService resourceService;
 
-    public static InlineKeyboardMarkup getCatePollButtons(CatRequest catRequest) {
+    public static InlineKeyboardMarkup getCatPollButtons(CatRequest catRequest) {
         return inlineKeyboardMarkup(
                 catRequest.getVotesButtonPrefix(CAT1) + CAT,
                 CAT1.getCallback(),
@@ -81,7 +80,7 @@ public class CatRequestVoteHandler implements TgCallBackHandler<CatRequestVote> 
             final Long chatId = req.getChatId();
             catService.saveRealCatPoll(req);
             sender.execute(new DeleteMessage(chatId, messageId));
-        } else if (VOTED.equals(voted)) {
+        } else if (VOTED.equals(voted) || CHANGED.equals(voted)) {
             if (req.isClosed()) {
                 saveFinishedPoll(vote, req);
                 sender.execute(
@@ -90,7 +89,7 @@ public class CatRequestVoteHandler implements TgCallBackHandler<CatRequestVote> 
                                 .setMessageId(req.getMessageId())
                                 .setText(req.getResult().getAmount() + "x" + CAT));
             } else {
-                InlineKeyboardMarkup pollButtons = getCatePollButtons(req);
+                InlineKeyboardMarkup pollButtons = getCatPollButtons(req);
                 if (!req.getPollButtons().equals(pollButtons)) {
                     req.setPollButtons(pollButtons);
                     sender.execute(getUpdateButtonsMsg(msg, pollButtons));

@@ -1,10 +1,10 @@
 package ru.v1as.tg.cat;
 
+import static java.time.LocalDateTime.now;
 import static ru.v1as.tg.cat.model.UpdateUtils.getChat;
 import static ru.v1as.tg.cat.model.UpdateUtils.getUser;
 
 import java.util.ArrayList;
-import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -54,7 +54,7 @@ public class DatabaseUpdateBeforeHandler implements TgUpdateBeforeHandler {
                             chat.getId(),
                             chat.getTitle(),
                             chat.getDescription(),
-                            new Date(),
+                            now(),
                             new ArrayList<>());
             chatDetails = new ChatDetailsEntity();
             chatDetails.setId(chat.getId());

@@ -1,7 +1,7 @@
 package ru.v1as.tg.cat.jpa.entities.chat;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -27,7 +27,7 @@ public class ChatEntity implements TgChat {
     @Id private Long id;
     private String title;
     private String description;
-    private Date updated;
+    private LocalDateTime updated;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private List<UserEntity> users;
@@ -57,7 +57,7 @@ public class ChatEntity implements TgChat {
             changed = true;
         }
         if (changed) {
-            updated = new Date();
+            updated = LocalDateTime.now();
         }
         return changed;
     }

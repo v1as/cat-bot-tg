@@ -44,6 +44,7 @@ public abstract class AbstractCommand implements CommandHandler {
         if (configuration.onlyPublicChat) {
             if (chat.isUserChat()) {
                 sender.message(chat, "Эта команда разрешена только в публичном чате.");
+                return;
             }
         }
         process(command, chat, user);
