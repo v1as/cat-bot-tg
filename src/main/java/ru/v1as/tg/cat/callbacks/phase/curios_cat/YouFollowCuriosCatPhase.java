@@ -31,7 +31,7 @@ public class YouFollowCuriosCatPhase extends AbstractCuriosCatPhase {
         final Integer standing = ctx.increment(STANDING);
         if (standing > 3) {
             messages(
-                    "Коту надоело сидеть и он отправился по своим делам.",
+                    "Коту наскучило и он отправился по своим делам.",
                     "Вы и дальше остались стоять на месте.",
                     "Почему же вам не засчитали этого кота?");
             catchUpCatAndClose(NOT_CAT);

@@ -39,7 +39,7 @@ public class CatBotTest extends AbstractCatBotTest {
         sendPhotoMessage();
         popSendMessage().assertText("Это кот?").findCallback(EmojiConst.HEAVY_MULTIPLY).send();
         popAnswerCallbackQuery().assertText("Вы закрыли голосование");
-        popDeleteMessage().getMessageId();
+        popDeleteMessage().assertTextContains("Это кот?");
     }
 
     @Test

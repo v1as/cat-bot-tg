@@ -36,7 +36,7 @@ public class KittenOnTheTree extends AbstractCuriosCatPhase {
     private void keepSpeed(ChooseContext ctx) {
         messages(
                 "Некая напряженность передалась и вам.",
-                "Прогулка завершилась для вас довольно так же неожиданно, как и началась.",
+                "Прогулка завершилась для вас так же неожиданно, как и началась.",
                 "Вы с котом стоите возле жилого дома.");
         poll("...").choice("Оглядеться", this::lookAround).send();
     }
@@ -44,7 +44,7 @@ public class KittenOnTheTree extends AbstractCuriosCatPhase {
     private void lookAround(ChooseContext chooseContext) {
         messages(
                 "Долго разбираться не пришлось.",
-                "Над головой раздаётся тихое мяуканье, а взгляд кошачей взволнованной морды направлен вверх.",
+                "Над головой раздаётся тихое мяуканье, а взволнованный кошачий взгляд направлен вверх.",
                 "В кроне дерева сидит котёнок и растерянно мяучит.");
         poll("Как поступим?")
                 .choice("Котёнок! " + EmojiConst.CAT, this::kittenCount)

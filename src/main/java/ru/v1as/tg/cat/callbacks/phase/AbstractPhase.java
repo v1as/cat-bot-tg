@@ -1,5 +1,6 @@
 package ru.v1as.tg.cat.callbacks.phase;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.function.Consumer;
@@ -120,7 +121,7 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
     }
 
     protected <L> Consumer<L> contextWrap(Consumer<L> consumer) {
-        T ctx = this.phaseContext.get();
+        T ctx = checkNotNull(this.phaseContext.get());
         return t -> {
             phaseContext.set(ctx);
             try {

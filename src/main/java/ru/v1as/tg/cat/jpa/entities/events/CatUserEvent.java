@@ -27,7 +27,7 @@ public class CatUserEvent extends UserEvent {
 
     private String questName;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private Integer messageId;
 
     public CatUserEvent(

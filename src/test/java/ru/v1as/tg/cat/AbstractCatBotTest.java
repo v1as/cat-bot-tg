@@ -1,6 +1,7 @@
 package ru.v1as.tg.cat;
 
 import static org.junit.Assert.assertEquals;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.util.Collection;
 import org.junit.Before;
@@ -10,6 +11,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.v1as.tg.cat.model.CatRequest;
 
 @Rollback
@@ -21,7 +23,11 @@ public abstract class AbstractCatBotTest extends TgBotTest {
 
     @Before
     public void before() {
-        sender.setMessageProducer(() -> getMessage(++lastMsgId));
+        sender.setMessageProducer((chatId, text) -> {
+            final Message message = getMessage(++lastMsgId, chatId);
+            setField(message, "text", text);
+            return message;
+        });
         lastMsgId = 0;
         lastCallbackQueryId = 0;
         catBotData.clear();
