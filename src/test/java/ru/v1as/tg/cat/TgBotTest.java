@@ -1,10 +1,10 @@
 package ru.v1as.tg.cat;
 
+import static java.util.Collections.singletonList;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 import static ru.v1as.tg.cat.model.TgUserWrapper.wrap;
 
 import java.io.Serializable;
@@ -23,7 +23,10 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageRe
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Chat;
+import org.telegram.telegrambots.meta.api.objects.EntityType;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.MessageEntity;
+import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import ru.v1as.tg.cat.model.TgChat;
@@ -31,6 +34,7 @@ import ru.v1as.tg.cat.model.TgChatWrapper;
 import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.tg.TgUpdateProcessor;
 import ru.v1as.tg.cat.utils.AssertAnswerCallbackQuery;
+import ru.v1as.tg.cat.utils.AssertDeleteMessage;
 import ru.v1as.tg.cat.utils.AssertEditMessage;
 import ru.v1as.tg.cat.utils.AssertEditMessageReplyMarkup;
 import ru.v1as.tg.cat.utils.AssertEditMessageText;
@@ -42,6 +46,7 @@ public abstract class TgBotTest implements TgTestInvoker {
     private static final int USER_2_ID = 1;
     private static final int USER_3_ID = 2;
     private static final int USER_4_ID = 3;
+    public static final Long PUBLIC_CHAT_ID_1 = 100L;
     private final Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass());
 
     @Autowired protected TestAbsSender sender;
@@ -88,9 +93,8 @@ public abstract class TgBotTest implements TgTestInvoker {
 
     protected Update getMessageUpdate() {
         Message message = getMessage(++lastMsgId);
-        Update update = mock(Update.class);
-        when(update.hasMessage()).thenReturn(true);
-        when(update.getMessage()).thenReturn(message);
+        Update update = new Update();
+        setField(update, "message", message);
         return update;
     }
 
@@ -98,37 +102,44 @@ public abstract class TgBotTest implements TgTestInvoker {
         return getMessage(++lastMsgId);
     }
 
-    protected Message getMessage(Integer newId) {
-        Message message = mock(Message.class);
-        when(message.getMessageId()).thenReturn(newId);
-        when(message.isUserMessage()).thenReturn(true);
-        User user = getUser();
-        when(message.getFrom()).thenReturn(user);
-        Chat chat = getChat();
-        Long chatId = getChatId();
-        when(message.getChat()).thenReturn(chat);
-        when(message.getChatId()).thenReturn(chatId);
+    protected Message getMessage(Integer newId, String chatIdStr) {
+        Long chatId = Long.valueOf(chatIdStr);
+        final Message message = getMessage(newId);
+        setField(message, "chat", mockChat(chatId, PUBLIC_CHAT_ID_1.equals(chatId)));
         return message;
     }
 
-    protected Message sendCommand(String text) {
+    protected Message getMessage(Integer newId) {
+        Message message = new Message();
+        User user = getUser();
+        setField(message, "messageId", newId);
+        setField(message, "chat", chat);
+        setField(message, "from", user);
+        return message;
+    }
+
+    public Message sendCommand(String text) {
         Update update = getMessageUpdate();
-        when(update.getMessage().getText()).thenReturn(text);
-        when(update.getMessage().isCommand()).thenReturn(true);
+        final Message message = update.getMessage();
+        setField(message, "text", text);
+        final MessageEntity messageEntity = new MessageEntity();
+        setField(messageEntity, "type", EntityType.BOTCOMMAND);
+        setField(messageEntity, "offset", 0);
+        setField(message, "entities", singletonList(messageEntity));
         updateProcessor.onUpdateReceived(update);
         return update.getMessage();
     }
 
     protected Message sendTextMessage(String text) {
         Update update = getMessageUpdate();
-        when(update.getMessage().getText()).thenReturn(text);
+        setField(update.getMessage(), "text", text);
         updateProcessor.onUpdateReceived(update);
         return update.getMessage();
     }
 
     protected Message sendPhotoMessage() {
         Update update = getMessageUpdate();
-        when(update.getMessage().hasPhoto()).thenReturn(true);
+        setField(update.getMessage(), "photo", singletonList(new PhotoSize()));
         updateProcessor.onUpdateReceived(update);
         return update.getMessage();
     }
@@ -140,21 +151,17 @@ public abstract class TgBotTest implements TgTestInvoker {
     }
 
     public Update getCallbackUpdate(Integer msgId, String data) {
-        Update update = mock(Update.class);
-        when(update.hasCallbackQuery()).thenReturn(true);
-        CallbackQuery callbackQuery = getCallbackQuery(msgId, data);
-        when(update.getCallbackQuery()).thenReturn(callbackQuery);
+        Update update = new Update();
+        setField(update, "callbackQuery", getCallbackQuery(msgId, data));
         return update;
     }
 
     private CallbackQuery getCallbackQuery(Integer msgId, String data) {
-        CallbackQuery query = mock(CallbackQuery.class);
-        User user = getUser();
-        when(query.getFrom()).thenReturn(user);
-        when(query.getData()).thenReturn(data);
-        when(query.getId()).thenReturn((++lastCallbackQueryId).toString());
-        Message message = getMessage(msgId);
-        when(query.getMessage()).thenReturn(message);
+        CallbackQuery query = new CallbackQuery();
+        setField(query, "from", getUser());
+        setField(query, "data", data);
+        setField(query, "id", (++lastCallbackQueryId).toString());
+        setField(query, "message", getMessage(msgId));
         return query;
     }
 
@@ -163,13 +170,12 @@ public abstract class TgBotTest implements TgTestInvoker {
     }
 
     protected User getUser() {
-        User user = mock(User.class);
-        when(user.getId()).thenReturn(getUserId());
+        User user = new User();
+        setField(user, "id", getUserId());
         String userName = "User" + getUserId();
-        when(user.toString()).thenReturn(userName);
-        when(user.getUserName()).thenReturn(userName);
-        when(user.getFirstName()).thenReturn("User");
-        when(user.getLastName()).thenReturn(getUserId().toString());
+        setField(user, "userName", userName);
+        setField(user, "firstName", "User");
+        setField(user, "lastName", getUserId().toString());
         return user;
     }
 
@@ -182,7 +188,7 @@ public abstract class TgBotTest implements TgTestInvoker {
     }
 
     protected void switchToPublicChat() {
-        this.chat = mockChat(100L, true);
+        this.chat = mockChat(PUBLIC_CHAT_ID_1, true);
     }
 
     protected void switchFirstUserChat() {
@@ -194,10 +200,13 @@ public abstract class TgBotTest implements TgTestInvoker {
     }
 
     private Chat mockChat(Long chatId, boolean isPublic) {
-        Chat res = mock(Chat.class);
-        when(res.getId()).thenReturn(chatId);
-        when(res.isSuperGroupChat()).thenReturn(isPublic);
-        when(res.isUserChat()).thenReturn(!isPublic);
+        Chat res = new Chat();
+        setField(res, "id", chatId);
+        if (isPublic) {
+            setField(res, "type", "supergroup");
+        } else {
+            setField(res, "type", "private");
+        }
         return res;
     }
 
@@ -273,11 +282,13 @@ public abstract class TgBotTest implements TgTestInvoker {
         return new AssertAnswerCallbackQuery(query);
     }
 
-    protected DeleteMessage popDeleteMessage() {
-        DeleteMessage deleteMessage = popMethod(DeleteMessage.class);
+    protected AssertDeleteMessage popDeleteMessage() {
+        final MethodCall<Boolean> deleteCall = popMethodCall(DeleteMessage.class);
+        DeleteMessage deleteMessage = deleteCall.getRequest();
         assertEquals(deleteMessage.getChatId(), getChatId().toString());
         assertNotNull(deleteMessage.getMessageId());
-        return deleteMessage;
+        return new AssertDeleteMessage(
+                deleteMessage, deleteCall.getMessage(), deleteCall.getResponse());
     }
 
     protected AssertEditMessageText popEditMessageText() {

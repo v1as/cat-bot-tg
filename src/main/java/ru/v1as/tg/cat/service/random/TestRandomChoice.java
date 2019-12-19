@@ -7,17 +7,17 @@ import ru.v1as.tg.cat.model.random.RandomRequest;
 
 @Component
 @Profile("test")
-public class TestRandomChoice implements RandomChoice {
+public class TestRandomChoice<L> implements RandomChoice {
 
-    private Function<RandomRequest<?>, ?> chooser = r -> r.getItems().iterator().next().getValue();
+    private Function<RandomRequest<L>, L> chooser = r -> r.getItems().iterator().next().getValue();
 
     @Override
     @SuppressWarnings("unchecked")
     public <T> T get(RandomRequest<T> request) {
-        return (T) chooser.apply(request);
+        return (T) chooser.apply((RandomRequest<L>) request);
     }
 
-    public void setChooser(Function<RandomRequest<?>, ?> chooser) {
+    public void setChooser(Function<RandomRequest<L>, L> chooser) {
         this.chooser = chooser;
     }
 }

@@ -108,7 +108,7 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
     }
 
     @Getter
-    static class CuriosCatContext extends PublicChatPhaseContext {
+    public static class CuriosCatContext extends PublicChatPhaseContext {
 
         private final TgUser user;
         private final Message message;

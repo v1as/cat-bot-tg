@@ -41,7 +41,7 @@ public class ParkGardenPhase extends AbstractCuriosCatPhase {
     }
 
     private void sitOnBench(ChooseContext chooseContext) {
-        messages("Вы удобно устроились на скамье.", "Кот всё так же играет с бабочкой.");
+        messages("Вы удобно устроились на скамье.", "Кот увлечённо играет с бабочкой.");
         poll("Что будем делать?")
                 .choice("Отдыхать", this::rest)
                 .choice("Кот!" + EmojiConst.CAT, this::goodBye)

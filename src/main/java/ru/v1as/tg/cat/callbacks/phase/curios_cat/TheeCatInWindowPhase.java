@@ -13,7 +13,7 @@ public class TheeCatInWindowPhase extends AbstractCuriosCatPhase {
     @Override
     protected void open() {
         messages(
-                "В этот раз Любопытный Кот выглядит довольно целеустрёмлённым.",
+                "В этот раз Любопытный Кот выглядит довольно целеустремлённым.",
                 "Вы почти что слышите уверенный топот кошачьих лапок.",
                 "Проходя мимо торца здания, вы замечаете кота в окне");
         poll("Как поступим?")
@@ -25,7 +25,7 @@ public class TheeCatInWindowPhase extends AbstractCuriosCatPhase {
     private void follow1(ChooseContext chooseContext) {
         messages(
                 "Кот всё так же серьёзно настроен и бежит вперёд.",
-                "Вот уже второй кот, подоравшись, смотрит на вас из окна.");
+                "Вот уже второй кот, подобравшись, смотрит на вас из окна.");
         poll("Что делаем?")
                 .choice("Кот! " + EmojiConst.CAT, this::cat2)
                 .choice("Следуем дальше", this::follow2)

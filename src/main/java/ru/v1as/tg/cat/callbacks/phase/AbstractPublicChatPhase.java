@@ -6,6 +6,6 @@ public abstract class AbstractPublicChatPhase<T extends PublicChatPhaseContext>
         extends AbstractPhase<T> {
 
     public TgInlinePoll publicPoll(String text) {
-        return poll(text, getPhaseContext().getChatId());
+        return poll(text, getPhaseContext().getPublicChatId());
     }
 }
