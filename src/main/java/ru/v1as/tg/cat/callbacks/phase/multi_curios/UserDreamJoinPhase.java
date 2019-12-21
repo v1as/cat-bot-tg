@@ -58,7 +58,7 @@ public class UserDreamJoinPhase extends AbstractMultiUserPhase<UserDreamJoinPhas
     private void join(CallbackCommandContext callback) {
         final UserDreamJoinPhaseContext ctx = getPhaseContext();
         final TgUser user = callback.getUser();
-        final Set<TgUser> users = ctx.getUsers();
+        final Set<TgUser> users = ctx.getGuests();
         boolean toUpdateJoinMsg = false;
         if (!users.contains(user) && !user.equals(ctx.getOwner())) {
             users.add(user);
@@ -94,7 +94,7 @@ public class UserDreamJoinPhase extends AbstractMultiUserPhase<UserDreamJoinPhas
                 ctx.getOwner().getUsernameOrFullName(),
                 DREAMING,
                 ctx.getUsersAmount(),
-                ctx.getUsers().stream()
+                ctx.getGuests().stream()
                         .map(TgUser::getUsernameOrFullName)
                         .collect(Collectors.joining("\n")));
     }

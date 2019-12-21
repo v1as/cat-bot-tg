@@ -6,7 +6,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public interface TgUser {
+public interface TgUser extends Comparable<TgUser> {
 
     Integer getId();
 
@@ -32,5 +32,10 @@ public interface TgUser {
         return Stream.of(getFirstName(), getLastName())
                 .filter(Objects::nonNull)
                 .collect(Collectors.joining(" "));
+    }
+
+    @Override
+    default int compareTo(TgUser o) {
+        return Integer.compare(this.getId(), o.getId());
     }
 }
