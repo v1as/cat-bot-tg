@@ -13,6 +13,8 @@ public class YouFollowCuriosCatPhase extends AbstractCuriosCatPhase {
 
     private static final String STANDING = "STANDING";
     private static final String WALKING = "WALKING";
+    public static final int CAT_PATIENCE_WALK = 5;
+    public static final int CAT_PATIENCE_STANDING = 4;
 
     @Override
     protected void open() {
@@ -29,7 +31,7 @@ public class YouFollowCuriosCatPhase extends AbstractCuriosCatPhase {
         final CuriosCatContext ctx = getPhaseContext();
         final Integer walking = ctx.get(WALKING, 0);
         final Integer standing = ctx.increment(STANDING);
-        if (standing > 3) {
+        if (standing > CAT_PATIENCE_STANDING) {
             messages(
                     "Коту наскучило и он отправился по своим делам.",
                     "Вы и дальше остались стоять на месте.",
@@ -55,7 +57,7 @@ public class YouFollowCuriosCatPhase extends AbstractCuriosCatPhase {
 
     private void walkAway(ChooseContext chooseContext) {
         final Integer walking = getPhaseContext().increment(WALKING);
-        if (walking > 5) {
+        if (walking > CAT_PATIENCE_WALK) {
             boringWalk();
         } else {
             messages(
