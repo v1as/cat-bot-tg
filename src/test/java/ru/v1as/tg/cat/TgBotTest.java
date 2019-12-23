@@ -8,12 +8,10 @@ import static org.springframework.test.util.ReflectionTestUtils.setField;
 import static ru.v1as.tg.cat.model.TgUserWrapper.wrap;
 
 import java.io.Serializable;
-import java.util.Deque;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import junit.framework.AssertionFailedError;
 import org.junit.After;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
@@ -47,7 +45,6 @@ public abstract class TgBotTest implements TgTestInvoker {
     private static final int USER_3_ID = 2;
     private static final int USER_4_ID = 3;
     public static final Long PUBLIC_CHAT_ID_1 = 100L;
-    private final Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass());
 
     @Autowired protected TestAbsSender sender;
     @Autowired protected CatBotData catBotData;
@@ -98,14 +95,10 @@ public abstract class TgBotTest implements TgTestInvoker {
         return update;
     }
 
-    protected Message getMessage() {
-        return getMessage(++lastMsgId);
-    }
-
     protected Message getMessage(Integer newId, String chatIdStr) {
         Long chatId = Long.valueOf(chatIdStr);
         final Message message = getMessage(newId);
-        setField(message, "chat", mockChat(chatId, PUBLIC_CHAT_ID_1.equals(chatId)));
+        setField(message, "chat", getChat(chatId, PUBLIC_CHAT_ID_1.equals(chatId)));
         return message;
     }
 
@@ -188,18 +181,30 @@ public abstract class TgBotTest implements TgTestInvoker {
     }
 
     protected void switchToPublicChat() {
-        this.chat = mockChat(PUBLIC_CHAT_ID_1, true);
+        this.chat = getChat(PUBLIC_CHAT_ID_1, true);
     }
 
     protected void switchFirstUserChat() {
-        this.chat = mockChat((long) USER_1_ID, false);
+        this.chat = getChat((long) USER_1_ID, false);
+    }
+
+    protected void switchSecondUserChat() {
+        this.chat = getChat((long) USER_2_ID, false);
+    }
+
+    protected void switchThirdUserChat() {
+        this.chat = getChat((long) USER_3_ID, false);
+    }
+
+    protected void switchFourthUserChat() {
+        this.chat = getChat((long) USER_4_ID, false);
     }
 
     protected Chat getChat() {
         return chat;
     }
 
-    private Chat mockChat(Long chatId, boolean isPublic) {
+    private Chat getChat(Long chatId, boolean isPublic) {
         Chat res = new Chat();
         setField(res, "id", chatId);
         if (isPublic) {
@@ -215,17 +220,19 @@ public abstract class TgBotTest implements TgTestInvoker {
     }
 
     @SuppressWarnings("unchecked")
-    private <P extends Serializable, T extends BotApiMethod<P>> T popMethod(Class<T> clazz) {
-        final MethodCall methodCall =
+    private <P extends Serializable, T extends BotApiMethod<P>> T popMethod(
+            Class<T> clazz, Predicate<T> filter) {
+        final MethodCall<?> methodCall =
                 sender.getMethodCalls().stream()
                         .filter(obj -> clazz.isInstance(obj.getRequest()))
+                        .filter(obj -> filter.test((T) obj.getRequest()))
                         .findFirst()
                         .orElseThrow(getAssertionFailedErrorSupplier(clazz));
         assertTrue(sender.getMethodCalls().remove(methodCall));
         return (T) methodCall.getRequest();
     }
 
-    private Supplier<AssertionFailedError> getAssertionFailedErrorSupplier(Class clazz) {
+    private Supplier<AssertionFailedError> getAssertionFailedErrorSupplier(Class<?> clazz) {
         return () ->
                 new AssertionFailedError(
                         String.format(
@@ -235,55 +242,54 @@ public abstract class TgBotTest implements TgTestInvoker {
 
     @SuppressWarnings("unchecked")
     private <P extends Serializable, T extends BotApiMethod<P>> MethodCall<P> popMethodCall(
-            Class<T> clazz) {
-        final MethodCall methodCall =
+            Class<T> clazz, Predicate<T> filter) {
+        final MethodCall<?> methodCall =
                 sender.getMethodCalls().stream()
                         .filter(obj -> clazz.isInstance(obj.getRequest()))
+                        .filter(obj -> filter.test((T) obj.getRequest()))
                         .findFirst()
                         .orElseThrow(getAssertionFailedErrorSupplier(clazz));
         assertTrue(sender.getMethodCalls().remove(methodCall));
         return (MethodCall<P>) methodCall;
     }
 
-    protected void printQueueMessages() {
-        log.info(sender.getMethodCalls().toString());
-    }
-
-    private String getMethodsStr(Deque<MethodCall> methods) {
-        return methods.stream()
-                .map(Object::getClass)
-                .map(Class::getSimpleName)
-                .collect(Collectors.joining(", "));
-    }
-
     protected AssertEditMessage popEditMessage() {
-        final EditMessageText message = popMethodCall(EditMessageText.class).getRequest();
-        assertEquals(getChatId().toString(), message.getChatId());
+        final EditMessageText message =
+                popMethodCall(
+                                EditMessageText.class,
+                                m -> getChatId().toString().equals(m.getChatId()))
+                        .getRequest();
         return new AssertEditMessage(this, message);
     }
 
     protected AssertEditMessageReplyMarkup popEditMessageReplyMarkup() {
         final EditMessageReplyMarkup edit =
-                popMethodCall(EditMessageReplyMarkup.class).getRequest();
+                popMethodCall(
+                                EditMessageReplyMarkup.class,
+                                m -> getChatId().toString().equals(m.getChatId()))
+                        .getRequest();
         assertEquals(getChatId().toString(), edit.getChatId());
         return new AssertEditMessageReplyMarkup(this, edit);
     }
 
     protected AssertSendMessage popSendMessage() {
-        final MethodCall<Message> call = popMethodCall(SendMessage.class);
+        final MethodCall<Message> call =
+                popMethodCall(SendMessage.class, m -> getChatId().toString().equals(m.getChatId()));
         SendMessage sendMessage = call.getRequest();
-        assertEquals(getChatId().toString(), sendMessage.getChatId());
+        assertEquals("Wrong chat expectation", getChatId().toString(), sendMessage.getChatId());
         return new AssertSendMessage(this, sendMessage, call.getResponse());
     }
 
     protected AssertAnswerCallbackQuery popAnswerCallbackQuery() {
-        AnswerCallbackQuery query = popMethod(AnswerCallbackQuery.class);
+        AnswerCallbackQuery query = popMethod(AnswerCallbackQuery.class, a -> true);
         assertEquals(lastCallbackQueryId.toString(), query.getCallbackQueryId());
         return new AssertAnswerCallbackQuery(query);
     }
 
     protected AssertDeleteMessage popDeleteMessage() {
-        final MethodCall<Boolean> deleteCall = popMethodCall(DeleteMessage.class);
+        final MethodCall<Boolean> deleteCall =
+                popMethodCall(
+                        DeleteMessage.class, m -> getChatId().toString().equals(m.getChatId()));
         DeleteMessage deleteMessage = deleteCall.getRequest();
         assertEquals(deleteMessage.getChatId(), getChatId().toString());
         assertNotNull(deleteMessage.getMessageId());
@@ -292,8 +298,8 @@ public abstract class TgBotTest implements TgTestInvoker {
     }
 
     protected AssertEditMessageText popEditMessageText() {
-        EditMessageText editMessageText = popMethod(EditMessageText.class);
-        assertEquals(getChatId().toString(), editMessageText.getChatId());
+        EditMessageText editMessageText =
+                popMethod(EditMessageText.class, m -> getChatId().toString().equals(m.getChatId()));
         return new AssertEditMessageText(editMessageText);
     }
 }

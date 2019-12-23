@@ -1,18 +1,35 @@
 package ru.v1as.tg.cat.callbacks.phase.multi_curios;
 
+import static java.util.Collections.singletonList;
 import static ru.v1as.tg.cat.utils.TimeoutUtils.getMsForTextReading;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import ru.v1as.tg.cat.callbacks.phase.AbstractPublicChatPhase;
 import ru.v1as.tg.cat.callbacks.phase.MultiUserPhaseContext;
+import ru.v1as.tg.cat.callbacks.phase.poll.TgInlinePoll;
 import ru.v1as.tg.cat.model.TgUser;
 
 public abstract class AbstractMultiUserPhase<T extends MultiUserPhaseContext>
         extends AbstractPublicChatPhase<T> {
+
+    @Override
+    protected void message(String text) {
+        super.message(getPhaseContext().getPublicChat(), text);
+        botClock.wait(getMsForTextReading(text.length()));
+    }
+
+    @Override
+    protected TgInlinePoll poll(String text) {
+        T ctx = getPhaseContext();
+        return poll(text, ctx.getPublicChatId());
+    }
+
+    public void messages(TgUser user, String... messages) {
+        messages(singletonList(user), messages);
+    }
 
     public void messages(List<TgUser> users, String... messages) {
         for (String message : messages) {
@@ -42,6 +59,6 @@ public abstract class AbstractMultiUserPhase<T extends MultiUserPhaseContext>
     }
 
     public String toString(Collection<TgUser> users) {
-        return users.stream().map(Objects::toString).collect(Collectors.joining(", "));
+        return users.stream().map(TgUser::getUsernameOrFullName).collect(Collectors.joining(", "));
     }
 }

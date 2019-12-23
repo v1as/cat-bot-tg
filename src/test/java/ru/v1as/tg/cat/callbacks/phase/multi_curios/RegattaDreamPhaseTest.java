@@ -69,7 +69,36 @@ public class RegattaDreamPhaseTest extends AbstractCatBotTest {
         switchToPublicChat();
         popDeleteMessage().assertTextContains("приглашает всех");
 
-        popSendMessage().assertContainText("Регата!");
+        popSendMessage().assertText("Игра начинается!");
+
+        switchFirstUserChat();
+        popSendMessage().assertText("Вы идёте по пирсу, уверенно чеканя шаг.");
+        popSendMessage().assertContainText("Море сегодня игриво");
+        popSendMessage().assertContainText("Теплый ветер");
+        popSendMessage()
+                .assertText(
+                        "Вас окружает ваша проверенная временем команда @User1, @User2, @User3");
+        popSendMessage().assertContainText("На краю пирса вас ждёт");
+
+        switchSecondUserChat();
+        popSendMessage().assertText("Вы идёте по пирсу, уверенно чеканя шаг.");
+        popSendMessage().assertContainText("Море сегодня игриво");
+        popSendMessage().assertContainText("Теплый ветер");
+        popSendMessage()
+                .assertText(
+                        "Вас окружает ваша проверенная временем команда @User0, @User2, @User3");
+        popSendMessage().assertContainText("На краю пирса вас ждёт");
+
+        switchThirdUserChat();
+        popSendMessage().assertText("Вы идёте по пирсу, уверенно чеканя шаг.");
+        popSendMessage().assertContainText("Море сегодня игриво");
+        popSendMessage().assertContainText("Теплый ветер");
+        popSendMessage()
+                .assertText(
+                        "Вас окружает ваша проверенная временем команда @User0, @User1, @User2");
+        popSendMessage().assertContainText("На краю пирса вас ждёт");
+
+        clearMethodsQueue();
     }
 
     private AbstractCuriosCatPhase choose(RandomRequest<AbstractCuriosCatPhase> randomRequest) {

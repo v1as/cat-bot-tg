@@ -51,6 +51,10 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
         return poll(text, ctx.getChatId());
     }
 
+    protected TgInlinePoll poll(String text, TgUser user) {
+        return poll(text, (long) user.getId());
+    }
+
     protected TgInlinePoll poll(String text, Long chatId) {
         TgInlinePoll poll = phaseContext.get().poll(text, chatId);
         poll.setSender(sender);
@@ -86,9 +90,7 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
 
     protected void message(String text) {
         PhaseContext phaseContext = this.phaseContext.get();
-        Long chatId = phaseContext.getChatId();
-        log.info("Sending message '{}' to chat '{}'", text, phaseContext.getChat());
-        sender.execute(new SendMessage(chatId, text));
+        sender.execute(new SendMessage(phaseContext.getChatId(), text));
     }
 
     protected void message(TgChat chat, String text) {
