@@ -1,5 +1,6 @@
 package ru.v1as.tg.cat.callbacks.phase;
 
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,13 +16,19 @@ public class MultiUserPhaseContext extends PublicChatPhaseContext {
     private final Set<TgUser> guests = new LinkedHashSet<>();
     private final TgUser owner;
 
-    public MultiUserPhaseContext(TgChat chat, TgChat publicChat, TgUser owner) {
+    public MultiUserPhaseContext(
+            TgChat chat, TgChat publicChat, TgUser owner, Collection<TgUser> guests) {
         super(chat, publicChat);
         this.owner = owner;
+        this.guests.addAll(guests);
     }
 
     public void addGuest(TgUser user) {
         guests.add(user);
+    }
+
+    public int getGuestAmounts() {
+        return guests.size();
     }
 
     public List<TgUser> getUsers() {
@@ -34,5 +41,9 @@ public class MultiUserPhaseContext extends PublicChatPhaseContext {
         return getUsers().stream()
                 .filter(u -> !u.getId().equals(me.getId()))
                 .collect(Collectors.toList());
+    }
+
+    public boolean isGuest(TgUser user) {
+        return guests.contains(user);
     }
 }

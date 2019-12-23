@@ -1,10 +1,10 @@
 package ru.v1as.tg.cat.callbacks.phase.multi_curios;
 
+import static java.util.Collections.emptyList;
 import static ru.v1as.tg.cat.EmojiConst.DREAMING;
 import static ru.v1as.tg.cat.EmojiConst.ZZZ;
 
 import java.time.Duration;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.Getter;
@@ -58,14 +58,13 @@ public class UserDreamJoinPhase extends AbstractMultiUserPhase<UserDreamJoinPhas
     private void join(CallbackCommandContext callback) {
         final UserDreamJoinPhaseContext ctx = getPhaseContext();
         final TgUser user = callback.getUser();
-        final Set<TgUser> users = ctx.getGuests();
         boolean toUpdateJoinMsg = false;
-        if (!users.contains(user) && !user.equals(ctx.getOwner())) {
-            users.add(user);
+        if (!ctx.isGuest(user) && !user.equals(ctx.getOwner())) {
+            ctx.addGuest(user);
             toUpdateJoinMsg = true;
             sender.message(callback.getChat(), "Вы ожидаете дрёму");
         }
-        if (users.size() == ctx.getUsersAmount()) {
+        if (ctx.getGuestAmounts() == ctx.getUsersAmount()) {
             toUpdateJoinMsg = false;
             close();
             ctx.getConnect().connect(ctx);
@@ -112,7 +111,7 @@ public class UserDreamJoinPhase extends AbstractMultiUserPhase<UserDreamJoinPhas
                 TgChat publicChat,
                 TgUser owner,
                 UserDreamJoinPhaseConnect<?> connect) {
-            super(chat, publicChat, owner);
+            super(chat, publicChat, owner, emptyList());
             this.connect = connect;
             this.usersAmount = connect.getUsersAmount();
         }
