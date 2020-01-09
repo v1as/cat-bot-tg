@@ -5,11 +5,11 @@ import org.junit.Test;
 public class SeasonScoreCommandHandlerTest extends AbstractCatBotTestWithPoll {
     @Test
     public void shouldSendEmptyScoreData() {
-        sendCommand("/season_score");
-        popSendMessage().assertText("Пока что тут пусто");
+        bob.inPublic().sendCommand("/season_score");
+        public0.getSendMessage().assertText("Пока что тут пусто");
         processPoll();
 
-        sendCommand("/season_score");
-        popSendMessage().assertContainText("@User0: 3");
+        bob.inPublic().sendCommand("/season_score");
+        public0.getSendMessage().assertContainText("@User1: 3");
     }
 }

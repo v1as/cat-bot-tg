@@ -6,11 +6,11 @@ public class GlobalScoreCommandHandlerTest extends AbstractCatBotTestWithPoll {
 
     @Test
     public void shouldSendEmptyScoreData() {
-        sendCommand("/global_score");
-        popSendMessage().assertText("Пока что тут пусто");
+        bob.inPublic().sendCommand("/global_score");
+        public0.getSendMessage().assertText("Пока что тут пусто");
         processPoll();
 
-        sendCommand("/global_score");
-        popSendMessage().assertContainText("@User0: 3");
+        bob.inPublic().sendCommand("/global_score");
+        public0.getSendMessage().assertContainText("@User1: 3");
     }
 }

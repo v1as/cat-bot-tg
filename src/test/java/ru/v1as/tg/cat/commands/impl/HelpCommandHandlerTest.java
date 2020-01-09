@@ -7,7 +7,7 @@ public class HelpCommandHandlerTest extends AbstractCatBotTest {
 
     @Test
     public void shouldSendHelpMessage() {
-        sendCommand("/help");
-        popSendMessage().assertContainText("/score - Вывести счёт за текущий месяц");
+        bob.inPublic().sendCommand("/help");
+        public0.getSendMessage().assertContainText("/score - Вывести счёт за текущий месяц");
     }
 }

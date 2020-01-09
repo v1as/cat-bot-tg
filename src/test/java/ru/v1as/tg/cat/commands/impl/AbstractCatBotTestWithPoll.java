@@ -2,35 +2,26 @@ package ru.v1as.tg.cat.commands.impl;
 
 import ru.v1as.tg.cat.AbstractCatBotTest;
 import ru.v1as.tg.cat.EmojiConst;
-import ru.v1as.tg.cat.utils.AssertSendMessage;
 
 public abstract class AbstractCatBotTestWithPoll extends AbstractCatBotTest {
 
     public void processPoll() {
-        switchToFirstUser();
-
-        sendCommand("/enable_polls");
+        bob.inPublic().sendCommand("/enable_polls");
         clearMethodsQueue();
 
-        sendPhotoMessage();
-        final AssertSendMessage message = popSendMessage().assertContainText("Это кот?");
+        bob.inPublic().sendPhotoMessage();
 
-        switchToSecondUser();
-        message.findCallback("x3").send();
-        popAnswerCallbackQuery().assertContainText("Голос учтён");
+        mary.inPublic().findSendMessageToSend("Это кот?").findCallbackToSend("x3").send();
+        mary.inPublic().getAnswerCallbackQuery().assertContainText("Голос учтён");
 
-        switchToThirdUser();
-        message.findCallback("x3").send();
-        popAnswerCallbackQuery().assertContainText("Голос учтён");
+        jho.inPublic().findSendMessageToSend("Это кот?").findCallbackToSend("x3").send();
+        jho.inPublic().getAnswerCallbackQuery().assertContainText("Голос учтён");
 
-        switchToFourthUser();
-        message.findCallback("x3").send();
-        popAnswerCallbackQuery().assertContainText("Голос учтён");
+        zakh.inPublic().findSendMessageToSend("Это кот?").findCallbackToSend("x3").send();
+        zakh.inPublic().getAnswerCallbackQuery().assertContainText("Голос учтён");
 
-        popEditMessageText().assertText("3x" + EmojiConst.CAT);
+        public0.getEditMessage().assertText("3x" + EmojiConst.CAT);
 
         clearMethodsQueue();
-
-        switchToFirstUser();
     }
 }

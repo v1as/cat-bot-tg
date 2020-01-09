@@ -6,11 +6,11 @@ public class QuarterScoreCommandHandlerTest extends AbstractCatBotTestWithPoll {
 
     @Test
     public void shouldSendEmptyScoreData() {
-        sendCommand("/quarter_score");
-        popSendMessage().assertText("Пока что тут пусто");
+        bob.inPublic().sendCommand("/quarter_score");
+        public0.getSendMessage().assertText("Пока что тут пусто");
         processPoll();
 
-        sendCommand("/quarter_score");
-        popSendMessage().assertContainText("@User0: 3");
+        bob.inPublic().sendCommand("/quarter_score");
+        public0.getSendMessage().assertContainText("@User1: 3");
     }
 }

@@ -24,7 +24,7 @@ public abstract class MainUpdateProcessor implements TgUpdateProcessor {
             TgChat chat = getChat(update);
             TgUser user = getUser(update);
             if (chat == null || user == null) {
-                log.warn("Such type updated does not supported '{}'", update);
+                log.warn("Such type updated is not supported '{}'", update);
                 return;
             }
             synchronized (chatToMonitor.computeIfAbsent(chat.getId(), (id) -> chat.getId())) {

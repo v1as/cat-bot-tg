@@ -18,6 +18,10 @@ public interface TgUser extends Comparable<TgUser> {
 
     String getLanguageCode();
 
+    default boolean isChatAdmin() {
+        return true; // todo implement it with chat relations or tg request
+    }
+
     default String getUsernameOrFullName() {
         if (isEmpty(getUserName())) {
             return Stream.of(getFirstName(), getLastName())

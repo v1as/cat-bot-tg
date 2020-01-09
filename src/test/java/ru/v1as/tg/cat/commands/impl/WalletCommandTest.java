@@ -9,11 +9,10 @@ public class WalletCommandTest extends AbstractCatBotTestWithPoll {
     @Test
     public void shouldReturnMoney() {
         processPoll();
-        sendCommand("/wallet");
-        popSendMessage().assertContainText(MONEY_BAG).assertContainText("9");
+        bob.inPublic().sendCommand("/wallet");
+        public0.getSendMessage().assertContainText(MONEY_BAG).assertContainText("9");
 
-        switchToSecondUser();
-        sendCommand("/wallet");
-        popSendMessage().assertContainText(MONEY_BAG).assertContainText("1");
+        mary.inPublic().sendCommand("/wallet");
+        public0.getSendMessage().assertContainText(MONEY_BAG).assertContainText("1");
     }
 }
