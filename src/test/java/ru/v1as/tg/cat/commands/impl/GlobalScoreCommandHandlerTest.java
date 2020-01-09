@@ -11,6 +11,6 @@ public class GlobalScoreCommandHandlerTest extends AbstractCatBotTestWithPoll {
         processPoll();
 
         bob.inPublic().sendCommand("/global_score");
-        public0.getSendMessage().assertContainText("@User1: 3");
+        public0.getSendMessage().assertContainText("@bob: 3");
     }
 }

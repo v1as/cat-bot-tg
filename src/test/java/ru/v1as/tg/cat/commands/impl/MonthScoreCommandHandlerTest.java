@@ -11,6 +11,6 @@ public class MonthScoreCommandHandlerTest extends AbstractCatBotTestWithPoll {
         processPoll();
 
         bob.inPublic().sendCommand("/score");
-        public0.getSendMessage().assertContainText("@User1: 3");
+        public0.getSendMessage().assertContainText("@bob: 3");
     }
 }

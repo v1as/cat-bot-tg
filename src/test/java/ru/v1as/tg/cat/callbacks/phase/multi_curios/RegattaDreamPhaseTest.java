@@ -46,7 +46,7 @@ public class RegattaDreamPhaseTest extends AbstractCatBotTest {
                 .sendStart();
         mary.inPrivate().getSendMessage().assertContainText("Вы ожидаете дрёму");
 
-        public0.getEditMessage().assertContainText("@User1");
+        public0.getEditMessage().assertContainText("@bob");
 
         jho.inPublic()
                 .findSendMessageToSend("приглашает всех в свой сон")
@@ -54,7 +54,7 @@ public class RegattaDreamPhaseTest extends AbstractCatBotTest {
                 .sendStart();
         jho.inPrivate().getSendMessage().assertContainText("Вы ожидаете дрёму");
 
-        public0.getEditMessage().assertContainText("@User2");
+        public0.getEditMessage().assertContainText("@mary");
 
         zakh.inPublic()
                 .getSendMessageToSend()
@@ -72,7 +72,7 @@ public class RegattaDreamPhaseTest extends AbstractCatBotTest {
         bob.inPrivate()
                 .getSendMessage()
                 .assertText(
-                        "Вас окружает ваша проверенная временем команда @User2, @User3, @User4");
+                        "Вас окружает ваша проверенная временем команда @mary, @jho, @zakh");
         bob.inPrivate().getSendMessage().assertContainText("На краю пирса вас ждёт");
 
         mary.inPrivate().getSendMessage().assertText("Вы идёте по пирсу, уверенно чеканя шаг.");
@@ -81,7 +81,7 @@ public class RegattaDreamPhaseTest extends AbstractCatBotTest {
         mary.inPrivate()
                 .getSendMessage()
                 .assertText(
-                        "Вас окружает ваша проверенная временем команда @User1, @User3, @User4");
+                        "Вас окружает ваша проверенная временем команда @bob, @jho, @zakh");
         mary.inPrivate().getSendMessage().assertContainText("На краю пирса вас ждёт");
 
         jho.inPrivate().getSendMessage().assertText("Вы идёте по пирсу, уверенно чеканя шаг.");
@@ -90,7 +90,7 @@ public class RegattaDreamPhaseTest extends AbstractCatBotTest {
         jho.inPrivate()
                 .getSendMessage()
                 .assertText(
-                        "Вас окружает ваша проверенная временем команда @User1, @User2, @User4");
+                        "Вас окружает ваша проверенная временем команда @bob, @mary, @zakh");
         jho.inPrivate().getSendMessage().assertContainText("На краю пирса вас ждёт");
 
         clearMethodsQueue();
