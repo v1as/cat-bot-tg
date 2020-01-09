@@ -1,7 +1,7 @@
 package ru.v1as.tg.cat;
 
 import static org.junit.Assert.assertEquals;
-import static org.springframework.test.util.ReflectionTestUtils.setField;
+import static ru.v1as.tg.cat.model.TgChatWrapper.wrap;
 
 import java.util.Collection;
 import org.junit.Before;
@@ -11,7 +11,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.v1as.tg.cat.model.CatRequest;
 
 @Rollback
@@ -23,21 +22,10 @@ public abstract class AbstractCatBotTest extends TgBotTest {
 
     @Before
     public void before() {
-        sender.setMessageProducer((chatId, text) -> {
-            final Message message = getMessage(++lastMsgId, chatId);
-            setField(message, "text", text);
-            return message;
-        });
-        lastMsgId = 0;
-        lastCallbackQueryId = 0;
+        super.before();
         catBotData.clear();
-
-        switchFirstUserChat();
-        sendTextMessage("init");
-
-        switchToPublicChat();
-        sendTextMessage("init");
-
+        bob.inPrivate().sendTextMessage("init");
+        bob.inPublic().sendTextMessage("init");
         clearMethodsQueue();
     }
 
@@ -47,7 +35,7 @@ public abstract class AbstractCatBotTest extends TgBotTest {
 
     public CatRequest getOnlyOneCatRequest() {
         Collection<CatRequest> catRequests =
-                getCatBotData().getChatData(getTgChat()).getCatRequests();
+                getCatBotData().getChatData(wrap(public0.getChat())).getCatRequests();
         assertEquals(1, catRequests.size());
         return catRequests.iterator().next();
     }

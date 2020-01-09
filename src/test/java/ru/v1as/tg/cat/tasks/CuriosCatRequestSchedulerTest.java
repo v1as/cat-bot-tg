@@ -21,7 +21,7 @@ public class CuriosCatRequestSchedulerTest extends AbstractCatBotTest {
     @Before
     public void init() {
         scheduler.init();
-        sendCommand("/enable_polls");
+        bob.inPublic().sendCommand("/enable_polls");
         clearMethodsQueue();
     }
 
@@ -31,12 +31,17 @@ public class CuriosCatRequestSchedulerTest extends AbstractCatBotTest {
         scheduler.setFirstTime(false);
         scheduler.run();
 
-        popSendMessage().assertText("Любопытный Кот гуляет рядом").findCallback("Кот").send();
-        popEditMessage().assertContainText("не пойдёт");
+        bob.inPublic()
+                .getSendMessageToSend()
+                .assertText("Любопытный Кот гуляет рядом")
+                .findCallbackToSend("Кот")
+                .send();
+
+        public0.getEditMessage().assertContainText("не пойдёт");
         clock.skip(11, TimeUnit.SECONDS);
 
-        popSendMessage().assertContainText("Любопытный Кот убежал к @User0");
-        popDeleteMessage();
+        public0.getSendMessage().assertContainText("Любопытный Кот убежал к @User1");
+        public0.getDeleteMessage();
     }
 
     @Test
@@ -44,9 +49,9 @@ public class CuriosCatRequestSchedulerTest extends AbstractCatBotTest {
         scheduler.setChance(1);
         scheduler.run();
 
-        popSendMessage().assertText("Любопытный Кот гуляет рядом");
+        public0.getSendMessage().assertText("Любопытный Кот гуляет рядом");
         clock.skip(5 + 1, TimeUnit.MINUTES);
 
-        popDeleteMessage();
+        public0.getDeleteMessage();
     }
 }

@@ -1,5 +1,7 @@
 package ru.v1as.tg.cat.callbacks.phase.multi_curios;
 
+import static ru.v1as.tg.cat.model.TgChatWrapper.wrap;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +15,6 @@ import ru.v1as.tg.cat.callbacks.phase.multi_curios.RegattaDreamPhaseTest.CuriosC
 import ru.v1as.tg.cat.model.random.RandomItem;
 import ru.v1as.tg.cat.model.random.RandomRequest;
 import ru.v1as.tg.cat.service.random.TestRandomChoice;
-import ru.v1as.tg.cat.utils.AssertCallback;
 
 @Import(CuriosConfiguration.class)
 public class RegattaDreamPhaseTest extends AbstractCatBotTest {
@@ -29,74 +30,68 @@ public class RegattaDreamPhaseTest extends AbstractCatBotTest {
 
     @Test
     public void testJoinRegataPhase() {
-        switchToPublicChat();
+        phase.open(wrap(public0.getChat()));
 
-        phase.open(getTgChat());
-        final AssertCallback followCatCb =
-                popSendMessage()
-                        .assertContainText("Любопытный Кот гуляет рядом")
-                        .findCallback("Пойти за котом");
+        bob.inPublic()
+                .getSendMessageToSend()
+                .assertContainText("Любопытный Кот гуляет рядом")
+                .findCallbackToSend("Пойти за котом")
+                .sendStart();
 
-        switchFirstUserChat();
-        followCatCb.sendStart();
+        public0.getDeleteMessage().assertTextContains("Любопытный Кот гуляет рядом");
 
-        switchToPublicChat();
-        popDeleteMessage().assertTextContains("Любопытный Кот гуляет рядом");
+        mary.inPublic()
+                .findSendMessageToSend("приглашает всех в свой сон")
+                .findCallbackToSend("Присоединиться")
+                .sendStart();
+        mary.inPrivate().getSendMessage().assertContainText("Вы ожидаете дрёму");
 
-        final AssertCallback joinCallback =
-                popSendMessage()
-                        .assertContainText("приглашает всех в свой сон")
-                        .findCallback("Присоединиться");
+        public0.getEditMessage().assertContainText("@User1");
 
-        switchToSecondUser();
-        joinCallback.sendStart();
-        popSendMessage().assertContainText("Вы ожидаете дрёму");
+        jho.inPublic()
+                .findSendMessageToSend("приглашает всех в свой сон")
+                .findCallbackToSend("Присоединиться")
+                .sendStart();
+        jho.inPrivate().getSendMessage().assertContainText("Вы ожидаете дрёму");
 
-        switchToPublicChat();
-        popEditMessage().assertContainText("@User1");
+        public0.getEditMessage().assertContainText("@User2");
 
-        switchToThirdUser();
-        joinCallback.sendStart();
-        popSendMessage().assertContainText("Вы ожидаете дрёму");
+        zakh.inPublic()
+                .getSendMessageToSend()
+                .assertContainText("приглашает всех в свой сон")
+                .findCallbackToSend("Присоединиться")
+                .sendStart();
+        zakh.inPrivate().getSendMessage().assertContainText("Вы ожидаете дрёму");
 
-        switchToPublicChat();
-        popEditMessage().assertContainText("@User2");
+        public0.getDeleteMessage().assertTextContains("приглашает всех");
+        public0.getSendMessage().assertText("Игра начинается!");
 
-        switchToFourthUser();
-        joinCallback.sendStart();
-        popSendMessage().assertContainText("Вы ожидаете дрёму");
-
-        switchToPublicChat();
-        popDeleteMessage().assertTextContains("приглашает всех");
-
-        popSendMessage().assertText("Игра начинается!");
-
-        switchFirstUserChat();
-        popSendMessage().assertText("Вы идёте по пирсу, уверенно чеканя шаг.");
-        popSendMessage().assertContainText("Море сегодня игриво");
-        popSendMessage().assertContainText("Теплый ветер");
-        popSendMessage()
+        bob.inPrivate().getSendMessage().assertText("Вы идёте по пирсу, уверенно чеканя шаг.");
+        bob.inPrivate().getSendMessage().assertContainText("Море сегодня игриво");
+        bob.inPrivate().getSendMessage().assertContainText("Теплый ветер");
+        bob.inPrivate()
+                .getSendMessage()
                 .assertText(
-                        "Вас окружает ваша проверенная временем команда @User1, @User2, @User3");
-        popSendMessage().assertContainText("На краю пирса вас ждёт");
+                        "Вас окружает ваша проверенная временем команда @User2, @User3, @User4");
+        bob.inPrivate().getSendMessage().assertContainText("На краю пирса вас ждёт");
 
-        switchSecondUserChat();
-        popSendMessage().assertText("Вы идёте по пирсу, уверенно чеканя шаг.");
-        popSendMessage().assertContainText("Море сегодня игриво");
-        popSendMessage().assertContainText("Теплый ветер");
-        popSendMessage()
+        mary.inPrivate().getSendMessage().assertText("Вы идёте по пирсу, уверенно чеканя шаг.");
+        mary.inPrivate().getSendMessage().assertContainText("Море сегодня игриво");
+        mary.inPrivate().getSendMessage().assertContainText("Теплый ветер");
+        mary.inPrivate()
+                .getSendMessage()
                 .assertText(
-                        "Вас окружает ваша проверенная временем команда @User0, @User2, @User3");
-        popSendMessage().assertContainText("На краю пирса вас ждёт");
+                        "Вас окружает ваша проверенная временем команда @User1, @User3, @User4");
+        mary.inPrivate().getSendMessage().assertContainText("На краю пирса вас ждёт");
 
-        switchThirdUserChat();
-        popSendMessage().assertText("Вы идёте по пирсу, уверенно чеканя шаг.");
-        popSendMessage().assertContainText("Море сегодня игриво");
-        popSendMessage().assertContainText("Теплый ветер");
-        popSendMessage()
+        jho.inPrivate().getSendMessage().assertText("Вы идёте по пирсу, уверенно чеканя шаг.");
+        jho.inPrivate().getSendMessage().assertContainText("Море сегодня игриво");
+        jho.inPrivate().getSendMessage().assertContainText("Теплый ветер");
+        jho.inPrivate()
+                .getSendMessage()
                 .assertText(
-                        "Вас окружает ваша проверенная временем команда @User0, @User1, @User2");
-        popSendMessage().assertContainText("На краю пирса вас ждёт");
+                        "Вас окружает ваша проверенная временем команда @User1, @User2, @User4");
+        jho.inPrivate().getSendMessage().assertContainText("На краю пирса вас ждёт");
 
         clearMethodsQueue();
     }

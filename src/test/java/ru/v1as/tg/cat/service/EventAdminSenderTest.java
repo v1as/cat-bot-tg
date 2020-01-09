@@ -33,12 +33,11 @@ public class EventAdminSenderTest extends AbstractCatBotTest {
 
     @Test
     public void shouldSendMessage() {
-        UserEntity user = userDao.getOne(getUserId());
-        ChatEntity chat = chatDao.getOne(getChatId());
-        userEventDao.save(new CatUserEvent(chat, user, lastMsgId, REAL, CAT1));
+        UserEntity user = userDao.getOne(bob.getUserId());
+        ChatEntity chat = chatDao.getOne(public0.getId());
+        userEventDao.save(new CatUserEvent(chat, user, public0.getMessageId(), REAL, CAT1));
 
-        switchFirstUserChat();
         eventAdminSender.sendEvents();
-        popSendMessage().assertContainText("CatUserEvent");
+        bob.inPrivate().getSendMessage().assertContainText("CatUserEvent");
     }
 }

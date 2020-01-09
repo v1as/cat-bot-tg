@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.v1as.tg.cat.callbacks.phase.MultiUserPhaseContext;
@@ -62,7 +63,7 @@ public class UserDreamJoinPhase extends AbstractMultiUserPhase<UserDreamJoinPhas
         if (!ctx.isGuest(user) && !user.equals(ctx.getOwner())) {
             ctx.addGuest(user);
             toUpdateJoinMsg = true;
-            sender.message(callback.getChat(), "Вы ожидаете дрёму");
+            sender.execute(new SendMessage(callback.getUserId().toString(), "Вы ожидаете дрёму"));
         }
         if (ctx.getGuestAmounts() == ctx.getUsersAmount()) {
             toUpdateJoinMsg = false;

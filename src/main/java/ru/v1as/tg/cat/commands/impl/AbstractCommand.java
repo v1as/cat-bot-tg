@@ -31,7 +31,7 @@ public abstract class AbstractCommand implements CommandHandler {
 
     @Override
     public final void handle(TgCommandRequest command, TgChat chat, TgUser user) {
-        if (configuration.onlyAdmin && !conf.isBotAdmin(user)) {
+        if (configuration.onlyAdmin && !user.isChatAdmin()) {
             sender.message(chat, "Только администратор бота может выполнять эту комманду.");
             return;
         }
