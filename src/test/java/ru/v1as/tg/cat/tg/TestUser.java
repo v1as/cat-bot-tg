@@ -11,8 +11,8 @@ public class TestUser {
     @Getter private final TestChat privateChat;
     private User user;
 
-    public TestUser(Integer userId, TestChat publicChat) {
-        this.user = publicChat.getUser(userId);
+    public TestUser(Integer userId, String userName, TestChat publicChat) {
+        this.user = publicChat.getUser(userId, userName);
         this.publicChat = publicChat;
         this.privateChat =
                 new TestChat(

@@ -25,10 +25,10 @@ public abstract class TgBotTest {
     @Before
     public void before() {
         public0 = TestChat.publicTestChat(sender, updateProcessor, 100L);
-        bob = new TestUser(1, public0);
-        mary = new TestUser(2, public0);
-        jho = new TestUser(3, public0);
-        zakh = new TestUser(4, public0);
+        bob = new TestUser(1, "bob", public0);
+        mary = new TestUser(2, "mary", public0);
+        jho = new TestUser(3, "jho", public0);
+        zakh = new TestUser(4, "zakh", public0);
 
         sender.registerChat(public0);
         sender.registerChat(bob.getPrivateChat());

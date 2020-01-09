@@ -40,7 +40,7 @@ public class CuriosCatRequestSchedulerTest extends AbstractCatBotTest {
         public0.getEditMessage().assertContainText("не пойдёт");
         clock.skip(11, TimeUnit.SECONDS);
 
-        public0.getSendMessage().assertContainText("Любопытный Кот убежал к @User1");
+        public0.getSendMessage().assertContainText("Любопытный Кот убежал к @bob");
         public0.getDeleteMessage();
     }
 

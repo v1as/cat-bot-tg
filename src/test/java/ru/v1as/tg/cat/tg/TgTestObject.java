@@ -21,12 +21,11 @@ public abstract class TgTestObject {
         return res;
     }
 
-    protected User getUser(Integer userId) {
+    protected User getUser(Integer userId, String userName) {
         User user = new User();
         setField(user, "id", userId);
-        String userName = "User" + userId;
         setField(user, "userName", userName);
-        setField(user, "firstName", "User");
+        setField(user, "firstName", userName);
         setField(user, "lastName", userId.toString());
         return user;
     }
