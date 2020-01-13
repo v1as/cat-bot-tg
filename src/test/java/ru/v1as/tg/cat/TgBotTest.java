@@ -15,7 +15,7 @@ public abstract class TgBotTest {
     @Autowired protected CatBotData catBotData;
     @Autowired protected TgUpdateProcessor updateProcessor;
 
-    protected TestChat public0;
+    protected TestChat inPublic;
 
     protected TestUser bob;
     protected TestUser mary;
@@ -24,13 +24,13 @@ public abstract class TgBotTest {
 
     @Before
     public void before() {
-        public0 = TestChat.publicTestChat(sender, updateProcessor, 100L);
-        bob = new TestUser(1, "bob", public0);
-        mary = new TestUser(2, "mary", public0);
-        jho = new TestUser(3, "jho", public0);
-        zakh = new TestUser(4, "zakh", public0);
+        inPublic = TestChat.publicTestChat(sender, updateProcessor, 100L);
+        bob = new TestUser(1, "bob", inPublic);
+        mary = new TestUser(2, "mary", inPublic);
+        jho = new TestUser(3, "jho", inPublic);
+        zakh = new TestUser(4, "zakh", inPublic);
 
-        sender.registerChat(public0);
+        sender.registerChat(inPublic);
         sender.registerChat(bob.getPrivateChat());
         sender.registerChat(mary.getPrivateChat());
         sender.registerChat(jho.getPrivateChat());
@@ -54,6 +54,6 @@ public abstract class TgBotTest {
     }
 
     public Long getChatId() {
-        return public0.getId();
+        return inPublic.getId();
     }
 }

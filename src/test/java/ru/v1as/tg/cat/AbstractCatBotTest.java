@@ -35,7 +35,7 @@ public abstract class AbstractCatBotTest extends TgBotTest {
 
     public CatRequest getOnlyOneCatRequest() {
         Collection<CatRequest> catRequests =
-                getCatBotData().getChatData(wrap(public0.getChat())).getCatRequests();
+                getCatBotData().getChatData(wrap(inPublic.getChat())).getCatRequests();
         assertEquals(1, catRequests.size());
         return catRequests.iterator().next();
     }

@@ -54,14 +54,14 @@ public class CatBotTest extends AbstractCatBotTest {
 
         mary.inPublic().findSendMessageToSend("Это кот?").firstCallbacksToSend().send();
         mary.inPublic().getAnswerCallbackQuery().assertContainText("Голос учтён");
-        public0.getEditMessageReplyMarkup();
+        inPublic.getEditMessageReplyMarkup();
 
         CatRequestVote vote = catRequest.getVotes().entrySet().iterator().next().getValue();
         assertEquals(CAT1, vote);
 
         jho.inPublic().findSendMessageToSend("Это кот?").firstCallbacksToSend().send();
         jho.inPublic().getAnswerCallbackQuery().assertContainText("Голос учтён");
-        public0.getEditMessageReplyMarkup();
+        inPublic.getEditMessageReplyMarkup();
 
         assertEquals(2, catRequest.getVotes().size());
         assertTrue(catRequest.getVotes().values().stream().allMatch(CAT1::equals));
