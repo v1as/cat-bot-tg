@@ -7,10 +7,10 @@ public class MonthScoreCommandHandlerTest extends AbstractCatBotTestWithPoll {
     @Test
     public void shouldSendEmptyScoreData() {
         bob.inPublic().sendCommand("/score");
-        public0.getSendMessage().assertText("Пока что тут пусто");
+        inPublic.getSendMessage().assertText("Пока что тут пусто");
         processPoll();
 
         bob.inPublic().sendCommand("/score");
-        public0.getSendMessage().assertContainText("@bob: 3");
+        inPublic.getSendMessage().assertContainText("@bob: 3");
     }
 }

@@ -17,19 +17,19 @@ public class DisablePollsCommandTest extends AbstractCatBotTest {
         assertFalse(chatDetailsDao.getOne(getChatId()).isCatPollEnabled());
 
         bob.inPublic().sendCommand("/enable_polls");
-        public0.getSendMessage().assertText("Создание опросов теперь включено");
+        inPublic.getSendMessage().assertText("Создание опросов теперь включено");
         assertTrue(chatDetailsDao.getOne(getChatId()).isCatPollEnabled());
 
         bob.inPublic().sendCommand("/enable_polls");
-        public0.getSendMessage().assertText("Создание опросов уже включено");
+        inPublic.getSendMessage().assertText("Создание опросов уже включено");
         assertTrue(chatDetailsDao.getOne(getChatId()).isCatPollEnabled());
 
         bob.inPublic().sendCommand("/disable_polls");
-        public0.getSendMessage().assertText("Создание опросов теперь выключено");
+        inPublic.getSendMessage().assertText("Создание опросов теперь выключено");
         assertFalse(chatDetailsDao.getOne(getChatId()).isCatPollEnabled());
 
         bob.inPublic().sendCommand("/disable_polls");
-        public0.getSendMessage().assertText("Создание опросов уже выключено");
+        inPublic.getSendMessage().assertText("Создание опросов уже выключено");
         assertFalse(chatDetailsDao.getOne(getChatId()).isCatPollEnabled());
     }
 

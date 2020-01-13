@@ -30,7 +30,7 @@ public class RegattaDreamPhaseTest extends AbstractCatBotTest {
 
     @Test
     public void testJoinRegataPhase() {
-        phase.open(wrap(public0.getChat()));
+        phase.open(wrap(inPublic.getChat()));
 
         bob.inPublic()
                 .getSendMessageToSend()
@@ -38,7 +38,7 @@ public class RegattaDreamPhaseTest extends AbstractCatBotTest {
                 .findCallbackToSend("Пойти за котом")
                 .sendStart();
 
-        public0.getDeleteMessage().assertTextContains("Любопытный Кот гуляет рядом");
+        inPublic.getDeleteMessage().assertTextContains("Любопытный Кот гуляет рядом");
 
         mary.inPublic()
                 .findSendMessageToSend("приглашает всех в свой сон")
@@ -46,7 +46,7 @@ public class RegattaDreamPhaseTest extends AbstractCatBotTest {
                 .sendStart();
         mary.inPrivate().getSendMessage().assertContainText("Вы ожидаете дрёму");
 
-        public0.getEditMessage().assertContainText("@bob");
+        inPublic.getEditMessage().assertContainText("@bob");
 
         jho.inPublic()
                 .findSendMessageToSend("приглашает всех в свой сон")
@@ -54,7 +54,7 @@ public class RegattaDreamPhaseTest extends AbstractCatBotTest {
                 .sendStart();
         jho.inPrivate().getSendMessage().assertContainText("Вы ожидаете дрёму");
 
-        public0.getEditMessage().assertContainText("@mary");
+        inPublic.getEditMessage().assertContainText("@mary");
 
         zakh.inPublic()
                 .getSendMessageToSend()
@@ -63,8 +63,8 @@ public class RegattaDreamPhaseTest extends AbstractCatBotTest {
                 .sendStart();
         zakh.inPrivate().getSendMessage().assertContainText("Вы ожидаете дрёму");
 
-        public0.getDeleteMessage().assertTextContains("приглашает всех");
-        public0.getSendMessage().assertText("Игра начинается!");
+        inPublic.getDeleteMessage().assertTextContains("приглашает всех");
+        inPublic.getSendMessage().assertText("Игра начинается!");
 
         bob.inPrivate().getSendMessage().assertText("Вы идёте по пирсу, уверенно чеканя шаг.");
         bob.inPrivate().getSendMessage().assertContainText("Море сегодня игриво");
