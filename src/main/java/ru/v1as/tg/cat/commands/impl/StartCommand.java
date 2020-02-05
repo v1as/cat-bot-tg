@@ -10,6 +10,7 @@ import ru.v1as.tg.cat.tg.TgSender;
 public class StartCommand extends ArgumentCallbackCommand {
 
     public static final String START_COMMAND_NAME = "start";
+    public static final String SLASH_START_COMMAND_NAME = "/start";
 
     public StartCommand(TgSender sender) {
         super(getDefaultBehaviour(sender));

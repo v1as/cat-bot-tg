@@ -22,7 +22,7 @@ public class TestUser {
     }
 
     public TestUserChat inPublic() {
-        return new TestUserChat(publicChat, user);
+        return new TestUserPublicChat(publicChat, privateChat, user);
     }
 
     public TestUserChat inPrivate() {
