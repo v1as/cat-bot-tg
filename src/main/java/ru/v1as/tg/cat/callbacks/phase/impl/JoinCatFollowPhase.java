@@ -1,5 +1,6 @@
 package ru.v1as.tg.cat.callbacks.phase.impl;
 
+import static java.time.LocalDateTime.now;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static ru.v1as.tg.cat.EmojiConst.CAT;
 import static ru.v1as.tg.cat.EmojiConst.MONEY_BAG;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 import ru.v1as.tg.cat.callbacks.phase.AbstractPhase;
 import ru.v1as.tg.cat.callbacks.phase.PhaseContext;
 import ru.v1as.tg.cat.callbacks.phase.PollTimeoutConfiguration;
@@ -21,6 +23,8 @@ import ru.v1as.tg.cat.callbacks.phase.poll.PollChoice;
 import ru.v1as.tg.cat.callbacks.phase.poll.UpdateWithChoiceTextBuilder;
 import ru.v1as.tg.cat.commands.ArgumentCallbackCommand.CallbackCommandContext;
 import ru.v1as.tg.cat.commands.impl.StartCommand;
+import ru.v1as.tg.cat.jpa.dao.CatUserEventDao;
+import ru.v1as.tg.cat.jpa.entities.events.CatUserEvent;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.service.BotConfiguration;
@@ -36,6 +40,7 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
             ImmutableList.of(
                     "Прости, но, похоже, тебя опередили.",
                     "Сожалею, но кто-то оказался быстрее тебя.");
+    private final CatUserEventDao catEventDao;
     private final StartCommand startCommand;
     private final CatEventService catEventService;
     private final CuriosCatQuestProducer curiosCatQuestProducer;
@@ -61,7 +66,7 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
                 .timeout(removeAfter5Min)
                 .send();
         ctx.startCommandArgument = followTheCat.getUuid();
-        startCommand.register(ctx.startCommandArgument, contextWrap(this::goToCat));
+        startCommand.register(ctx.startCommandArgument, contextWrap(this::checkUserPriority));
     }
 
     @Override
@@ -100,16 +105,34 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
         message(String.format("Любопытный Кот убежал к %s  %s  (+3%s)", user, CAT, MONEY_BAG));
     }
 
+    private void checkUserPriority(CallbackCommandContext data) {
+        int recentlyCatsAmount =
+                catEventDao.findByUserIdAndDateGreaterThan(data.getUserId(), now().minusHours(8))
+                        .stream()
+                        .filter(CatUserEvent::isNotReal)
+                        .map(CatUserEvent::getResult)
+                        .mapToInt(CatRequestVote::getAmount)
+                        .sum();
+        if (recentlyCatsAmount == 0) {
+            goToCat(data);
+        } else {
+            botClock.schedule(() -> goToCat(data), 5, TimeUnit.SECONDS);
+        }
+    }
+
     private void goToCat(CallbackCommandContext data) {
-        close();
         Context ctx = getPhaseContext();
-        AbstractCuriosCatPhase nextPhase = curiosCatQuestProducer.get(data.getUserId());
-        nextPhase.open(data.getChat(), ctx.getChat(), data.getUser(), ctx.message);
+        if (ctx.isClosed()) {
+            youAreLate(data);
+        } else {
+            close();
+            AbstractCuriosCatPhase nextPhase = curiosCatQuestProducer.get(data.getUserId());
+            nextPhase.open(data.getChat(), ctx.getChat(), data.getUser(), ctx.message);
+        }
     }
 
     private void youAreLate(CallbackCommandContext data) {
-        final String msg = random(YOU_ARE_LATE_MESSAGE);
-        message(data.getChat(), msg);
+        message(data.getChat(), random(YOU_ARE_LATE_MESSAGE));
     }
 
     private void saveCatRequest(ChooseContext choice) {

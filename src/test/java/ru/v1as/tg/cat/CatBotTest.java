@@ -74,7 +74,7 @@ public class CatBotTest extends AbstractCatBotTest {
                 .send();
         zakh.inPublic().getAnswerCallbackQuery().assertContainText("Голос учтён");
 
-        public0.getEditMessage().assertText("1x" + CAT);
+        inPublic.getEditMessage().assertText("1x" + CAT);
 
         assertEquals(3, catRequest.getVotes().size());
         assertTrue(catRequest.getVotes().values().stream().allMatch(CAT1::equals));

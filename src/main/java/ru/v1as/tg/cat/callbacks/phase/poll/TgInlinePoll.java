@@ -76,18 +76,6 @@ public class TgInlinePoll {
         return this;
     }
 
-    private void checkModifiable() {
-        if (!CREATED.equals(state) && !SENT.equals(state) && !UPDATED.equals(state)) {
-            throw new IllegalStateException("Wrong poll state: " + state);
-        }
-    }
-
-    private void checkCreated() {
-        if (!CREATED.equals(state)) {
-            throw new IllegalStateException("Wrong poll state: " + state);
-        }
-    }
-
     public List<PollChoice> getChoices() {
         return new ArrayList<>(choices.values());
     }
@@ -339,6 +327,18 @@ public class TgInlinePoll {
         checkCreated();
         this.choiceAroundInterceptor = choiceAroundInterceptor;
         return this;
+    }
+
+    private void checkModifiable() {
+        if (!CREATED.equals(state) && !SENT.equals(state) && !UPDATED.equals(state)) {
+            throw new IllegalStateException("Wrong poll state: " + state);
+        }
+    }
+
+    private void checkCreated() {
+        if (!CREATED.equals(state)) {
+            throw new IllegalStateException("Wrong poll state: " + state);
+        }
     }
 
     @Value

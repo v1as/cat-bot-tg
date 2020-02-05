@@ -14,8 +14,8 @@ import ru.v1as.tg.cat.utils.AssertSendMessageToSend;
 
 public class TestUserChat implements TgTestInvoker {
 
-    private final TestChat chat;
-    private final User user;
+    final TestChat chat;
+    final User user;
 
     public TestUserChat(TestChat chat, User user) {
         this.chat = chat;

@@ -43,4 +43,8 @@ public class CatUserEvent extends UserEvent {
         this.result = result;
         this.date = LocalDateTime.now();
     }
+
+    public boolean isNotReal() {
+        return !CatEventType.REAL.equals(catType);
+    }
 }

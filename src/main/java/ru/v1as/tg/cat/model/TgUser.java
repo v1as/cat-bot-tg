@@ -10,6 +10,10 @@ public interface TgUser extends Comparable<TgUser> {
 
     Integer getId();
 
+    default Long getChatId() {
+        return getId().longValue();
+    }
+
     String getUserName();
 
     String getFirstName();

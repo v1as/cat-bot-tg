@@ -2,6 +2,7 @@ package ru.v1as.tg.cat.callbacks.phase;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ru.v1as.tg.cat.callbacks.phase.poll.TgInlinePoll;
@@ -13,10 +14,11 @@ public class PhaseContext {
 
     private final TgChat chat;
     private final List<TgInlinePoll> polls = new ArrayList<>();
-    private boolean finished = false;
+    @Getter
+    private boolean closed = false;
 
     public void checkNotClose() {
-        if (finished) {
+        if (closed) {
             log.info("Phase context is already closed");
             throw new PhaseContextClosedException("This phase context is already closed.");
         }
@@ -31,7 +33,7 @@ public class PhaseContext {
 
     public void close() {
         checkNotClose();
-        this.finished = true;
+        this.closed = true;
         for (TgInlinePoll poll : polls) {
             try {
                 poll.close();

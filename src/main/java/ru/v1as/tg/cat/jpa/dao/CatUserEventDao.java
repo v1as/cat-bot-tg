@@ -9,5 +9,7 @@ public interface CatUserEventDao extends JpaRepository<CatUserEvent, Long> {
 
     List<CatUserEvent> findByChatIdAndDateGreaterThan(Long chatId, LocalDateTime after);
 
+    List<CatUserEvent> findByUserIdAndDateGreaterThan(Integer userId, LocalDateTime after);
+
     List<CatUserEvent> findByUserId(Integer userId);
 }

@@ -20,7 +20,7 @@ public abstract class AbstractCatBotTestWithPoll extends AbstractCatBotTest {
         zakh.inPublic().findSendMessageToSend("Это кот?").findCallbackToSend("x3").send();
         zakh.inPublic().getAnswerCallbackQuery().assertContainText("Голос учтён");
 
-        public0.getEditMessage().assertText("3x" + EmojiConst.CAT);
+        inPublic.getEditMessage().assertText("3x" + EmojiConst.CAT);
 
         clearMethodsQueue();
     }
