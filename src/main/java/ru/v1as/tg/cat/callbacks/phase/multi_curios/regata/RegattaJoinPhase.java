@@ -1,13 +1,13 @@
-package ru.v1as.tg.cat.callbacks.phase.multi_curios;
+package ru.v1as.tg.cat.callbacks.phase.multi_curios.regata;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import ru.v1as.tg.cat.callbacks.phase.curios_cat.AbstractCuriosCatPhase;
-import ru.v1as.tg.cat.callbacks.phase.multi_curios.RegattaDreamPhase.RegattaDreamPhaseContext;
+import ru.v1as.tg.cat.callbacks.phase.multi_curios.UserDreamJoinPhase;
 import ru.v1as.tg.cat.callbacks.phase.multi_curios.UserDreamJoinPhase.UserDreamJoinPhaseConnect;
 import ru.v1as.tg.cat.callbacks.phase.multi_curios.UserDreamJoinPhase.UserDreamJoinPhaseContext;
+import ru.v1as.tg.cat.callbacks.phase.multi_curios.regata.RegattaDreamPhase.RegattaDreamPhaseContext;
 
-@Component
+// @Component
 @RequiredArgsConstructor
 public class RegattaJoinPhase extends AbstractCuriosCatPhase {
 
