@@ -82,7 +82,7 @@ public class AntiCafeCuriosCatPhase extends AbstractCuriosCatPhase {
     }
 
     private void lookAround2(ChooseContext chooseContext) {
-        final CatRequestVote cat = random(CAT1, CAT2, CAT3);
+        final CatRequestVote cat = random(RANDOM_REQUEST_CAT_1_2_3);
         message("Вы стоите и рассматриваете окна здания.");
         if (CAT3.equals(cat)) {
             message("Одного за другим вы замечаете трёх котов в окнах.");
