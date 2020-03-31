@@ -113,10 +113,11 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
                         .map(CatUserEvent::getResult)
                         .mapToInt(CatRequestVote::getAmount)
                         .sum();
+
         if (recentlyCatsAmount == 0) {
             goToCat(data);
         } else {
-            botClock.schedule(() -> goToCat(data), 5, TimeUnit.SECONDS);
+            botClock.schedule(contextWrap(() -> goToCat(data)), 2, TimeUnit.SECONDS);
         }
     }
 

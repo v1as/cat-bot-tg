@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.v1as.tg.cat.callbacks.phase.curios_cat.AbstractCuriosCatPhase;
+import ru.v1as.tg.cat.callbacks.phase.curios_cat.JustOneCatPhase;
 import ru.v1as.tg.cat.jpa.dao.CatUserEventDao;
 import ru.v1as.tg.cat.jpa.entities.events.CatUserEvent;
 import ru.v1as.tg.cat.service.random.RandomChoice;
@@ -20,9 +21,11 @@ import ru.v1as.tg.cat.service.random.RandomChoice;
 @RequiredArgsConstructor
 public class CuriosCatQuestProducer {
 
+    public static final int QUESTS_AMOUNT_LIMIT = 20;
     private final List<AbstractCuriosCatPhase> nextPhases;
     private final CatUserEventDao catUserEventDao;
     private final RandomChoice randomChoice;
+    private final JustOneCatPhase justOneCatPhase;
 
     @PostConstruct
     public void init() {
@@ -50,6 +53,9 @@ public class CuriosCatQuestProducer {
                         .filter(e -> e.getValue().equals(rareQuestPlayedAmount))
                         .map(Entry::getKey)
                         .collect(Collectors.toList());
+        if (rareQuestName.size() > QUESTS_AMOUNT_LIMIT) {
+            return justOneCatPhase;
+        }
         List<AbstractCuriosCatPhase> quests =
                 rareQuestName.isEmpty()
                         ? nextPhases

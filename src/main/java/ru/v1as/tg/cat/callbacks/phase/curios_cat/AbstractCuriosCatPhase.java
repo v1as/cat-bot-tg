@@ -2,6 +2,9 @@ package ru.v1as.tg.cat.callbacks.phase.curios_cat;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static ru.v1as.tg.cat.EmojiConst.MONEY_BAG;
+import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT1;
+import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT2;
+import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT3;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.NOT_CAT;
 import static ru.v1as.tg.cat.service.CatEventService.CAT_REWARD;
 import static ru.v1as.tg.cat.utils.TimeoutUtils.getMsForTextReading;
@@ -24,9 +27,13 @@ import ru.v1as.tg.cat.callbacks.phase.poll.interceptor.PhaseContextChoiceAroundI
 import ru.v1as.tg.cat.callbacks.phase.poll.interceptor.TimeoutPhaseContextChoiceAroundInterceptor;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
+import ru.v1as.tg.cat.model.random.RandomRequest;
 import ru.v1as.tg.cat.service.CatEventService;
 
 public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<CuriosCatContext> {
+
+    protected static final RandomRequest<CatRequestVote> RANDOM_REQUEST_CAT_1_2_3 =
+            new RandomRequest<CatRequestVote>().add(CAT1, 60).add(CAT2, 30).add(CAT3, 10);
 
     @Autowired protected CatBotData data;
     @Autowired protected CatEventService catEventService;
@@ -84,11 +91,11 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
         final TgUser user = ctx.getUser();
         final TgChat publicChat = ctx.getPublicChat();
         String message = "";
-        if (result == CatRequestVote.CAT1) {
+        if (result == CAT1) {
             message = "Любопытный кот убегает к ";
-        } else if (result == CatRequestVote.CAT2) {
+        } else if (result == CAT2) {
             message = "Вот это удача! Целых два кота засчитано игроку ";
-        } else if (result == CatRequestVote.CAT3) {
+        } else if (result == CAT3) {
             message = "Так просто не бывает... Целых ТРИ кота засчитано игроку ";
         } else if (result == NOT_CAT) {
             message = "Любопытный кот сбегает от игрока ";

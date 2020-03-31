@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.Test;
 import ru.v1as.tg.cat.callbacks.phase.curios_cat.AbstractCuriosCatPhase;
+import ru.v1as.tg.cat.callbacks.phase.curios_cat.JustOneCatPhase;
 import ru.v1as.tg.cat.jpa.dao.CatUserEventDao;
 import ru.v1as.tg.cat.jpa.entities.events.CatUserEvent;
 import ru.v1as.tg.cat.service.random.SimpleRandomChoicer;
@@ -23,7 +24,8 @@ public class CuriosCatQuestProducerTest {
                 new CuriosCatQuestProducer(
                                 of(new TestPhase("quest1")),
                                 getCatUserEventDaoMock(),
-                                new SimpleRandomChoicer())
+                                new SimpleRandomChoicer(),
+                                new JustOneCatPhase())
                         .get(0);
         assertEquals(phase.getName(), "quest1");
     }
@@ -34,7 +36,8 @@ public class CuriosCatQuestProducerTest {
                 new CuriosCatQuestProducer(
                                 of(new TestPhase("quest1"), new TestPhase("quest2")),
                                 getCatUserEventDaoMock("quest2"),
-                                new SimpleRandomChoicer())
+                                new SimpleRandomChoicer(),
+                                new JustOneCatPhase())
                         .get(0);
         assertEquals(phase.getName(), "quest1");
     }
@@ -49,7 +52,8 @@ public class CuriosCatQuestProducerTest {
                                         new TestPhase("questZ")),
                                 getCatUserEventDaoMock(
                                         "questY", "questY", "questZ", "questX", "questX"),
-                                new SimpleRandomChoicer())
+                                new SimpleRandomChoicer(),
+                                new JustOneCatPhase())
                         .get(0);
         assertEquals(phase.getName(), "questZ");
     }
