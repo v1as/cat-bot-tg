@@ -12,7 +12,7 @@ public class RedStonePhase extends AbstractCuriosCatPhase {
 
     @Override
     protected void open() {
-        poll("Кот неторопливо бежит впереди вас")
+        poll("Кот неторопливо бежит впереди вас.")
                 .choice("Попытаться догнать кота", this::fastFollowCat)
                 .choice("Спокойно следовать", this::followTheCat)
                 .timeout(TIMEOUT_LEAVE_CAT)
@@ -21,7 +21,7 @@ public class RedStonePhase extends AbstractCuriosCatPhase {
 
     private void fastFollowCat(ChooseContext choice) {
         messages(
-                "Кот испугался и рванул что было сил, вам не удалось его догнать.",
+                "Кот испугался и рванул, что было сил, вам не удалось его догнать.",
                 " Хуже того, никто не слышал как вы кричали 'Кот'.");
         catchUpCatAndClose(CatRequestVote.NOT_CAT);
     }
@@ -40,7 +40,7 @@ public class RedStonePhase extends AbstractCuriosCatPhase {
         messages(
                 "Вы остановились чтобы разглядеть находку.",
                 "Это оказался затейливый красный камешек " + COLLISION,
-                "Пожалуй вы заберёте его себе - в хозяйстве всё пригодится.");
+                "Пожалуй, вы заберёте его себе - в хозяйстве всё пригодится.");
 
         message(
                 getPhaseContext().getPublicChat(),
@@ -50,7 +50,7 @@ public class RedStonePhase extends AbstractCuriosCatPhase {
                         + COLLISION);
 
         messages(
-                "Пока вы разглядывали драгоценность кота и след простыл,"
+                "Пока вы разглядывали драгоценность, кота и след простыл,"
                         + " хотя в воздухе остался лишь след улыбки кота.",
                 " Похоже, он не просто так вас сюда привёл.");
 
