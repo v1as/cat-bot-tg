@@ -27,6 +27,11 @@ public class HelpCommandHandler extends AbstractCommand {
     }
 
     @Override
+    public String getCommandDescription() {
+        return "Список команд";
+    }
+
+    @Override
     public void process(TgCommandRequest command, TgChat chat, TgUser user) {
         final String helpMessage =
                 commands.stream()
