@@ -42,7 +42,7 @@ public class AntiCafeCuriosCatPhase extends AbstractCuriosCatPhase {
     private void cafe(ChooseContext chooseContext) {
         messages(
                 "Похоже, цель вашей прогулки близка.",
-                "Вы приближаетесь к трехэтажному кирпичному зданию.",
+                "Вы приближаетесь к трёхэтажному кирпичному зданию.",
                 "Кот, не останавливаясь, забегает в приоткрытую дверь.");
         poll("Как поступим?")
                 .choice("Пойти за котом", this::goInto)

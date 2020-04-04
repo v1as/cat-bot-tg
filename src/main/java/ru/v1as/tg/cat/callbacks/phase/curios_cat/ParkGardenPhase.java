@@ -12,9 +12,9 @@ public class ParkGardenPhase extends AbstractCuriosCatPhase {
     private RandomRequest<String> chillingMessages =
             new RandomRequest<String>()
                     .addAll(
-                            "Коту немного подустал и решил устроиться рядом с вами на лавочке, свернувшись клубочком",
-                            "На этот раз кота заинтересовал одуванчик",
-                            "Кот с любопытством уставился на птицу на дереве",
+                            "Коту немного подустал и решил устроиться рядом с вами на лавочке, свернувшись клубочком.",
+                            "На этот раз кота заинтересовал одуванчик.",
+                            "Кот с любопытством уставился на птицу на дереве.",
                             "Мимо проходит ребёнок с маленьким щенком. Вы с котом провожаете их взглядом.",
                             "Кот лениво играет со своим хвостом.",
                             "Так бывает? Кот потёрся о вашу ногу.");
@@ -52,7 +52,7 @@ public class ParkGardenPhase extends AbstractCuriosCatPhase {
         Integer loop = getPhaseContext().increment("LOOP");
         if (loop >= chillingMessages.size()) {
             messages(
-                    "Похоже у кота появились более важные дела.",
+                    "Похоже, у кота появились более важные дела.",
                     "Он кивнул вам на прощанье и исчез.");
             catchUpCatAndClose(CatRequestVote.CAT1);
         } else {
@@ -65,7 +65,7 @@ public class ParkGardenPhase extends AbstractCuriosCatPhase {
     }
 
     private void goodBye(ChooseContext chooseContext) {
-        messages("Вы славно отдохнули.", "Да еще и балл свой получили. Разве не прекрасно?");
+        messages("Вы славно отдохнули.", "Да ещё и балл свой получили. Разве не прекрасно?");
         catchUpCatAndClose(CatRequestVote.CAT1);
     }
 }
