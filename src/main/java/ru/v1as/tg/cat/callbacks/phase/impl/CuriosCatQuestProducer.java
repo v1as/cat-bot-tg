@@ -54,6 +54,7 @@ public class CuriosCatQuestProducer {
                         .map(Entry::getKey)
                         .collect(Collectors.toList());
         if (rareQuestName.size() > QUESTS_AMOUNT_LIMIT) {
+            log.info("This player already played too many times all quests.");
             return justOneCatPhase;
         }
         List<AbstractCuriosCatPhase> quests =

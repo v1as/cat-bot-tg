@@ -32,6 +32,7 @@ public class ChatDetailsUpdater {
                         sender.execute(new GetChatMembersCount().setChatId(details.getId()));
                 details.setMembersAmount(amount);
                 details.getChat().setUpdated(LocalDateTime.now());
+                details.setEnabled(true);
                 chatDetailsDao.save(details);
                 chatDao.save(details.getChat());
                 liveChats++;
