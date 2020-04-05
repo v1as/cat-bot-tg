@@ -9,7 +9,7 @@ public class TestUser {
 
     private final TestChat publicChat;
     @Getter private final TestChat privateChat;
-    private User user;
+    @Getter private final User user;
 
     public TestUser(Integer userId, String userName, TestChat publicChat) {
         this.user = publicChat.getUser(userId, userName);
@@ -19,6 +19,12 @@ public class TestUser {
                         publicChat.getSender(),
                         publicChat.getUpdateProcessor(),
                         getChat(userId.longValue(), false));
+    }
+
+    protected TestUser(TestChat publicChat, TestChat privateChat, User user) {
+        this.publicChat = publicChat;
+        this.privateChat = privateChat;
+        this.user = user;
     }
 
     public TestUserChat inPublic() {
