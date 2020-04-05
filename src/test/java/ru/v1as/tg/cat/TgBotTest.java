@@ -5,6 +5,7 @@ import static junit.framework.TestCase.assertEquals;
 import org.junit.After;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.v1as.tg.cat.tg.TestBot;
 import ru.v1as.tg.cat.tg.TestChat;
 import ru.v1as.tg.cat.tg.TestUser;
 import ru.v1as.tg.cat.tg.TgUpdateProcessor;
@@ -21,6 +22,7 @@ public abstract class TgBotTest {
     protected TestUser mary;
     protected TestUser jho;
     protected TestUser zakh;
+    protected TestBot bot;
 
     @Before
     public void before() {
@@ -29,6 +31,7 @@ public abstract class TgBotTest {
         mary = new TestUser(2, "mary", inPublic);
         jho = new TestUser(3, "jho", inPublic);
         zakh = new TestUser(4, "zakh", inPublic);
+        bot = new TestBot(5, "bot", inPublic);
 
         sender.registerChat(inPublic);
         sender.registerChat(bob.getPrivateChat());

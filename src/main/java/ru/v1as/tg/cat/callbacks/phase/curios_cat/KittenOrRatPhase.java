@@ -32,7 +32,7 @@ public class KittenOrRatPhase extends AbstractCuriosCatPhase {
         message(
                 "Подойдя к подъезду, вы заглядываете в подвальную нишу, из которой доносится подозрительный звук.");
         message("Снизу выныривает испуганная крыса.");
-        message("Само собой кота уже и след простыл.");
+        message("Само собой, кота уже и след простыл.");
         catchUpCatAndClose(NOT_CAT);
     }
 
@@ -43,7 +43,7 @@ public class KittenOrRatPhase extends AbstractCuriosCatPhase {
 
     private void keepFollowFail(ChooseContext ctx) {
         message(
-                "Даже мимолётного отвлечения на странный звук хватило паршивцу чтобы сбежать."
+                "Даже мимолётного отвлечения на странный звук хватило паршивцу, чтобы сбежать."
                         + " Ничего, в следующий раз может и повезти.");
         catchUpCatAndClose(NOT_CAT);
     }

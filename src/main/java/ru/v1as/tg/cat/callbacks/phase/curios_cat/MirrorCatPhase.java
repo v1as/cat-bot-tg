@@ -12,7 +12,7 @@ public class MirrorCatPhase extends AbstractCuriosCatPhase {
     @Override
     protected void open() {
         messages(
-                "Как и всегда вы устремляетесь за котом",
+                "Как и всегда, вы устремляетесь за котом",
                 "На улице свежо и приятно. Кот трусит впереди.");
         poll("Что будем делать?")
                 .choice("Оглядеться", random(this::lookAround, this::lookAroundFail))
@@ -21,7 +21,7 @@ public class MirrorCatPhase extends AbstractCuriosCatPhase {
     }
 
     private void lookAroundFail(ChooseContext chooseContext) {
-        message("Пока вы считали ворон по сторонами, кот сбежал.");
+        message("Пока вы считали ворон по сторонам, кот сбежал.");
         catchUpCatAndClose(NOT_CAT);
     }
 
@@ -55,7 +55,7 @@ public class MirrorCatPhase extends AbstractCuriosCatPhase {
     }
 
     private void goToCat(ChooseContext chooseContext) {
-        message("О чем вы только думали? Кот, раздраженно мяукая, сбегает");
+        message("О чем вы только думали? Кот, раздражённо мяукая, сбегает");
         catchUpCatAndClose(NOT_CAT);
     }
 

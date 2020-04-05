@@ -27,6 +27,7 @@ public abstract class TgTestObject {
         setField(user, "userName", userName);
         setField(user, "firstName", userName);
         setField(user, "lastName", userId.toString());
+        setField(user, "isBot", false);
         return user;
     }
 
@@ -68,4 +69,9 @@ public abstract class TgTestObject {
 
     public abstract Integer incrementId();
 
+    public User getBot(Integer userId, String userName) {
+        final User bot = getUser(userId, userName);
+        setField(bot, "isBot", true);
+        return bot;
+    }
 }

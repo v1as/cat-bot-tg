@@ -33,7 +33,7 @@ public class YouFollowCuriosCatPhase extends AbstractCuriosCatPhase {
         final Integer standing = ctx.increment(STANDING);
         if (standing > CAT_PATIENCE_STANDING) {
             messages(
-                    "Коту наскучило и он отправился по своим делам.",
+                    "Коту наскучило, и он отправился по своим делам.",
                     "Вы и дальше остались стоять на месте.",
                     "Почему же вам не засчитали этого кота?");
             catchUpCatAndClose(NOT_CAT);
@@ -61,8 +61,8 @@ public class YouFollowCuriosCatPhase extends AbstractCuriosCatPhase {
             boringWalk();
         } else {
             messages(
-                    "Немного растерянно, вы начинаете идти, переодически оборачиваясь посмотреть на кота.",
-                    "Кот, как ни в чем не бывало, следует за вами.",
+                    "Немного растерянно, вы начинаете идти, периодически оборачиваясь посмотреть на кота.",
+                    "Кот, как ни в чём не бывало, следует за вами.",
                     "Сегодня вы устраиваете прогулку для Кота, а не наоборот.");
             poll("Что дальше?")
                     .choice("Продолжаем идти", this::keepGo)
@@ -119,7 +119,7 @@ public class YouFollowCuriosCatPhase extends AbstractCuriosCatPhase {
     private void emptyPark(ChooseContext chooseContext) {
         messages(
                 "Ничего интересного в парке не происходит.",
-                "Впрочем кот не выглядит разочарованным - мяукнув вам на прощание, он убегает.");
+                "Впрочем, кот не выглядит разочарованным - мяукнув вам на прощание, он убегает.");
         catchUpCatAndClose(CAT1);
     }
 }
