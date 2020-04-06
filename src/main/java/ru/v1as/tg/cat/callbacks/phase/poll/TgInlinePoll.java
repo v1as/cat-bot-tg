@@ -109,9 +109,13 @@ public class TgInlinePoll {
 
     public TgInlinePoll clearChoices() {
         checkModifiable();
-        this.choices.values().forEach(pollChoice -> callbackProcessor.drop(pollChoice.getUuid()));
+        releaseResources();
         choices.clear();
         return this;
+    }
+
+    private void releaseResources() {
+        this.choices.values().forEach(pollChoice -> callbackProcessor.drop(pollChoice.getUuid()));
     }
 
     public TgInlinePoll onSend(Consumer<Message> callback) {
@@ -260,7 +264,7 @@ public class TgInlinePoll {
     }
 
     private void close(boolean shouldRemove) {
-        clearChoices();
+        releaseResources();
         if (state.equals(SENT) || state.equals(UPDATED)) {
             state = CLOSED;
             if (shouldRemove) {
