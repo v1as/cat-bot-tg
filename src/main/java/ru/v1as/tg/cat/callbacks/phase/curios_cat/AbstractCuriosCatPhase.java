@@ -15,7 +15,6 @@ import java.util.Map;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 import ru.v1as.tg.cat.callbacks.phase.AbstractPublicChatPhase;
 import ru.v1as.tg.cat.callbacks.phase.PollTimeoutConfiguration;
@@ -35,7 +34,6 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
     protected static final RandomRequest<CatRequestVote> RANDOM_REQUEST_CAT_1_2_3 =
             new RandomRequest<CatRequestVote>().add(CAT1, 60).add(CAT2, 30).add(CAT3, 10);
 
-    @Autowired protected CatBotData data;
     @Autowired protected CatEventService catEventService;
 
     protected final PollTimeoutConfiguration TIMEOUT_LEAVE_CAT =
@@ -102,7 +100,7 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
         }
         String reward =
                 result.getAmount() > 0
-                        ? " (+" + result.getAmount() * CAT_REWARD.intValue() + MONEY_BAG + ")"
+                        ? " (+" + result.getAmount() * CAT_REWARD + MONEY_BAG + ")"
                         : "";
         message(publicChat, message + user.getUsernameOrFullName() + reward);
         catEventService.saveCuriosCatQuest(

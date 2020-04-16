@@ -21,7 +21,7 @@ public class CuriosCatQuestProducerTest {
     @Test
     public void shouldReturnQuestIfNoPlayerQuests() {
         final AbstractCuriosCatPhase phase =
-                new CuriosCatQuestProducer(
+                new RandomCuriosCatQuestProducer(
                                 of(new TestPhase("quest1")),
                                 getCatUserEventDaoMock(),
                                 new SimpleRandomChoicer(),
@@ -33,7 +33,7 @@ public class CuriosCatQuestProducerTest {
     @Test
     public void shouldReturnNonPlayerQuest() {
         final AbstractCuriosCatPhase phase =
-                new CuriosCatQuestProducer(
+                new RandomCuriosCatQuestProducer(
                                 of(new TestPhase("quest1"), new TestPhase("quest2")),
                                 getCatUserEventDaoMock("quest2"),
                                 new SimpleRandomChoicer(),
@@ -45,7 +45,7 @@ public class CuriosCatQuestProducerTest {
     @Test
     public void shouldReturnRareQuest() {
         final AbstractCuriosCatPhase phase =
-                new CuriosCatQuestProducer(
+                new RandomCuriosCatQuestProducer(
                                 of(
                                         new TestPhase("questY"),
                                         new TestPhase("questX"),

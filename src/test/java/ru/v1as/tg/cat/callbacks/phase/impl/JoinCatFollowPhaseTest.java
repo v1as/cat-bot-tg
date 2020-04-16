@@ -8,21 +8,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import ru.v1as.tg.cat.AbstractCatBotTest;
 import ru.v1as.tg.cat.callbacks.phase.curios_cat.AbstractCuriosCatPhase;
+import ru.v1as.tg.cat.callbacks.phase.curios_cat.JustOneCatPhase;
 import ru.v1as.tg.cat.callbacks.phase.multi_curios.RegattaDreamPhaseTest.CuriosConfiguration;
 import ru.v1as.tg.cat.model.random.RandomItem;
 import ru.v1as.tg.cat.model.random.RandomRequest;
-import ru.v1as.tg.cat.service.random.TestRandomChoice;
 
 @Import(CuriosConfiguration.class)
 public class JoinCatFollowPhaseTest extends AbstractCatBotTest {
 
-    @Autowired private TestRandomChoice<AbstractCuriosCatPhase> randomChoice;
     @Autowired private JoinCatFollowPhase phase;
+    @Autowired private FixedCatQuestProducer catQuestProducer;
+    @Autowired private JustOneCatPhase justOneCatPhase;
 
     @Before
     public void before() {
         super.before();
-        randomChoice.setChooser(this::choose);
+        catQuestProducer.set(justOneCatPhase);
     }
 
     @Test

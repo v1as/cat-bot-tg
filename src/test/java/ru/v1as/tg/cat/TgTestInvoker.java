@@ -8,4 +8,5 @@ public interface TgTestInvoker {
 
     Message sendCommand(String text);
 
+    Message sendTextMessage(String text);
 }

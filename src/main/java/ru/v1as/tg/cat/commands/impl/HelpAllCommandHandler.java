@@ -19,6 +19,11 @@ public class HelpAllCommandHandler extends HelpCommandHandler {
     }
 
     @Override
+    public String getCommandDescription() {
+        return null; //admins command
+    }
+
+    @Override
     protected boolean filterCommand(CommandHandler commandHandler) {
         return true;
     }

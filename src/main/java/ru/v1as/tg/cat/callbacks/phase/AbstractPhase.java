@@ -29,7 +29,6 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
 
     @Autowired protected BotClock botClock;
     @Autowired protected TgSender sender;
-    @Autowired protected BotClock clock;
     @Autowired private TgCallbackProcessor callbackProcessor;
     @Autowired private RandomChoice randomChoice;
 
@@ -107,10 +106,6 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
     }
 
     protected abstract void open();
-
-    protected void timeout(int ms) {
-        clock.wait(ms);
-    }
 
     @Override
     public void close() {

@@ -14,8 +14,7 @@ public class PhaseContext {
 
     private final TgChat chat;
     private final List<TgInlinePoll> polls = new ArrayList<>();
-    @Getter
-    private boolean closed = false;
+    @Getter private boolean closed = false;
 
     public void checkNotClose() {
         if (closed) {

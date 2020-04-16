@@ -6,6 +6,5 @@ import ru.v1as.tg.cat.jpa.entities.resource.ResourceEvent;
 
 public interface ResourceEventDao extends JpaRepository<ResourceEvent, Long> {
 
-    List<ResourceEvent> findByChatIdAndUserIdAndResourceId(
-            Long chatId, Integer userId, Long resourceId);
+    List<ResourceEvent> findByResourceId(Long id);
 }

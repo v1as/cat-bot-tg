@@ -2,7 +2,6 @@ package ru.v1as.tg.cat.tg;
 
 import java.util.ArrayList;
 import java.util.List;
-import lombok.experimental.UtilityClass;
 import org.apache.http.util.Asserts;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
@@ -10,10 +9,14 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
-@UtilityClass
 public class KeyboardUtils {
+
+    private KeyboardUtils() {}
 
     public static InlineKeyboardMarkup inlineKeyboardMarkup(String... buttonAndData) {
         Asserts.check(buttonAndData.length % 2 == 0, "Arguments amount should be even.");
@@ -26,13 +29,24 @@ public class KeyboardUtils {
                             .setText(buttonAndData[2 * i])
                             .setCallbackData(buttonAndData[2 * i + 1]));
         }
-        // Set the keyboard to the markup
         if (!rowInline.isEmpty()) {
             rowsInline.add(rowInline);
         }
-        // Add it to the message
         markupInline.setKeyboard(rowsInline);
         return markupInline;
+    }
+
+    public static ReplyKeyboardMarkup replyKeyboardMarkup(String... buttons) {
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        final List<KeyboardRow> keyboard = new ArrayList<>(buttons.length);
+        for (String text : buttons) {
+            KeyboardRow row = new KeyboardRow();
+            final KeyboardButton keyboardButton = new KeyboardButton(text);
+            row.add(keyboardButton);
+            keyboard.add(row);
+        }
+        replyKeyboardMarkup.setKeyboard(keyboard);
+        return replyKeyboardMarkup;
     }
 
     public static EditMessageReplyMarkup getUpdateButtonsMsg(

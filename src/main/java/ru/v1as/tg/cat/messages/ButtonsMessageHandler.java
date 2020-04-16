@@ -1,0 +1,131 @@
+package ru.v1as.tg.cat.messages;
+
+import static java.util.stream.Stream.concat;
+import static ru.v1as.tg.cat.tg.KeyboardUtils.replyKeyboardMarkup;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
+import java.util.stream.Stream;
+import javax.annotation.PostConstruct;
+import lombok.Builder;
+import lombok.RequiredArgsConstructor;
+import lombok.Singular;
+import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
+import ru.v1as.tg.cat.model.TgChat;
+import ru.v1as.tg.cat.model.TgUser;
+import ru.v1as.tg.cat.tg.TgSender;
+
+@Component
+@RequiredArgsConstructor
+public class ButtonsMessageHandler implements MessageHandler {
+
+    private final TgSender sender;
+    private final ShopService shopService;
+    private final Map<String, ButtonMenu> requests = new HashMap<>();
+    private final Map<String, ButtonCallback> callbacks = new HashMap<>();
+
+    public static final String BACK = "◀️ Назад";
+
+    public static final String GO_TO_THE_CITY = "\uD83C\uDFD9 Пойти в город";
+
+    @PostConstruct
+    public void init() {
+        final ButtonMenu root =
+                buttonMenu()
+                        .message("Что делаем?")
+                        .isRoot(true)
+                        .button(
+                                GO_TO_THE_CITY,
+                                buttonMenu()
+                                        .message("Куда пойдём?")
+                                        .button(
+                                                "\uD83D\uDECD Магазин",
+                                                buttonMenu()
+                                                        .message("Что купим?")
+                                                        .callback(
+                                                                "\uD83D\uDC1F Кошачье угощение",
+                                                                shopService::buyCatBite)
+                                                        //
+                                                        //              .callback(
+                                                        //
+                                                        //                      "\uD83D\uDECD
+                                                        // Сумотьку Свете",
+                                                        //
+                                                        //                      this::bagForSveta)
+                                                        .build())
+//                                        .button(
+//                                                "✉️ Почта",
+//                                                buttonMenu()
+//                                                        .message("Что будем делать?")
+//                                                        .callback(
+//                                                                "\uD83D\uDCEC Написать разработчику",
+//                                                                this::writeDeveloper)
+//                                                        .build())
+//                                        .button(
+//                                                "\uD83C\uDFE6 Банк",
+//                                                buttonMenu()
+//                                                        .message("Что будем делать?")
+//                                                        .callback(
+//                                                                "\uD83D\uDCB0 Узнать состояние счёта",
+//                                                                this::walletValue)
+//                                                        .build())
+                                        .build())
+                        .build();
+        requests.put(BACK, root);
+        Stack<ButtonMenu> buttons = new Stack<>();
+        buttons.push(root);
+        while (!buttons.empty()) {
+            final ButtonMenu button = buttons.pop();
+            requests.putAll(button.buttons);
+            callbacks.putAll(button.callbacks);
+            button.buttons.values().forEach(buttons::push);
+        }
+    }
+
+    private ButtonMenu.ButtonMenuBuilder buttonMenu() {
+        return new ButtonMenu.ButtonMenuBuilder();
+    }
+
+    @Override
+    public void handle(Message message, TgChat chat, TgUser user) {
+        if (!chat.isUserChat()) {
+            return;
+        }
+        final String text = message.getText();
+        final ButtonMenu menu = requests.get(text);
+        if (menu != null) {
+            final String[] buttonsTest = menu.getButtonsTest();
+            sender.execute(
+                    new SendMessage(chat.getId(), menu.message)
+                            .setReplyMarkup(replyKeyboardMarkup(buttonsTest)));
+            return;
+        }
+        final ButtonCallback callback = callbacks.get(text);
+        if (callback != null) {
+            callback.process(message, chat, user);
+        }
+    }
+
+    private interface ButtonCallback {
+        void process(Message message, TgChat chat, TgUser user);
+    }
+
+    @Builder
+    private static class ButtonMenu {
+
+        String message;
+        @Singular Map<String, ButtonMenu> buttons;
+        @Singular Map<String, ButtonCallback> callbacks;
+        boolean isRoot;
+
+        String[] getButtonsTest() {
+            return concat(
+                            concat(buttons.keySet().stream(), callbacks.keySet().stream()),
+                            isRoot ? Stream.of() : Stream.of(BACK))
+                    .toArray(String[]::new);
+        }
+    }
+}

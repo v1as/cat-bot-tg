@@ -1,5 +1,7 @@
 package ru.v1as.tg.cat.tasks;
 
+import static ru.v1as.tg.cat.service.ChatParam.CAT_BITE_LEVEL;
+
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ScheduledExecutorService;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Component;
 import ru.v1as.tg.cat.callbacks.phase.impl.JoinCatFollowPhase;
 import ru.v1as.tg.cat.jpa.dao.ChatDao;
 import ru.v1as.tg.cat.jpa.entities.chat.ChatEntity;
+import ru.v1as.tg.cat.service.ChatParamResource;
 
 @Slf4j
 @Setter
@@ -29,6 +32,7 @@ public class CuriosCatRequestScheduler {
     private int delayMin = 30;
     private double chance = 0.2;
     private TimeUnit timeUnit = TimeUnit.MINUTES;
+    private final ChatParamResource paramResource;
 
     @PostConstruct
     public void init() {
@@ -45,17 +49,24 @@ public class CuriosCatRequestScheduler {
         }
 
         final List<ChatEntity> chats = chatDao.findAll();
+        int chatSent = 0;
         for (ChatEntity chat : chats) {
             try {
                 double randomResult = random.nextDouble();
-                if (randomResult < chance) {
+                final int catBite = paramResource.paramInt(chat, CAT_BITE_LEVEL);
+                if (randomResult < chance + increaseChance(catBite)) {
                     log.info("Curios cat is sending to chat {}", chat);
                     joinCatFollowPhase.open(chat);
                 }
+                chatSent++;
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        log.info("Curios cat was executed for {} chats", chats.size());
+        log.info("Curios cat was executed for {} chats", chatSent);
+    }
+
+    double increaseChance(int catBite) {
+        return catBite * (1 - chance) / (double) CAT_BITE_LEVEL.getMaxValue();
     }
 }

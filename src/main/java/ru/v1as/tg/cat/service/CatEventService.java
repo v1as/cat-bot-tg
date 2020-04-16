@@ -3,9 +3,8 @@ package ru.v1as.tg.cat.service;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT1;
 import static ru.v1as.tg.cat.jpa.entities.events.CatEventType.CURIOS_CAT;
 import static ru.v1as.tg.cat.jpa.entities.events.CatEventType.REAL;
-import static ru.v1as.tg.cat.service.init.ResourceService.MONEY;
+import static ru.v1as.tg.cat.jpa.entities.user.ChatUserParam.MONEY;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -21,7 +20,6 @@ import ru.v1as.tg.cat.jpa.entities.chat.ChatEntity;
 import ru.v1as.tg.cat.jpa.entities.events.CatUserEvent;
 import ru.v1as.tg.cat.jpa.entities.events.CatVoteEvent;
 import ru.v1as.tg.cat.jpa.entities.events.UserEvent;
-import ru.v1as.tg.cat.jpa.entities.resource.ResourceEvent;
 import ru.v1as.tg.cat.jpa.entities.user.UserEntity;
 import ru.v1as.tg.cat.model.CatRequest;
 import ru.v1as.tg.cat.model.TgChat;
@@ -32,7 +30,9 @@ import ru.v1as.tg.cat.model.TgUser;
 @RequiredArgsConstructor
 public class CatEventService {
 
-    public static final BigDecimal CAT_REWARD = new BigDecimal(3);
+    public static final int CAT_REWARD = 3;
+    public static final int VOTE_REWARD = 1;
+    private final ChatParamResource paramResource;
     private final UserEventDao userEventDao;
     private final UserDao userDao;
     private final ChatDao chatDao;
@@ -42,7 +42,7 @@ public class CatEventService {
         final UserEntity owner = userDao.getOne(user.getId());
         final CatUserEvent event = new CatUserEvent(chatEntity, owner, messageId, CURIOS_CAT, CAT1);
         userEventDao.save(event);
-        userEventDao.save(new ResourceEvent(MONEY, CAT_REWARD, event, owner, chatEntity));
+        paramResource.increment(chatEntity, owner, MONEY, CAT_REWARD);
     }
 
     public void saveCuriosCatQuest(
@@ -54,10 +54,7 @@ public class CatEventService {
         event.setQuestName(quest);
         userEventDao.save(event);
         int cats = result.getAmount();
-        if (cats > 0) {
-            final BigDecimal catsRewards = CAT_REWARD.multiply(new BigDecimal(cats));
-            userEventDao.save(new ResourceEvent(MONEY, catsRewards, event, owner, chatEntity));
-        }
+        paramResource.increment(chatEntity, owner, MONEY, CAT_REWARD * cats);
     }
 
     public void saveRealCatPoll(CatRequest req) {
@@ -74,10 +71,9 @@ public class CatEventService {
                 final CatVoteEvent voteEvent =
                         new CatVoteEvent(chat, voter, event, vote.getValue());
                 events.add(voteEvent);
-                events.add(new ResourceEvent(MONEY, BigDecimal.ONE, voteEvent, voter, chat));
+                paramResource.increment(chat, voter, MONEY, VOTE_REWARD);
             }
-            final BigDecimal catsRewards = CAT_REWARD.multiply(new BigDecimal(cats));
-            events.add(new ResourceEvent(MONEY, catsRewards, event, owner, chat));
+            paramResource.increment(chat, owner, MONEY, CAT_REWARD * cats);
         }
         userEventDao.saveAll(events);
     }
