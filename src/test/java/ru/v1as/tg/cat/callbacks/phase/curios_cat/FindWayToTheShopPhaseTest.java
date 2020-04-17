@@ -42,7 +42,7 @@ public class FindWayToTheShopPhaseTest extends AbstractCuriosCatPhaseTest {
                 .send();
         bobChat.getEditMessage();
 
-        bob.inPublic().getSendMessage().assertContainText("Игрок @bob нашел путь к магазину.");
+        bob.inPublic().getSendMessage().assertContainText("Игрок @bob нашел путь к магазину ");
 
 
         bobChat.getSendMessageToSend()

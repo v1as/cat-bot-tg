@@ -28,19 +28,19 @@ public class FindWayToTheShopPhase extends AbstractCuriosCatPhase {
     @Override
     protected void open() {
         messages(
-                "Задумвиво бредя по улочкам, вы внезапно останавливаетесь, сами не понимая почему.",
+                "Задумчиво бредя по улочкам, вы внезапно останавливаетесь, сами не понимая почему.",
                 "Интуиция беснуется, вытаскивая ваше сознание из задумчивости.",
                 "Вам вдруг захотелось потереть выступающий из стены кирпич.");
         poll("Как поступим?")
-                .choice("Потереть кипрпич", this::brick)
+                .choice("Потереть кирпич", this::brick)
                 .choice("Пойти дальше", this::goFurther)
                 .send();
     }
 
     private void brick(ChooseContext chooseContext) {
         messages(
-                "Поддаваяст своему наитию, вы медленно поднимаете руку и трёте кирпич.",
-                "Вы замираете и ждете секунду...",
+                "Поддавшись своему наитию, вы медленно поднимаете руку и трёте кирпич.",
+                "Вы замираете и ждёте секунду...",
                 "Другую...",
                 "И ничего не происходит.",
                 "Странно было ожидать, что что-то случится.");
@@ -62,7 +62,7 @@ public class FindWayToTheShopPhase extends AbstractCuriosCatPhase {
 
     private void notFindShop(ChooseContext chooseContext) {
         messages(
-                "Проходя мимо магазинчика вы рассматриваете брущатку.",
+                "Проходя мимо магазинчика вы рассматриваете брусчатку.",
                 "Сегодня вы гуляли не одни - пушистый хвост обмахивает ваши ноги.");
         catchUpCatAndClose(CAT1);
     }
@@ -77,7 +77,7 @@ public class FindWayToTheShopPhase extends AbstractCuriosCatPhase {
             message(
                     ctx.getPublicChat(),
                     String.format(
-                            "Игрок %s нашел путь к магазину." + SHOP_BAG,
+                            "Игрок %s нашел путь к магазину  " + SHOP_BAG,
                             user.getUsernameOrFullName()));
             sender.execute(
                     new SendMessage(user.getChatId(), "Вы нашли путь к магазину! " + SHOP_BAG)

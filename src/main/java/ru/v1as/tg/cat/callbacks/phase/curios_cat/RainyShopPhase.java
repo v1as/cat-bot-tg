@@ -56,5 +56,6 @@ public class RainyShopPhase extends AbstractCuriosCatPhase {
         messages(
                 "Вы бежите через темный двор, наступая в лужи, Кот шмыгает в подвальное окно.",
                 "Кажется, в этот раз вам не удалось его поймать. Может в следующий раз удача будет благосклоннее?");
+        catchUpCatAndClose(NOT_CAT);
     }
 }
