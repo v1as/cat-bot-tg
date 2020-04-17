@@ -125,7 +125,8 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
             youAreLate(data);
         } else {
             close();
-            AbstractCuriosCatPhase nextPhase = curiosCatQuestProducer.get(data.getUserId());
+            final TgChat chat = getPhaseContext().getChat();
+            AbstractCuriosCatPhase nextPhase = curiosCatQuestProducer.get(data.getUser(), chat);
             nextPhase.open(data.getChat(), ctx.getChat(), data.getUser(), ctx.message);
         }
     }

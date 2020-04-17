@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import ru.v1as.tg.cat.callbacks.phase.curios_cat.AbstractCuriosCatPhase;
+import ru.v1as.tg.cat.model.TgChat;
+import ru.v1as.tg.cat.model.TgUser;
 
 @Component
 @Primary
@@ -15,7 +17,7 @@ public class FixedCatQuestProducer implements CuriosCatQuestProducer {
     private AbstractCuriosCatPhase phase;
 
     @Override
-    public AbstractCuriosCatPhase get(Integer userId) {
+    public AbstractCuriosCatPhase get(TgUser user, TgChat chat) {
         return phase;
     }
 

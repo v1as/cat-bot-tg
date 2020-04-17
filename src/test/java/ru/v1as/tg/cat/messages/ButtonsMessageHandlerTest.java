@@ -61,7 +61,7 @@ public class ButtonsMessageHandlerTest extends AbstractCatBotTest {
         chat.sendTextMessage(GO_TO_THE_CITY);
         chat.getSendMessageToSend().assertText("Куда пойдём?").findButtonToSend("Магазин").send();
         chat.getSendMessageToSend()
-                .assertText("Что купим?")
+                .assertContainText("Что купим?")
                 .findButtonToSend("Кошачье угощение")
                 .send();
         return chat;

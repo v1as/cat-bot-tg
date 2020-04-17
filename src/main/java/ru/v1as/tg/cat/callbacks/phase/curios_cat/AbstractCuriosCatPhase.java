@@ -112,6 +112,10 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
         return getClass().getSimpleName();
     }
 
+    public boolean filter(TgUser user, TgChat chat) {
+        return true;
+    }
+
     @Getter
     public static class CuriosCatContext extends PublicChatPhaseContext {
 

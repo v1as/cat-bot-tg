@@ -16,6 +16,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
+import ru.v1as.tg.cat.service.ResourceTexts;
 import ru.v1as.tg.cat.tg.TgSender;
 
 @Component
@@ -26,13 +27,16 @@ public class ButtonsMessageHandler implements MessageHandler {
     private final ShopService shopService;
     private final Map<String, ButtonMenu> requests = new HashMap<>();
     private final Map<String, ButtonCallback> callbacks = new HashMap<>();
+    private final ResourceTexts texts;
 
     public static final String BACK = "◀️ Назад";
 
     public static final String GO_TO_THE_CITY = "\uD83C\uDFD9 Пойти в город";
+    private String shopText;
 
     @PostConstruct
     public void init() {
+        shopText = texts.load("shop");
         final ButtonMenu root =
                 buttonMenu()
                         .message("Что делаем?")
@@ -44,7 +48,7 @@ public class ButtonsMessageHandler implements MessageHandler {
                                         .button(
                                                 "\uD83D\uDECD Магазин",
                                                 buttonMenu()
-                                                        .message("Что купим?")
+                                                        .message(shopText)
                                                         .callback(
                                                                 "\uD83D\uDC1F Кошачье угощение",
                                                                 shopService::buyCatBite)
