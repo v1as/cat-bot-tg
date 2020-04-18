@@ -20,7 +20,7 @@ public class FindWayToTheShopPhaseTest extends AbstractCuriosCatPhaseTest {
         phase.open(getStartCtx(bob));
         final TestUserChat bobChat = bob.inPrivate();
 
-        bobChat.getSendMessage().assertContainText("Задумвиво бредя по улочкам");
+        bobChat.getSendMessage().assertContainText("Задумчиво бредя по улочкам");
         bobChat.getSendMessage().assertContainText("Интуиция беснуется,");
         bobChat.getSendMessage().assertContainText("Вам вдруг захотелось");
 

@@ -2,7 +2,6 @@ package ru.v1as.tg.cat.tasks;
 
 import static java.time.LocalDateTime.now;
 import static java.util.function.Function.identity;
-import static ru.v1as.tg.cat.service.ChatParam.CAT_BITE_LEVEL;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -49,7 +48,6 @@ public class SendWinners {
                         .collect(Collectors.toMap(ChatDetailsEntity::getId, identity()));
         for (ChatEntity chat : chatDao.findAll()) {
             final ChatDetailsEntity details = id2Details.get(chat.getId());
-            resetChatParams(chat);
             if (!details.isEnabled()) {
                 log.debug("Chat '{}' skipped because of disabled", chat);
                 continue;
@@ -74,14 +72,6 @@ public class SendWinners {
             } catch (Exception ex) {
                 log.error("Error while send winners to the chat " + chat, ex);
             }
-        }
-    }
-
-    private void resetChatParams(ChatEntity chat) { // todo move it to separate class
-        try {
-            chatParam.reset(chat, CAT_BITE_LEVEL);
-        } catch (Exception e) {
-            log.error("Error while reseting params for chat " + chat, e);
         }
     }
 }

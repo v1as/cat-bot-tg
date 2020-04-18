@@ -12,13 +12,10 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import ru.v1as.tg.cat.callbacks.phase.poll.ChooseContext;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
-import ru.v1as.tg.cat.service.ChatParamResource;
 
 @Component
 @RequiredArgsConstructor
 public class FindWayToTheShopPhase extends AbstractCuriosCatPhase {
-
-    private final ChatParamResource paramResource;
 
     @Override
     public boolean filter(TgUser user, TgChat chat) {

@@ -17,6 +17,7 @@ import ru.v1as.tg.cat.callbacks.phase.poll.interceptor.PhaseContextChoiceAroundI
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.model.random.RandomRequest;
+import ru.v1as.tg.cat.service.ChatParamResource;
 import ru.v1as.tg.cat.service.clock.BotClock;
 import ru.v1as.tg.cat.service.random.RandomChoice;
 import ru.v1as.tg.cat.tg.TgSender;
@@ -31,6 +32,7 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
     @Autowired protected TgSender sender;
     @Autowired private TgCallbackProcessor callbackProcessor;
     @Autowired private RandomChoice randomChoice;
+    @Autowired protected ChatParamResource paramResource;
 
     protected void message(TgUser userData, String text) {
         sender.execute(new SendMessage(userData.getId().longValue(), text));

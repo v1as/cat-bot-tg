@@ -16,4 +16,5 @@ public class EmojiConst {
     public static final String DREAMING = "\uD83D\uDE34";
     public static final String ZZZ = "\uD83D\uDCA4";
     public static final String FISH = "\uD83D\uDC1F";
+    public static final String POTION = "\uD83E\uDDEA";
 }

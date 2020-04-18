@@ -1,6 +1,9 @@
 package ru.v1as.tg.cat.messages;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static ru.v1as.tg.cat.jpa.entities.user.ChatUserParam.CONCENTRATION_POTION;
 import static ru.v1as.tg.cat.jpa.entities.user.ChatUserParam.MONEY;
 import static ru.v1as.tg.cat.jpa.entities.user.ChatUserParam.WAY_TO_SHOP;
 import static ru.v1as.tg.cat.messages.ButtonsMessageHandler.GO_TO_THE_CITY;
@@ -12,7 +15,7 @@ import ru.v1as.tg.cat.AbstractCatBotTest;
 import ru.v1as.tg.cat.service.ChatParamResource;
 import ru.v1as.tg.cat.tg.TestUserChat;
 
-public class ButtonsMessageHandlerTest extends AbstractCatBotTest {
+public class ShopServiceTest extends AbstractCatBotTest {
 
     @Autowired ChatParamResource paramResource;
 
@@ -65,5 +68,29 @@ public class ButtonsMessageHandlerTest extends AbstractCatBotTest {
                 .findButtonToSend("Кошачье угощение")
                 .send();
         return chat;
+    }
+
+    @Test
+    public void buy_concentration_potion() {
+        assertFalse(
+                paramResource.paramBool(inPublic.getId(), bob.getUserId(), CONCENTRATION_POTION));
+
+        paramResource.param(inPublic.getId(), bob.getUserId(), WAY_TO_SHOP, true);
+        paramResource.param(inPublic.getId(), bob.getUserId(), MONEY, 60);
+
+        final TestUserChat chat = bob.inPrivate();
+        chat.sendTextMessage(GO_TO_THE_CITY);
+        chat.getSendMessageToSend().assertText("Куда пойдём?").findButtonToSend("Магазин").send();
+        chat.getSendMessageToSend()
+                .assertContainText("Что купим?")
+                .findButtonToSend("Зелье концентрации")
+                .send();
+
+        chat.getSendMessage().assertContainText("Вы купили зелье концентрации");
+        inPublic.getSendMessage().assertContainText("Игрок @bob купил зелье концентрации");
+
+        assertTrue(
+                paramResource.paramBool(inPublic.getId(), bob.getUserId(), CONCENTRATION_POTION));
+        assertEquals(40, paramResource.paramInt(inPublic.getId(), bob.getUserId(), MONEY));
     }
 }

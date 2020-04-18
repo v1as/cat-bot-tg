@@ -7,7 +7,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ChatUserParam {
     MONEY("0", null),
-    WAY_TO_SHOP("false", null);
+    WAY_TO_SHOP("false", null),
+    CONCENTRATION_POTION("false", null);
 
     private final String defaultValue;
     private final Integer maxValue;

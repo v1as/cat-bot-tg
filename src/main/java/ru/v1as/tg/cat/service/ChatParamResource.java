@@ -23,6 +23,8 @@ import ru.v1as.tg.cat.jpa.entities.events.ChatUserParamChangeEvent;
 import ru.v1as.tg.cat.jpa.entities.user.ChatUserParam;
 import ru.v1as.tg.cat.jpa.entities.user.ChatUserParamValue;
 import ru.v1as.tg.cat.jpa.entities.user.UserEntity;
+import ru.v1as.tg.cat.model.TgChat;
+import ru.v1as.tg.cat.model.TgUser;
 
 @Service
 @Transactional
@@ -74,6 +76,11 @@ public class ChatParamResource {
                 .findByChatIdAndUserIdAndParam(chat, user, param)
                 .map(ChatUserParamValue::getValue)
                 .orElse(param.getDefaultValue());
+    }
+
+    public List<ChatUserParamChangeEvent> param(
+            TgChat chat, TgUser user, ChatUserParam param, @NonNull Object newValue) {
+        return param(chat.getId(), user.getId(), param, newValue);
     }
 
     public List<ChatUserParamChangeEvent> param(
@@ -166,6 +173,24 @@ public class ChatParamResource {
                         new ChatParamChangeEvent(
                                 chat, admin, param, oldValue, param.getDefaultValue()));
                 paramDao.save(paramValue);
+            }
+        }
+    }
+
+    public void reset(ChatEntity chat, UserEntity user, ChatUserParam param) {
+        final Optional<ChatUserParamValue> paramValueOptional =
+                userParamDao.findByChatIdAndUserIdAndParam(chat.getId(), user.getId(), param);
+        final String adminUserName = conf.getAdminUserNames().iterator().next();
+        UserEntity admin = userDao.findByUserName(adminUserName).get();
+        if (paramValueOptional.isPresent()) {
+            final ChatUserParamValue paramValue = paramValueOptional.get();
+            final String oldValue = paramValue.getValue();
+            if (!param.getDefaultValue().equals(oldValue)) {
+                paramValue.setValue(param.getDefaultValue());
+                eventDao.save(
+                        new ChatUserParamChangeEvent(
+                                chat, admin, param, oldValue, param.getDefaultValue()));
+                userParamDao.save(paramValue);
             }
         }
     }
