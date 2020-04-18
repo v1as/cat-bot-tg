@@ -55,6 +55,9 @@ public class ButtonsMessageHandler implements MessageHandler {
                                                         .callback(
                                                                 "\uD83E\uDDEA Зелье концентрации",
                                                                 shopService::buyConcentrationPotion)
+                                                        .callback(
+                                                                "\uD83D\uDC89 Лекарство от бешенства",
+                                                                shopService::buyRabiesMedicine)
                                                         //
                                                         //              .callback(
                                                         //

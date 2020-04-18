@@ -17,4 +17,5 @@ public class EmojiConst {
     public static final String ZZZ = "\uD83D\uDCA4";
     public static final String FISH = "\uD83D\uDC1F";
     public static final String POTION = "\uD83E\uDDEA";
+    public static final String SYRINGE = "\uD83D\uDC89";
 }
