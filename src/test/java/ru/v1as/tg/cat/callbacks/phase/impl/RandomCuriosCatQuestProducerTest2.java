@@ -5,7 +5,9 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static ru.v1as.tg.cat.model.TestTgUser.tgUser;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,38 +16,39 @@ import ru.v1as.tg.cat.callbacks.phase.curios_cat.AbstractCuriosCatPhase;
 import ru.v1as.tg.cat.callbacks.phase.curios_cat.JustOneCatPhase;
 import ru.v1as.tg.cat.jpa.dao.CatUserEventDao;
 import ru.v1as.tg.cat.jpa.entities.events.CatUserEvent;
+import ru.v1as.tg.cat.model.TestTgChat;
 import ru.v1as.tg.cat.service.random.SimpleRandomChoicer;
 
-public class CuriosCatQuestProducerTest {
+public class RandomCuriosCatQuestProducerTest2 {
 
     @Test
     public void shouldReturnQuestIfNoPlayerQuests() {
         final AbstractCuriosCatPhase phase =
-                new CuriosCatQuestProducer(
+                new RandomCuriosCatQuestProducer(
                                 of(new TestPhase("quest1")),
                                 getCatUserEventDaoMock(),
                                 new SimpleRandomChoicer(),
                                 new JustOneCatPhase())
-                        .get(0);
+                        .get(tgUser(0), new TestTgChat(false, 0));
         assertEquals(phase.getName(), "quest1");
     }
 
     @Test
     public void shouldReturnNonPlayerQuest() {
         final AbstractCuriosCatPhase phase =
-                new CuriosCatQuestProducer(
+                new RandomCuriosCatQuestProducer(
                                 of(new TestPhase("quest1"), new TestPhase("quest2")),
                                 getCatUserEventDaoMock("quest2"),
                                 new SimpleRandomChoicer(),
                                 new JustOneCatPhase())
-                        .get(0);
+                        .get(tgUser(0), new TestTgChat(false, 0));
         assertEquals(phase.getName(), "quest1");
     }
 
     @Test
     public void shouldReturnRareQuest() {
         final AbstractCuriosCatPhase phase =
-                new CuriosCatQuestProducer(
+                new RandomCuriosCatQuestProducer(
                                 of(
                                         new TestPhase("questY"),
                                         new TestPhase("questX"),
@@ -54,7 +57,7 @@ public class CuriosCatQuestProducerTest {
                                         "questY", "questY", "questZ", "questX", "questX"),
                                 new SimpleRandomChoicer(),
                                 new JustOneCatPhase())
-                        .get(0);
+                        .get(tgUser(0), new TestTgChat(false, 0));
         assertEquals(phase.getName(), "questZ");
     }
 
@@ -66,6 +69,7 @@ public class CuriosCatQuestProducerTest {
                                 name -> {
                                     CatUserEvent event = new CatUserEvent();
                                     event.setQuestName(name);
+                                    event.setDate(LocalDateTime.now().minusDays(2));
                                     return event;
                                 })
                         .collect(Collectors.toList());

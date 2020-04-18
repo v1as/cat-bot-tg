@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.updateshandlers.SentCallback;
 import ru.v1as.tg.cat.model.TgChat;
+import ru.v1as.tg.cat.model.TgUser;
 
 public interface TgSender {
 
@@ -23,6 +24,10 @@ public interface TgSender {
 
     default Message message(TgChat chat, String text) {
         return execute(new SendMessage(chat.getId(), text));
+    }
+
+    default Message message(TgUser user, String text) {
+        return execute(new SendMessage(user.getChatId(), text));
     }
 
     Message executeDoc(SendDocument sendDocument);

@@ -5,6 +5,7 @@ import static ru.v1as.tg.cat.EmojiConst.MONEY_BAG;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT1;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT2;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT3;
+import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT4;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.NOT_CAT;
 import static ru.v1as.tg.cat.service.CatEventService.CAT_REWARD;
 import static ru.v1as.tg.cat.utils.TimeoutUtils.getMsForTextReading;
@@ -15,7 +16,6 @@ import java.util.Map;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 import ru.v1as.tg.cat.callbacks.phase.AbstractPublicChatPhase;
 import ru.v1as.tg.cat.callbacks.phase.PollTimeoutConfiguration;
@@ -35,7 +35,6 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
     protected static final RandomRequest<CatRequestVote> RANDOM_REQUEST_CAT_1_2_3 =
             new RandomRequest<CatRequestVote>().add(CAT1, 60).add(CAT2, 30).add(CAT3, 10);
 
-    @Autowired protected CatBotData data;
     @Autowired protected CatEventService catEventService;
 
     protected final PollTimeoutConfiguration TIMEOUT_LEAVE_CAT =
@@ -90,28 +89,34 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
         CuriosCatContext ctx = getPhaseContext();
         final TgUser user = ctx.getUser();
         final TgChat publicChat = ctx.getPublicChat();
+        result = catEventService.saveCuriosCatQuest(
+            user, publicChat, ctx.message, result, getClass().getSimpleName());
         String message = "";
-        if (result == CAT1) {
+        if (result == NOT_CAT) {
+            message = "Любопытный кот сбегает от игрока ";
+        } else if (result == CAT1) {
             message = "Любопытный кот убегает к ";
         } else if (result == CAT2) {
-            message = "Вот это удача! Целых два кота засчитано игроку ";
+            message = "Два кота засчитано игроку ";
         } else if (result == CAT3) {
-            message = "Так просто не бывает... Целых ТРИ кота засчитано игроку ";
-        } else if (result == NOT_CAT) {
-            message = "Любопытный кот сбегает от игрока ";
+            message = "Целых три кота засчитано игроку ";
+        } else if (result == CAT4) {
+            message = "Целых 4 кота засчитано игроку ";
         }
         String reward =
                 result.getAmount() > 0
-                        ? " (+" + result.getAmount() * CAT_REWARD.intValue() + MONEY_BAG + ")"
+                        ? " (+" + result.getAmount() * CAT_REWARD + MONEY_BAG + ")"
                         : "";
         message(publicChat, message + user.getUsernameOrFullName() + reward);
-        catEventService.saveCuriosCatQuest(
-                user, publicChat, ctx.message, result, getClass().getSimpleName());
         close();
     }
 
     public String getName() {
         return getClass().getSimpleName();
+    }
+
+    public boolean filter(TgUser user, TgChat chat) {
+        return true;
     }
 
     @Getter

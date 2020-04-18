@@ -1,5 +1,7 @@
 package ru.v1as.tg.cat.tasks;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,5 +55,12 @@ public class CuriosCatRequestSchedulerTest extends AbstractCatBotTest {
         clock.skip(5 + 1, TimeUnit.MINUTES);
 
         inPublic.getDeleteMessage();
+    }
+
+    @Test
+    public void chanceTest() {
+        scheduler.setChance(0.2);
+        assertTrue(0.8 - scheduler.increaseChance(5) < 0.0001);
+        assertTrue(scheduler.increaseChance(0) < 0.0001);
     }
 }

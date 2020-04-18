@@ -19,6 +19,7 @@ import ru.v1as.tg.cat.jpa.dao.ChatDetailsDao;
 import ru.v1as.tg.cat.jpa.entities.chat.ChatDetailsEntity;
 import ru.v1as.tg.cat.jpa.entities.chat.ChatEntity;
 import ru.v1as.tg.cat.model.LongProperty;
+import ru.v1as.tg.cat.service.ChatParamResource;
 import ru.v1as.tg.cat.service.ScoreDataService;
 import ru.v1as.tg.cat.tg.TgSender;
 
@@ -31,6 +32,7 @@ public class SendWinners {
     private final ChatDao chatDao;
     private final ChatDetailsDao chatDetailsDao;
     private final ScoreDataService scoreData;
+    private final ChatParamResource chatParam;
 
     @PostConstruct
     public void init() {

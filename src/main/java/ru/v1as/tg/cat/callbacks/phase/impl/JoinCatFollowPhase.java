@@ -29,7 +29,6 @@ import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.service.BotConfiguration;
 import ru.v1as.tg.cat.service.CatEventService;
-import ru.v1as.tg.cat.service.clock.BotClock;
 
 @Slf4j
 @Component
@@ -44,7 +43,6 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
     private final StartCommand startCommand;
     private final CatEventService catEventService;
     private final CuriosCatQuestProducer curiosCatQuestProducer;
-    private final BotClock botClock;
     private final BotConfiguration conf;
 
     @Override
@@ -127,7 +125,8 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
             youAreLate(data);
         } else {
             close();
-            AbstractCuriosCatPhase nextPhase = curiosCatQuestProducer.get(data.getUserId());
+            final TgChat chat = getPhaseContext().getChat();
+            AbstractCuriosCatPhase nextPhase = curiosCatQuestProducer.get(data.getUser(), chat);
             nextPhase.open(data.getChat(), ctx.getChat(), data.getUser(), ctx.message);
         }
     }

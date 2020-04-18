@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import ru.v1as.tg.cat.TgTestInvoker;
 
 public class AssertSendMessageToSend extends AbstractAssertMessageToSend {
@@ -37,14 +38,27 @@ public class AssertSendMessageToSend extends AbstractAssertMessageToSend {
         return sendMessage.getText().toLowerCase().contains(value.toLowerCase());
     }
 
+    public AssertSendMessageToSend assertButton(String text) {
+        final ReplyKeyboardMarkup replyMarkup = getReplyKeyboardMarkup();
+        buttonsStream(replyMarkup)
+                .filter(b -> b.getText().contains(text))
+                .findAny()
+                .orElseThrow(() -> new AssertionError("No such button: " + text));
+        return this;
+    }
+
     @Override
     protected InlineKeyboardMarkup getInlineKeyboardMarkup() {
         return (InlineKeyboardMarkup) sendMessage.getReplyMarkup();
     }
 
     @Override
+    protected ReplyKeyboardMarkup getReplyKeyboardMarkup() {
+        return (ReplyKeyboardMarkup) sendMessage.getReplyMarkup();
+    }
+
+    @Override
     protected Integer getMessageId() {
         return message.getMessageId();
     }
-
 }

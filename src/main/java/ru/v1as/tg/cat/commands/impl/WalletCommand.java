@@ -2,9 +2,7 @@ package ru.v1as.tg.cat.commands.impl;
 
 import static org.springframework.util.StringUtils.isEmpty;
 import static ru.v1as.tg.cat.EmojiConst.MONEY_BAG;
-import static ru.v1as.tg.cat.service.init.ResourceService.MONEY;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,45 +10,43 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import ru.v1as.tg.cat.commands.TgCommandRequest;
 import ru.v1as.tg.cat.jpa.dao.ChatDao;
-import ru.v1as.tg.cat.jpa.dao.ResourceEventDao;
+import ru.v1as.tg.cat.jpa.dao.UserDao;
 import ru.v1as.tg.cat.jpa.entities.chat.ChatEntity;
-import ru.v1as.tg.cat.jpa.entities.resource.ResourceEvent;
+import ru.v1as.tg.cat.jpa.entities.user.ChatUserParam;
+import ru.v1as.tg.cat.jpa.entities.user.UserEntity;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
+import ru.v1as.tg.cat.service.ChatParamResource;
 
 @Component
 public class WalletCommand extends AbstractCommand {
 
-    private final ResourceEventDao resourceEventDao;
+    private final ChatParamResource paramResource;
     private final ChatDao chatDao;
+    private final UserDao userDao;
 
-    public WalletCommand(ResourceEventDao resourceEventDao, ChatDao chatDao) {
+    public WalletCommand(ChatParamResource paramResource, ChatDao chatDao, UserDao userDao) {
         super(cfg().commandName("wallet"));
-        this.resourceEventDao = resourceEventDao;
+        this.paramResource = paramResource;
         this.chatDao = chatDao;
+        this.userDao = userDao;
     }
 
     @Override
     public void process(TgCommandRequest command, TgChat chat, TgUser user) {
         final List<ChatEntity> chats = chatDao.findByUsersId(user.getId());
-        final Map<ChatEntity, BigDecimal> chatToMoney = new HashMap<>();
+        final UserEntity userEntity = userDao.findById(user.getId()).get();
+        final Map<ChatEntity, String> chatToMoney = new HashMap<>();
+
         for (ChatEntity chatEntity : chats) {
-            final BigDecimal money =
-                    resourceEventDao
-                            .findByChatIdAndUserIdAndResourceId(
-                                    chatEntity.getId(), user.getId(), MONEY.getId())
-                            .stream()
-                            .map(ResourceEvent::getDelta)
-                            .reduce(BigDecimal.ZERO, BigDecimal::add);
-            if (money.compareTo(BigDecimal.ZERO) > 0) {
-                chatToMoney.put(chatEntity, money);
-            }
+            final String money = paramResource.param(chatEntity, userEntity, ChatUserParam.MONEY);
+            chatToMoney.put(chatEntity, money);
         }
         final String message;
         if (chatToMoney.size() == 0) {
             message = "0 " + MONEY_BAG;
         } else if (chatToMoney.size() == 1) {
-            message = chatToMoney.values().iterator().next().toString() + " " + MONEY_BAG;
+            message = chatToMoney.values().iterator().next() + " " + MONEY_BAG;
         } else {
             message =
                     chatToMoney.entrySet().stream()

@@ -55,7 +55,7 @@ public class MirrorCatPhase extends AbstractCuriosCatPhase {
     }
 
     private void goToCat(ChooseContext chooseContext) {
-        message("О чем вы только думали? Кот, раздражённо мяукая, сбегает");
+        message("О чём вы только думали? Кот, раздражённо мяукая, сбегает");
         catchUpCatAndClose(NOT_CAT);
     }
 
