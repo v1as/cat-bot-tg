@@ -26,7 +26,7 @@ public class RandomRequest<T> {
         return add(value, DEFAULT_WEIGHT);
     }
 
-    public RandomRequest<T> add(T value, int weight) {
+    public RandomRequest<T> add(T value, Number weight) {
         this.items.add(new RandomItem<>(value, weight));
         return this;
     }

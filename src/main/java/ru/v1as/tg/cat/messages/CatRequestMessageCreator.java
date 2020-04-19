@@ -28,7 +28,7 @@ public class CatRequestMessageCreator implements MessageHandler {
 
     @Override
     public void handle(Message msg, TgChat chat, TgUser user) {
-        if (isInvalidIncomeMessage(msg)) {
+        if (isInvalidIncomeMessage(msg, chat)) {
             return;
         }
         final ChatDetailsEntity chatDetails = chatDetailsDao.findByChatId(chat.getId());
@@ -45,11 +45,12 @@ public class CatRequestMessageCreator implements MessageHandler {
                 new IsCatPollCallback(chatData, catRequest));
     }
 
-    private boolean isInvalidIncomeMessage(Message message) {
-        return !message.hasPhoto()
-                && !message.hasVideo()
-                && !message.hasVideoNote()
-                && !message.hasDocument();
+    private boolean isInvalidIncomeMessage(Message message, TgChat chat) {
+        return chat.isUserChat()
+                || !message.hasPhoto()
+                        && !message.hasVideo()
+                        && !message.hasVideoNote()
+                        && !message.hasDocument();
     }
 
     private SendMessage buildIsThatCatMessage(Message message, TgChat chat, CatRequest catRequest) {

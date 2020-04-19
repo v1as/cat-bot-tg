@@ -5,5 +5,5 @@ import lombok.Value;
 @Value
 public class RandomItem<T> {
     private final T value;
-    private final int weight;
+    private final Number weight;
 }
