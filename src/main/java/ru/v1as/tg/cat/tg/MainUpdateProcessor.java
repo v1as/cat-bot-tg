@@ -47,7 +47,7 @@ public abstract class MainUpdateProcessor implements TgUpdateProcessor {
                 }
             }
         } catch (Exception e) {
-            log.error("Something gone wrong ", e);
+            log.error("Something gone wrong for update: " + update, e);
         }
     }
 

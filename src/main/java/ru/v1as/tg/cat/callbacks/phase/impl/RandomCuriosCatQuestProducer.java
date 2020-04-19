@@ -1,5 +1,7 @@
 package ru.v1as.tg.cat.callbacks.phase.impl;
 
+import static java.lang.Math.min;
+import static java.util.stream.Collectors.toMap;
 import static org.springframework.util.StringUtils.isEmpty;
 
 import java.time.LocalDateTime;
@@ -18,6 +20,7 @@ import ru.v1as.tg.cat.jpa.dao.CatUserEventDao;
 import ru.v1as.tg.cat.jpa.entities.events.CatUserEvent;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
+import ru.v1as.tg.cat.model.random.RandomRequest;
 import ru.v1as.tg.cat.service.random.RandomChoice;
 
 @Slf4j
@@ -46,29 +49,30 @@ public class RandomCuriosCatQuestProducer implements CuriosCatQuestProducer {
     public AbstractCuriosCatPhase get(TgUser user, TgChat chat) {
         final List<CatUserEvent> catEvents = catUserEventDao.findByUserId(user.getId());
         final Set<String> recentlyPlayed = getRecentlyPlayed(catEvents);
-        final Map<String, Long> questToAmount =
-                getQuestToAmount(user, chat, catEvents, recentlyPlayed);
+        Map<String, Long> questToAmount = getQuestToAmount(user, chat, catEvents, recentlyPlayed);
         final long rareQuestPlayedAmount =
                 questToAmount.values().stream().mapToLong(value -> value).min().orElse(0L);
-        if (rareQuestPlayedAmount > QUESTS_AMOUNT_LIMIT) {
+        if (questToAmount.isEmpty() || rareQuestPlayedAmount > QUESTS_AMOUNT_LIMIT) {
             log.info("This player already played too many times all quests.");
             return justOneCatPhase;
         }
-        final List<String> rareQuestName =
-                questToAmount.entrySet().stream()
-                        .filter(e -> e.getValue().equals(rareQuestPlayedAmount))
-                        .map(Entry::getKey)
-                        .collect(Collectors.toList());
-        List<AbstractCuriosCatPhase> quests =
-                rareQuestName.isEmpty()
-                        ? nextPhases
-                        : nextPhases.stream()
-                                .filter(q -> rareQuestName.contains(q.getName()))
-                                .collect(Collectors.toList());
-        if (quests.isEmpty()) {
-            return justOneCatPhase;
+        if (rareQuestPlayedAmount == 0) {
+            questToAmount =
+                    questToAmount.entrySet().stream()
+                            .filter(e -> e.getValue() == 0L)
+                            .collect(toMap(Entry::getKey, Entry::getValue));
+        } else {
+            questToAmount =
+                    questToAmount.entrySet().stream()
+                            .collect(toMap(Entry::getKey, e -> min(e.getValue(), 10)));
         }
-        return randomChoice.random(quests);
+        final RandomRequest<String> getQuestName = new RandomRequest<>();
+        questToAmount.forEach((name, amount) -> getQuestName.add(name, (11 - amount) * 10));
+        final String questName = randomChoice.get(getQuestName);
+        return nextPhases.stream()
+                .filter(p -> p.getName().equals(questName))
+                .findFirst()
+                .orElse(justOneCatPhase);
     }
 
     private Set<String> getRecentlyPlayed(List<CatUserEvent> catEvents) {
@@ -85,7 +89,7 @@ public class RandomCuriosCatQuestProducer implements CuriosCatQuestProducer {
                 nextPhases.stream()
                         .filter(p -> p.filter(user, chat))
                         .filter(e -> !recentlyPlayed.contains(e.getName()))
-                        .collect(Collectors.toMap(AbstractCuriosCatPhase::getName, p -> 0L));
+                        .collect(toMap(AbstractCuriosCatPhase::getName, p -> 0L));
         final Set<String> quests = questToAmount.keySet();
         catEvents.stream()
                 .filter(e -> !isEmpty(e.getQuestName()))

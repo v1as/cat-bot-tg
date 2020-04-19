@@ -11,6 +11,7 @@ import javax.annotation.PostConstruct;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.Singular;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -19,6 +20,7 @@ import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.service.ResourceTexts;
 import ru.v1as.tg.cat.tg.TgSender;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ButtonsMessageHandler implements MessageHandler {
@@ -66,22 +68,36 @@ public class ButtonsMessageHandler implements MessageHandler {
                                                         //
                                                         //                      this::bagForSveta)
                                                         .build())
-//                                        .button(
-//                                                "✉️ Почта",
-//                                                buttonMenu()
-//                                                        .message("Что будем делать?")
-//                                                        .callback(
-//                                                                "\uD83D\uDCEC Написать разработчику",
-//                                                                this::writeDeveloper)
-//                                                        .build())
-//                                        .button(
-//                                                "\uD83C\uDFE6 Банк",
-//                                                buttonMenu()
-//                                                        .message("Что будем делать?")
-//                                                        .callback(
-//                                                                "\uD83D\uDCB0 Узнать состояние счёта",
-//                                                                this::walletValue)
-//                                                        .build())
+                                        //                                        .button(
+                                        //                                                "✉️
+                                        // Почта",
+                                        //
+                                        // buttonMenu()
+                                        //
+                                        // .message("Что будем делать?")
+                                        //
+                                        // .callback(
+                                        //
+                                        //      "\uD83D\uDCEC Написать разработчику",
+                                        //
+                                        //      this::writeDeveloper)
+                                        //
+                                        // .build())
+                                        //                                        .button(
+                                        //
+                                        // "\uD83C\uDFE6 Банк",
+                                        //
+                                        // buttonMenu()
+                                        //
+                                        // .message("Что будем делать?")
+                                        //
+                                        // .callback(
+                                        //
+                                        //      "\uD83D\uDCB0 Узнать состояние счёта",
+                                        //
+                                        //      this::walletValue)
+                                        //
+                                        // .build())
                                         .build())
                         .build();
         requests.put(BACK, root);
@@ -107,6 +123,7 @@ public class ButtonsMessageHandler implements MessageHandler {
         final String text = message.getText();
         final ButtonMenu menu = requests.get(text);
         if (menu != null) {
+            log.info("User {} choose button {}", user.getUsernameOrFullName(), text);
             final String[] buttonsTest = menu.getButtonsTest();
             sender.execute(
                     new SendMessage(chat.getId(), menu.message)
@@ -115,6 +132,7 @@ public class ButtonsMessageHandler implements MessageHandler {
         }
         final ButtonCallback callback = callbacks.get(text);
         if (callback != null) {
+            log.info("User {} choose button {}", user.getUsernameOrFullName(), text);
             callback.process(message, chat, user);
         }
     }

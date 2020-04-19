@@ -13,13 +13,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import ru.v1as.tg.cat.jpa.entities.user.UserEntity;
 import ru.v1as.tg.cat.model.TgChat;
 
 @Entity
 @Data
-@ToString(exclude = "users")
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -65,5 +63,10 @@ public class ChatEntity implements TgChat {
     @Override
     public Boolean isUserChat() {
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Chat[%s:%s:%s]", id, title, updated);
     }
 }

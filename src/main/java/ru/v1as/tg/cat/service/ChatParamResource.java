@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Optional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.v1as.tg.cat.jpa.dao.ChatDao;
@@ -26,6 +27,7 @@ import ru.v1as.tg.cat.jpa.entities.user.UserEntity;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -99,6 +101,7 @@ public class ChatParamResource {
             return emptyList();
         }
         paramValue.setValue(value);
+        log.info("User {} in chat {} set param {} = {}", user, chat, param, newValue);
         final ChatUserParamChangeEvent event =
                 new ChatUserParamChangeEvent(chatEntity, userEntity, param, oldValue, value);
         userParamDao.save(paramValue);
@@ -125,6 +128,7 @@ public class ChatParamResource {
             value.setValue(newValue);
             final ChatParamChangeEvent event =
                     new ChatParamChangeEvent(chat, user, param, oldValue, value.getValue());
+            log.info("User {} in chat {} set param {} = {}", user, chat, param, newValue);
             paramDao.save(value);
             eventDao.save(event);
             return singletonList(event);
@@ -151,6 +155,7 @@ public class ChatParamResource {
             value.setValue(newValue);
             final ChatUserParamChangeEvent event =
                     new ChatUserParamChangeEvent(chat, user, param, oldValue, value.getValue());
+            log.info("User {} in chat {} set param {} = {}", user, chat, param, newValue);
             eventDao.save(event);
             userParamDao.save(value);
             return singletonList(event);
@@ -168,6 +173,7 @@ public class ChatParamResource {
             final ChatParamValue paramValue = paramValueOptional.get();
             final String oldValue = paramValue.getValue();
             if (!param.getDefaultValue().equals(oldValue)) {
+                log.info("Chat {} reset param {}", chat, param);
                 paramValue.setValue(param.getDefaultValue());
                 eventDao.save(
                         new ChatParamChangeEvent(
@@ -186,6 +192,7 @@ public class ChatParamResource {
             final ChatUserParamValue paramValue = paramValueOptional.get();
             final String oldValue = paramValue.getValue();
             if (!param.getDefaultValue().equals(oldValue)) {
+                log.info("User {} in chat {} reset param {}", user, chat, param);
                 paramValue.setValue(param.getDefaultValue());
                 eventDao.save(
                         new ChatUserParamChangeEvent(

@@ -19,13 +19,16 @@ public class SimpleRandomChoicer implements RandomChoice {
         if (request.size() == 0) {
             return null;
         }
-        final int summaryWeight = request.getItems().stream().mapToInt(RandomItem::getWeight).sum();
+        final int summaryWeight =
+                request.getItems().stream()
+                        .mapToInt(tRandomItem -> tRandomItem.getWeight().intValue())
+                        .sum();
         int random = rnd.nextInt(summaryWeight);
         for (final RandomItem<T> valueWeight : request.getItems()) {
-            if (valueWeight.getWeight() >= random) {
+            if (valueWeight.getWeight().intValue() >= random) {
                 return valueWeight.getValue();
             } else {
-                random -= valueWeight.getWeight();
+                random -= valueWeight.getWeight().intValue();
             }
         }
         throw new RuntimeException("Unreachable");
