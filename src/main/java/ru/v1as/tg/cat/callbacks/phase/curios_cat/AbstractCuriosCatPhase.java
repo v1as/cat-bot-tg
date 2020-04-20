@@ -90,7 +90,7 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
         final TgUser user = ctx.getUser();
         final TgChat publicChat = ctx.getPublicChat();
         result = catEventService.saveCuriosCatQuest(
-            user, publicChat, ctx.message, result, getClass().getSimpleName());
+            user, publicChat, ctx.message, result, getName());
         String message = "";
         if (result == NOT_CAT) {
             message = "Любопытный кот сбегает от игрока ";

@@ -136,7 +136,7 @@ public class ShopService {
         }
         if (!chatParam.param(chat, userEntity, RABIES_MEDICINE, "true").isEmpty()) {
             chatParam.increment(chat, userEntity, MONEY, -1 * RABIES_MEDICINE_PRICE);
-            sender.execute(new SendMessage(user.getChatId(), "Вы купили лекарсвто от бешенства " + SYRINGE));
+            sender.execute(new SendMessage(user.getChatId(), "Вы купили лекарство от бешенства " + SYRINGE));
         } else {
             sender.message(user, "У вас уже есть лекарство от бешенства, зачем вам еще одно?");
         }

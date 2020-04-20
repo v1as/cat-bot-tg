@@ -60,44 +60,7 @@ public class ButtonsMessageHandler implements MessageHandler {
                                                         .callback(
                                                                 "\uD83D\uDC89 Лекарство от бешенства",
                                                                 shopService::buyRabiesMedicine)
-                                                        //
-                                                        //              .callback(
-                                                        //
-                                                        //                      "\uD83D\uDECD
-                                                        // Сумотьку Свете",
-                                                        //
-                                                        //                      this::bagForSveta)
                                                         .build())
-                                        //                                        .button(
-                                        //                                                "✉️
-                                        // Почта",
-                                        //
-                                        // buttonMenu()
-                                        //
-                                        // .message("Что будем делать?")
-                                        //
-                                        // .callback(
-                                        //
-                                        //      "\uD83D\uDCEC Написать разработчику",
-                                        //
-                                        //      this::writeDeveloper)
-                                        //
-                                        // .build())
-                                        //                                        .button(
-                                        //
-                                        // "\uD83C\uDFE6 Банк",
-                                        //
-                                        // buttonMenu()
-                                        //
-                                        // .message("Что будем делать?")
-                                        //
-                                        // .callback(
-                                        //
-                                        //      "\uD83D\uDCB0 Узнать состояние счёта",
-                                        //
-                                        //      this::walletValue)
-                                        //
-                                        // .build())
                                         .build())
                         .build();
         requests.put(BACK, root);

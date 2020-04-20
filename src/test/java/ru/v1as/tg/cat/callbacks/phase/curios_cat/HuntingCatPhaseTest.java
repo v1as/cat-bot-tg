@@ -1,5 +1,8 @@
 package ru.v1as.tg.cat.callbacks.phase.curios_cat;
 
+import static ru.v1as.tg.cat.model.TgChatWrapper.wrap;
+
+import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -11,10 +14,6 @@ import ru.v1as.tg.cat.callbacks.phase.multi_curios.RegattaDreamPhaseTest.CuriosC
 import ru.v1as.tg.cat.model.TgUserWrapper;
 import ru.v1as.tg.cat.service.clock.TestBotClock;
 import ru.v1as.tg.cat.tg.TestUserChat;
-
-import java.util.concurrent.TimeUnit;
-
-import static ru.v1as.tg.cat.model.TgChatWrapper.wrap;
 
 @Import(CuriosConfiguration.class)
 public class HuntingCatPhaseTest extends AbstractCatBotTest {
@@ -58,10 +57,7 @@ public class HuntingCatPhaseTest extends AbstractCatBotTest {
         chat.getSendMessage().assertContainText("Скорее всего, кот убежит");
         chat.getSendMessage().assertContainText("не стоит спешить");
 
-        chat.getSendMessageToSend()
-                .assertText("Что дальше?")
-                .findCallbackToSend("Кот!")
-                .send();
+        chat.getSendMessageToSend().assertText("Что дальше?").findCallbackToSend("Кот!").send();
         chat.getEditMessage();
 
         chat.getSendMessage().assertContainText("От вашего восклицания");
@@ -179,10 +175,7 @@ public class HuntingCatPhaseTest extends AbstractCatBotTest {
 
         chat.getSendMessage().assertText("Что-то изменилось.");
 
-        chat.getSendMessageToSend()
-                .assertText("Что же дальше?")
-                .findCallbackToSend("Кот!")
-                .send();
+        chat.getSendMessageToSend().assertText("Что же дальше?").findCallbackToSend("Кот!").send();
         chat.getEditMessage();
 
         chat.getSendMessage().assertContainText("Кот вас услышал и остановился");
