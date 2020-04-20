@@ -1,6 +1,7 @@
 package ru.v1as.tg.cat.service.random;
 
-import java.util.function.Function;
+import java.util.function.Predicate;
+import lombok.SneakyThrows;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import ru.v1as.tg.cat.model.random.RandomRequest;
@@ -9,15 +10,20 @@ import ru.v1as.tg.cat.model.random.RandomRequest;
 @Profile("test")
 public class TestRandomChoice<L> implements RandomChoice {
 
-    private Function<RandomRequest<L>, L> chooser = r -> r.getItems().iterator().next().getValue();
+    private Predicate chooser = v -> true;
 
     @Override
     @SuppressWarnings("unchecked")
+    @SneakyThrows
     public <T> T get(RandomRequest<T> request) {
-        return (T) chooser.apply((RandomRequest<L>) request);
+        return (T)
+                request.getItems().stream()
+                        .filter(chooser)
+                        .findFirst()
+                        .orElseThrow(() -> new RuntimeException("Bad choose predicate"));
     }
 
-    public void setChooser(Function<RandomRequest<L>, L> chooser) {
+    public void setChooser(Predicate<?> chooser) {
         this.chooser = chooser;
     }
 }
