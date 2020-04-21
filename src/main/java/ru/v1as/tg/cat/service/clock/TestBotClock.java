@@ -66,6 +66,10 @@ public class TestBotClock implements BotClock {
         } while (todo.isPresent());
     }
 
+    public void reset() {
+        tasks.clear();
+    }
+
     @Data
     @EqualsAndHashCode(of = "id")
     @AllArgsConstructor

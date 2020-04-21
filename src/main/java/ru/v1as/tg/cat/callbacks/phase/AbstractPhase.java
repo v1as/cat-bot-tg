@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.callbacks.TgCallbackProcessor;
 import ru.v1as.tg.cat.callbacks.phase.poll.TgInlinePoll;
 import ru.v1as.tg.cat.callbacks.phase.poll.UpdateWithChoiceTextBuilder;
@@ -33,6 +34,7 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
     @Autowired private TgCallbackProcessor callbackProcessor;
     @Autowired private RandomChoice randomChoice;
     @Autowired protected ChatParamResource paramResource;
+    @Autowired protected CatBotData catBotData;
 
     protected void message(TgUser userData, String text) {
         sender.execute(new SendMessage(userData.getId().longValue(), text));
@@ -101,19 +103,25 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
     public final void open(T phaseContext) {
         this.phaseContext.set(phaseContext);
         try {
+            this.beforeOpen();
             this.open();
         } finally {
             this.phaseContext.remove();
         }
     }
 
+    protected void beforeOpen() {};
+
     protected abstract void open();
 
     @Override
     public void close() {
+        beforeClose();
         log.info("Phase {} is closing...", this.getClass().getSimpleName());
         this.phaseContext.get().close();
     }
+
+    protected void beforeClose() {};
 
     protected T getPhaseContext() {
         return this.phaseContext.get();

@@ -47,6 +47,18 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
     }
 
     @Override
+    protected void beforeOpen() {
+        final Integer userId = getPhaseContext().getUser().getId();
+        this.catBotData.incrementPhase(userId);
+    }
+
+    @Override
+    protected void beforeClose() {
+        final Integer userId = getPhaseContext().getUser().getId();
+        this.catBotData.decrementPhase(userId);
+    }
+
+    @Override
     protected TgInlinePoll poll(String text) {
         return super.poll(text).timeout(TIMEOUT_LEAVE_CAT);
     }
@@ -89,8 +101,9 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
         CuriosCatContext ctx = getPhaseContext();
         final TgUser user = ctx.getUser();
         final TgChat publicChat = ctx.getPublicChat();
-        result = catEventService.saveCuriosCatQuest(
-            user, publicChat, ctx.message, result, getName());
+        result =
+                catEventService.saveCuriosCatQuest(
+                        user, publicChat, ctx.message, result, getName());
         String message = "";
         if (result == NOT_CAT) {
             message = "Любопытный кот сбегает от игрока ";
