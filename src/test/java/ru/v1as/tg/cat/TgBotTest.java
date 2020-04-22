@@ -40,6 +40,8 @@ public abstract class TgBotTest {
         sender.registerChat(mary.getPrivateChat());
         sender.registerChat(jho.getPrivateChat());
         sender.registerChat(zakh.getPrivateChat());
+
+        clock.reset();
     }
 
     protected void clearMethodsQueue() {
