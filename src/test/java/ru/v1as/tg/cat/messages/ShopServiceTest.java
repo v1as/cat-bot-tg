@@ -47,7 +47,7 @@ public class ShopServiceTest extends AbstractCatBotTest {
             bob.inPrivate().getSendMessageToSend().assertContainText("Вы купили приманку");
             bob.inPublic()
                     .getSendMessageToSend()
-                    .assertContainText("Куплена приманка для Любопытного Кота");
+                    .assertContainText("Игрок @bob купил приманку для Любопытного Кота");
             assertEquals(i, paramResource.paramInt(inPublic.getId(), CAT_BITE_LEVEL));
         }
         buyCatBite();

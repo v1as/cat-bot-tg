@@ -101,7 +101,7 @@ public class ChatParamResource {
             return emptyList();
         }
         paramValue.setValue(value);
-        log.info("User {} in chat {} set param {} = {}", user, chat, param, newValue);
+        log.info("User set param {} = {}", param, newValue);
         final ChatUserParamChangeEvent event =
                 new ChatUserParamChangeEvent(chatEntity, userEntity, param, oldValue, value);
         userParamDao.save(paramValue);
@@ -128,7 +128,7 @@ public class ChatParamResource {
             value.setValue(newValue);
             final ChatParamChangeEvent event =
                     new ChatParamChangeEvent(chat, user, param, oldValue, value.getValue());
-            log.info("User {} in chat {} set param {} = {}", user, chat, param, newValue);
+            log.info("User set param {} = {}", param, newValue);
             paramDao.save(value);
             eventDao.save(event);
             return singletonList(event);
@@ -155,7 +155,7 @@ public class ChatParamResource {
             value.setValue(newValue);
             final ChatUserParamChangeEvent event =
                     new ChatUserParamChangeEvent(chat, user, param, oldValue, value.getValue());
-            log.info("User {} in chat {} set param {} = {}", user, chat, param, newValue);
+            log.info("User set param {} = {}", param, newValue);
             eventDao.save(event);
             userParamDao.save(value);
             return singletonList(event);
