@@ -32,7 +32,7 @@ public class LongJourneyPhaseTest extends AbstractCuriosCatPhaseTest {
                 .send();
         chat.getEditMessage();
         chat.getSendMessage().assertText("Кот, недовольно мяукая, убегает.");
-        inPublic.getSendMessage().assertText("Любопытный кот сбегает от игрока @zakh");
+        inPublic.getSendMessage().assertText("Любопытный Кот сбегает от игрока @zakh");
     }
 
     @Test

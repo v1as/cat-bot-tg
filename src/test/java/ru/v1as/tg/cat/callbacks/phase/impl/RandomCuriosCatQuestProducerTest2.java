@@ -58,7 +58,7 @@ public class RandomCuriosCatQuestProducerTest2 {
                                 new SimpleRandomChoicer(),
                                 new JustOneCatPhase())
                         .get(tgUser(0), new TestTgChat(false, 0));
-        assertEquals(phase.getName(), "questZ");
+        assertEquals("questZ", phase.getName());
     }
 
     private CatUserEventDao getCatUserEventDaoMock(String... names) {
@@ -69,7 +69,7 @@ public class RandomCuriosCatQuestProducerTest2 {
                                 name -> {
                                     CatUserEvent event = new CatUserEvent();
                                     event.setQuestName(name);
-                                    event.setDate(LocalDateTime.now().minusDays(2));
+                                    event.setDate(LocalDateTime.now().minusDays(5));
                                     return event;
                                 })
                         .collect(Collectors.toList());

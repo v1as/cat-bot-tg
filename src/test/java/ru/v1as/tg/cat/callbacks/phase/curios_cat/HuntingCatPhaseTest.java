@@ -42,7 +42,7 @@ public class HuntingCatPhaseTest extends AbstractCatBotTest {
         chat.getSendMessage().assertContainText("Неосторожное приближение");
         chat.getSendMessage().assertContainText("Кот убежал");
 
-        inPublic.getSendMessage().assertText("Любопытный кот сбегает от игрока @zakh");
+        inPublic.getSendMessage().assertText("Любопытный Кот сбегает от игрока @zakh");
     }
 
     @Test

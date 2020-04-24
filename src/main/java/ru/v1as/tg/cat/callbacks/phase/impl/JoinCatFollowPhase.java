@@ -3,7 +3,6 @@ package ru.v1as.tg.cat.callbacks.phase.impl;
 import static java.time.LocalDateTime.now;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static ru.v1as.tg.cat.EmojiConst.CAT;
-import static ru.v1as.tg.cat.EmojiConst.MONEY_BAG;
 
 import com.google.common.collect.ImmutableList;
 import java.time.Duration;
@@ -99,8 +98,8 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
         close();
         String user = ctx.getUser().getUsernameOrFullName();
         log.info("Trying to say cat for user '{}'", user);
-        saveCatRequest(ctx);
-        message(String.format("Любопытный Кот убежал к %s  %s  (+3%s)", user, CAT, MONEY_BAG));
+        final CatRequestVote cats = saveCatRequest(ctx);
+        message(cats.getMessage(user));
     }
 
     private void checkUserPriority(CallbackCommandContext data) {
@@ -135,11 +134,11 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
         message(data.getChat(), random(YOU_ARE_LATE_MESSAGE));
     }
 
-    private void saveCatRequest(ChooseContext choice) {
+    private CatRequestVote saveCatRequest(ChooseContext choice) {
         final TgUser user = choice.getUser();
         final TgChat chat = getPhaseContext().getChat();
         final Message message = getPhaseContext().message;
-        catEventService.saveCuriosCat(user, chat, message.getMessageId());
+        return catEventService.saveCuriosCat(user, chat, message.getMessageId());
     }
 
     public void open(TgChat chat) {

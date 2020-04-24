@@ -1,19 +1,17 @@
 package ru.v1as.tg.cat.callbacks.phase.curios_cat;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
-import static ru.v1as.tg.cat.EmojiConst.MONEY_BAG;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT1;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT2;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT3;
-import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT4;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.NOT_CAT;
-import static ru.v1as.tg.cat.service.CatEventService.CAT_REWARD;
 import static ru.v1as.tg.cat.utils.TimeoutUtils.getMsForTextReading;
 
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
@@ -97,30 +95,14 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
         botClock.wait(getMsForTextReading(text.length()));
     }
 
-    protected void catchUpCatAndClose(CatRequestVote result) {
+    protected void catchUpCatAndClose(@NonNull CatRequestVote result) {
         CuriosCatContext ctx = getPhaseContext();
         final TgUser user = ctx.getUser();
         final TgChat publicChat = ctx.getPublicChat();
         result =
                 catEventService.saveCuriosCatQuest(
                         user, publicChat, ctx.message, result, getName());
-        String message = "";
-        if (result == NOT_CAT) {
-            message = "Любопытный кот сбегает от игрока ";
-        } else if (result == CAT1) {
-            message = "Любопытный кот убегает к ";
-        } else if (result == CAT2) {
-            message = "Два кота засчитано игроку ";
-        } else if (result == CAT3) {
-            message = "Целых три кота засчитано игроку ";
-        } else if (result == CAT4) {
-            message = "Целых 4 кота засчитано игроку ";
-        }
-        String reward =
-                result.getAmount() > 0
-                        ? " (+" + result.getAmount() * CAT_REWARD + MONEY_BAG + ")"
-                        : "";
-        message(publicChat, message + user.getUsernameOrFullName() + reward);
+        message(publicChat, result.getMessage(user.getUsernameOrFullName()));
         close();
     }
 
