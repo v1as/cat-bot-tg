@@ -1,10 +1,12 @@
 package ru.v1as.tg.cat.callbacks.phase.curios_cat;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
+import static ru.v1as.tg.cat.EmojiConst.DIE;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT1;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT2;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT3;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.NOT_CAT;
+import static ru.v1as.tg.cat.jpa.entities.user.ChatUserParam.DIE_AMULET;
 import static ru.v1as.tg.cat.utils.TimeoutUtils.getMsForTextReading;
 
 import java.time.Duration;
@@ -46,14 +48,35 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
 
     @Override
     protected void beforeOpen() {
-        final Integer userId = getPhaseContext().getUser().getId();
+        final CuriosCatContext ctx = getPhaseContext();
+        final Integer userId = ctx.getUser().getId();
+        final int amuletCharges =
+                paramResource.paramInt(ctx.getPublicChatId(), ctx.getUser().getId(), DIE_AMULET);
+        ctx.dieAmulet = amuletCharges > 0;
         this.catBotData.incrementPhase(userId);
     }
 
     @Override
     protected void beforeClose() {
-        final Integer userId = getPhaseContext().getUser().getId();
-        this.catBotData.decrementPhase(userId);
+        checkDieCharges();
+        catBotData.decrementPhase(getPhaseContext().getUser().getId());
+    }
+
+    private void checkDieCharges() {
+        final CuriosCatContext ctx = getPhaseContext();
+        if (ctx.dieAmulet) {
+            final Integer userId = ctx.getUser().getId();
+            final Boolean lastCharge =
+                    paramResource.increment(ctx.getPublicChatId(), userId, DIE_AMULET, -1).stream()
+                            .findFirst()
+                            .map(e -> e.getOldValue().equals("1"))
+                            .orElse(false);
+            if (lastCharge) {
+                message(
+                        "Кристаллические кости рассыпались у вас в руках, исчерпав свою магическую силу "
+                                + DIE);
+            }
+        }
     }
 
     @Override
@@ -85,8 +108,17 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
 
     @Override
     protected void message(String text) {
-        super.message(text);
+        super.message(addDieText(text));
         botClock.wait(getMsForTextReading(text.length()));
+    }
+
+    private String addDieText(String text) {
+        final CuriosCatContext phaseContext = getPhaseContext();
+        if (phaseContext.dieAmulet && phaseContext.randomFlag()) {
+            text = DIE + " " + text;
+            phaseContext.randomFlag(false);
+        }
+        return text;
     }
 
     @Override
@@ -120,6 +152,7 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
         private final TgUser user;
         private final Message message;
         private final Map<String, Object> values = new HashMap<>();
+        private boolean dieAmulet = false;
 
         CuriosCatContext(TgChat chat, TgChat publicChat, TgUser user, Message message) {
             super(chat, publicChat);
