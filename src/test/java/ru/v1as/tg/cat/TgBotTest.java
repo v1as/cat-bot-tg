@@ -5,6 +5,7 @@ import static junit.framework.TestCase.assertEquals;
 import org.junit.After;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.v1as.tg.cat.service.clock.TestBotClock;
 import ru.v1as.tg.cat.tg.TestBot;
 import ru.v1as.tg.cat.tg.TestChat;
 import ru.v1as.tg.cat.tg.TestUser;
@@ -15,6 +16,7 @@ public abstract class TgBotTest {
     @Autowired protected TestAbsSender sender;
     @Autowired protected CatBotData catBotData;
     @Autowired protected TgUpdateProcessor updateProcessor;
+    @Autowired protected TestBotClock clock;
 
     protected TestChat inPublic;
 
@@ -38,6 +40,8 @@ public abstract class TgBotTest {
         sender.registerChat(mary.getPrivateChat());
         sender.registerChat(jho.getPrivateChat());
         sender.registerChat(zakh.getPrivateChat());
+
+        clock.reset();
     }
 
     protected void clearMethodsQueue() {
@@ -54,6 +58,7 @@ public abstract class TgBotTest {
     @After
     public void after() {
         assertMethodsQueueIsEmpty();
+        clock.reset();
     }
 
     public Long getChatId() {

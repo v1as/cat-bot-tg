@@ -1,6 +1,10 @@
 package ru.v1as.tg.cat.messages;
 
 import static java.util.stream.Stream.concat;
+import static ru.v1as.tg.cat.messages.ShopService.CAT_BITE_PRICE;
+import static ru.v1as.tg.cat.messages.ShopService.CONCENTRATION_POTION_PRICE;
+import static ru.v1as.tg.cat.messages.ShopService.RABIES_MEDICINE_PRICE;
+import static ru.v1as.tg.cat.messages.ShopService.prc;
 import static ru.v1as.tg.cat.tg.KeyboardUtils.replyKeyboardMarkup;
 
 import java.util.HashMap;
@@ -15,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.service.ResourceTexts;
@@ -29,6 +34,7 @@ public class ButtonsMessageHandler implements MessageHandler {
     private final ShopService shopService;
     private final Map<String, ButtonMenu> requests = new HashMap<>();
     private final Map<String, ButtonCallback> callbacks = new HashMap<>();
+    private final CatBotData catBotData;
     private final ResourceTexts texts;
 
     public static final String BACK = "◀️ Назад";
@@ -52,52 +58,20 @@ public class ButtonsMessageHandler implements MessageHandler {
                                                 buttonMenu()
                                                         .message(shopText)
                                                         .callback(
-                                                                "\uD83D\uDC1F Кошачье угощение",
+                                                                "\uD83D\uDC1F Кошачье угощение"
+                                                                        + prc(CAT_BITE_PRICE),
                                                                 shopService::buyCatBite)
                                                         .callback(
-                                                                "\uD83E\uDDEA Зелье концентрации",
+                                                                "\uD83E\uDDEA Зелье концентрации"
+                                                                        + prc(
+                                                                                CONCENTRATION_POTION_PRICE),
                                                                 shopService::buyConcentrationPotion)
                                                         .callback(
-                                                                "\uD83D\uDC89 Лекарство от бешенства",
+                                                                "\uD83D\uDC89 Лекарство от бешенства"
+                                                                        + prc(
+                                                                                RABIES_MEDICINE_PRICE),
                                                                 shopService::buyRabiesMedicine)
-                                                        //
-                                                        //              .callback(
-                                                        //
-                                                        //                      "\uD83D\uDECD
-                                                        // Сумотьку Свете",
-                                                        //
-                                                        //                      this::bagForSveta)
                                                         .build())
-                                        //                                        .button(
-                                        //                                                "✉️
-                                        // Почта",
-                                        //
-                                        // buttonMenu()
-                                        //
-                                        // .message("Что будем делать?")
-                                        //
-                                        // .callback(
-                                        //
-                                        //      "\uD83D\uDCEC Написать разработчику",
-                                        //
-                                        //      this::writeDeveloper)
-                                        //
-                                        // .build())
-                                        //                                        .button(
-                                        //
-                                        // "\uD83C\uDFE6 Банк",
-                                        //
-                                        // buttonMenu()
-                                        //
-                                        // .message("Что будем делать?")
-                                        //
-                                        // .callback(
-                                        //
-                                        //      "\uD83D\uDCB0 Узнать состояние счёта",
-                                        //
-                                        //      this::walletValue)
-                                        //
-                                        // .build())
                                         .build())
                         .build();
         requests.put(BACK, root);
@@ -117,13 +91,13 @@ public class ButtonsMessageHandler implements MessageHandler {
 
     @Override
     public void handle(Message message, TgChat chat, TgUser user) {
-        if (!chat.isUserChat()) {
+        if (!chat.isUserChat() || catBotData.inPhase(user.getId())) {
             return;
         }
         final String text = message.getText();
         final ButtonMenu menu = requests.get(text);
         if (menu != null) {
-            log.info("User {} choose button {}", user.getUsernameOrFullName(), text);
+            log.info("User choose button '{}'", text);
             final String[] buttonsTest = menu.getButtonsTest();
             sender.execute(
                     new SendMessage(chat.getId(), menu.message)
@@ -132,7 +106,7 @@ public class ButtonsMessageHandler implements MessageHandler {
         }
         final ButtonCallback callback = callbacks.get(text);
         if (callback != null) {
-            log.info("User {} choose button {}", user.getUsernameOrFullName(), text);
+            log.info("User choose button '{}'", text);
             callback.process(message, chat, user);
         }
     }

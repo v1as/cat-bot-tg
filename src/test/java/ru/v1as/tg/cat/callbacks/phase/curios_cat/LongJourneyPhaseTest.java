@@ -1,5 +1,7 @@
 package ru.v1as.tg.cat.callbacks.phase.curios_cat;
 
+import static ru.v1as.tg.cat.messages.ButtonsMessageHandler.GO_TO_THE_CITY;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -31,6 +33,18 @@ public class LongJourneyPhaseTest extends AbstractCuriosCatPhaseTest {
         chat.getEditMessage();
         chat.getSendMessage().assertText("Кот, недовольно мяукая, убегает.");
         inPublic.getSendMessage().assertText("Любопытный кот сбегает от игрока @zakh");
+    }
+
+    @Test
+    public void test_shop_in_quest() {
+        final CuriosCatContext phaseContext = getStartCtx(zakh);
+        phase.open(phaseContext);
+        final TestUserChat chat = zakh.inPrivate();
+        chat.getSendMessage().assertText("Сегодня выдался на удивление приятный денёк.");
+        chat.getSendMessage().containText("Вы с котом медленно прогуливаетесь по городу.");
+        chat.getSendMessage().assertText("Что будем делать?");
+
+        chat.sendTextMessage(GO_TO_THE_CITY);
     }
 
     @Test

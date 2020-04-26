@@ -246,7 +246,7 @@ public class TgInlinePoll {
             public void handle(
                     String value, TgChat chat, TgUser user, CallbackQuery callbackQuery) {
                 choose = choices.get(callbackQuery.getData());
-                log.info("{} just choose '{}' in {}", user, choose.getText(), chat);
+                log.info(" choose '{}'", choose.getText());
                 if (closeOnChoose) {
                     close();
                 }

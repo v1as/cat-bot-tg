@@ -34,7 +34,7 @@ public class ParkGardenPhase extends AbstractCuriosCatPhase {
 
     private void cat(ChooseContext chooseContext) {
         messages(
-                "Вы воспользовались занятостью кота и получили свой бал.",
+                "Вы воспользовались занятостью кота и получили свой балл.",
                 "И, конечно, отправились по своим важным делам.",
                 "Скучный зануда.");
         catchUpCatAndClose(CatRequestVote.CAT1);

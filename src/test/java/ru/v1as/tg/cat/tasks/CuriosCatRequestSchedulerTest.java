@@ -11,13 +11,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.v1as.tg.cat.AbstractCatBotTest;
 import ru.v1as.tg.cat.CaBotTestConfiguration;
-import ru.v1as.tg.cat.service.clock.TestBotClock;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = CaBotTestConfiguration.class)
 public class CuriosCatRequestSchedulerTest extends AbstractCatBotTest {
 
-    @Autowired TestBotClock clock;
     @Autowired CuriosCatRequestScheduler scheduler;
 
     @Before

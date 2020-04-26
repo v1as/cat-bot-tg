@@ -70,12 +70,12 @@ public class CatRequestVoteHandler implements TgCallBackHandler<CatRequestVote> 
             return;
         }
         RequestAnswerResult voted = req.vote(user, vote);
-        log.info("User '{}' just voted: {} for request {}", user, vote, msgId);
+        log.info("User just voted: {} for request {}", vote, msgId);
         sender.execute(getVoteAnswerMsg(callbackQuery, voted));
         if (FINISHED.equals(voted)) {
             sender.execute(clearButtons(msg));
         } else if (CANCELED.equals(voted)) {
-            log.info("Request for user '{}' is canceled.", user.getUsernameOrFullName());
+            log.info("Request for user is canceled.");
             final Integer messageId = req.getMessageId();
             final Long chatId = req.getChatId();
             catService.saveRealCatPoll(req);

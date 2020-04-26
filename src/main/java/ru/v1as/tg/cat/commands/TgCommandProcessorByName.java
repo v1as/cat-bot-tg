@@ -45,14 +45,12 @@ public class TgCommandProcessorByName implements TgCommandProcessor {
         CommandHandler commandHandler = commandToHandler.get(command.getName());
         if (commandHandler != null) {
             log.info(
-                    "Command '{}' just come from {} in {}.  It will be processed by handler: '{}'",
+                    "Command '{}' will be processed by handler: '{}'",
                     commandHandler.getCommandName(),
-                    user,
-                    chat,
                     commandHandler.getClass().getName());
             commandHandler.handle(command, chat, user);
         } else {
-            log.info("No handlers for this command: {}", command);
+            log.debug("No handlers for this command: {}", command);
         }
     }
 

@@ -13,8 +13,6 @@ import ru.v1as.tg.cat.AbstractCatBotTest;
 import ru.v1as.tg.cat.callbacks.phase.curios_cat.AbstractCuriosCatPhase;
 import ru.v1as.tg.cat.callbacks.phase.impl.JoinCatFollowPhase;
 import ru.v1as.tg.cat.callbacks.phase.multi_curios.RegattaDreamPhaseTest.CuriosConfiguration;
-import ru.v1as.tg.cat.model.random.RandomItem;
-import ru.v1as.tg.cat.model.random.RandomRequest;
 import ru.v1as.tg.cat.service.random.TestRandomChoice;
 
 @Import(CuriosConfiguration.class)
@@ -26,7 +24,7 @@ public class RegattaDreamPhaseTest extends AbstractCatBotTest {
     @Before
     public void before() {
         super.before();
-        randomChoice.setChooser(this::choose);
+        randomChoice.setChooser((AbstractCuriosCatPhase q) -> q.getName().equals("RegattaJoinPhase"));
     }
 
     @Test
@@ -93,14 +91,6 @@ public class RegattaDreamPhaseTest extends AbstractCatBotTest {
         jho.inPrivate().getSendMessage().assertContainText("На краю пирса вас ждёт");
 
         clearMethodsQueue();
-    }
-
-    private AbstractCuriosCatPhase choose(RandomRequest<AbstractCuriosCatPhase> randomRequest) {
-        return randomRequest.getItems().stream()
-                .map(RandomItem::getValue)
-                .filter(q -> q.getName().equals("RegattaJoinPhase"))
-                .findFirst()
-                .orElseThrow(RuntimeException::new);
     }
 
     @Configuration

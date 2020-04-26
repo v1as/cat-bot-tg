@@ -1,11 +1,15 @@
 package ru.v1as.tg.cat.tg;
 
+import static java.lang.String.format;
+import static java.util.Optional.ofNullable;
 import static ru.v1as.tg.cat.model.UpdateUtils.getChat;
 import static ru.v1as.tg.cat.model.UpdateUtils.getUser;
 
+import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -27,6 +31,7 @@ public abstract class MainUpdateProcessor implements TgUpdateProcessor {
                 log.warn("Such type updated is not supported '{}'", update);
                 return;
             }
+            setupMdc(chat, user);
             synchronized (chatToMonitor.computeIfAbsent(chat.getId(), (id) -> chat.getId())) {
                 before(update);
                 if (update.hasMessage() && update.getMessage().isCommand()) {
@@ -48,7 +53,18 @@ public abstract class MainUpdateProcessor implements TgUpdateProcessor {
             }
         } catch (Exception e) {
             log.error("Something gone wrong for update: " + update, e);
+        } finally {
+            MDC.clear();
         }
+    }
+
+    private void setupMdc(TgChat chat, TgUser user) {
+        final String userDesc = format("[%s:%d", user.getUsernameOrFullName(), user.getId());
+        final String chatDesc =
+                chat.isUserChat()
+                        ? ":private]"
+                        : format(":%s:%d]", ofNullable(chat.getTitle()).orElse(""), chat.getId());
+        MDC.setContextMap(ImmutableMap.of("username", userDesc, "chat", chatDesc));
     }
 
     protected abstract void onUpdateCommand(TgCommandRequest command, TgChat chat, TgUser user);
