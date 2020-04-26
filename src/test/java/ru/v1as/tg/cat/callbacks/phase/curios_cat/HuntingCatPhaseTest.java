@@ -42,7 +42,7 @@ public class HuntingCatPhaseTest extends AbstractCatBotTest {
         chat.getSendMessage().assertContainText("Неосторожное приближение");
         chat.getSendMessage().assertContainText("Кот убежал");
 
-        inPublic.getSendMessage().assertText("Любопытный кот сбегает от игрока @zakh");
+        inPublic.getSendMessage().assertText("Любопытный Кот сбегает от игрока @zakh");
     }
 
     @Test
@@ -220,6 +220,44 @@ public class HuntingCatPhaseTest extends AbstractCatBotTest {
 
         chat.getSendMessage().assertContainText("Неосторожное приближение");
         chat.getSendMessage().assertContainText("Кот убежал");
+
+        inPublic.getSendMessage().assertContainText("Любопытный кот сбегает от игрока @zakh");
+    }
+
+    @Test
+    public void finish_waiting() {
+        final CuriosCatContext phaseContext = getStartCtx();
+        phase.open(phaseContext);
+        final TestUserChat chat = zakh.inPrivate();
+
+        chat.getSendMessage().assertContainText("В этот раз Кот промчался");
+        chat.getSendMessage().assertContainText("После некоторого времени блуждания");
+        chat.getSendMessage().assertContainText("Кот чрезвычайно занят, он затаился");
+        chat.getSendMessage().assertContainText("Скорее всего, кот убежит");
+        chat.getSendMessage().assertContainText("не стоит спешить");
+
+        chat.getSendMessage().assertText("Что дальше?");
+        clock.skip(4, TimeUnit.SECONDS);
+        chat.getDeleteMessage().assertTextContains("Что дальше?");
+
+        chat.getSendMessage().assertText("Ожидание привело к изменениям.");
+        chat.getSendMessage().assertContainText("Кот выбрал жертву");
+        chat.getSendMessage().assertText("Пора выбрать следующее действие?");
+
+        clock.skip(7, TimeUnit.SECONDS);
+        chat.getDeleteMessage().assertTextContains("Пора выбрать следующее действие?");
+
+        chat.getSendMessage().assertText("Что-то изменилось.");
+
+        chat.getSendMessage().assertText("Что же дальше?");
+        clock.skip(13, TimeUnit.SECONDS);
+        chat.getDeleteMessage().assertTextContains("Что же дальше?");
+
+        chat.getSendMessage().assertContainText("Последний раз вы видели кота");
+        chat.getSendMessage().assertContainText("Но вы ждёте слишком долго");
+        chat.getSendMessage().assertContainText("Ожидание затянулось");
+        chat.getSendMessage().assertContainText("Кота там нет");
+        chat.getSendMessage().assertContainText("Похоже, пока вы ожидали");
 
         inPublic.getSendMessage().assertContainText("Любопытный кот сбегает от игрока @zakh");
     }

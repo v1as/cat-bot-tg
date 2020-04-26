@@ -31,25 +31,24 @@ import ru.v1as.tg.cat.model.TgUser;
 @RequiredArgsConstructor
 public class CatEventService {
 
-    public static final int CAT_REWARD = 3;
     public static final int VOTE_REWARD = 1;
     private final ChatParamResource params;
     private final UserEventDao userEventDao;
     private final UserDao userDao;
     private final ChatDao chatDao;
 
-    public void saveCuriosCat(TgUser user, TgChat chat, Integer messageId) {
+    public CatRequestVote saveCuriosCat(TgUser user, TgChat chat, Integer messageId) {
         final ChatEntity chatEntity = chatDao.getOne(chat.getId());
         final UserEntity owner = userDao.getOne(user.getId());
         final CatRequestVote result = concentration(chatEntity, owner, CAT1);
         final CatUserEvent event =
                 new CatUserEvent(chatEntity, owner, messageId, CURIOS_CAT, result);
         userEventDao.save(event);
-        params.increment(chatEntity, owner, MONEY, CAT_REWARD * result.getAmount());
+        params.increment(chatEntity, owner, MONEY, result.reward());
+        return result;
     }
 
-    private CatRequestVote concentration(
-            ChatEntity chat, UserEntity user, CatRequestVote cats) {
+    private CatRequestVote concentration(ChatEntity chat, UserEntity user, CatRequestVote cats) {
         final boolean concentration =
                 params.paramBool(chat.getId(), user.getId(), CONCENTRATION_POTION);
         return concentration ? cats.increment() : cats;
@@ -64,7 +63,7 @@ public class CatEventService {
                 new CatUserEvent(chat, owner, voteMessage.getMessageId(), CURIOS_CAT, cats);
         event.setQuestName(quest);
         userEventDao.save(event);
-        params.increment(chat, owner, MONEY, CAT_REWARD * cats.getAmount());
+        params.increment(chat, owner, MONEY, CatRequestVote.CAT_REWARD * cats.getAmount());
         return cats;
     }
 
@@ -83,7 +82,7 @@ public class CatEventService {
                 events.add(voteEvent);
                 params.increment(chat, voter, MONEY, VOTE_REWARD);
             }
-            params.increment(chat, owner, MONEY, CAT_REWARD * cats.getAmount());
+            params.increment(chat, owner, MONEY, CatRequestVote.CAT_REWARD * cats.getAmount());
         }
         userEventDao.saveAll(events);
     }

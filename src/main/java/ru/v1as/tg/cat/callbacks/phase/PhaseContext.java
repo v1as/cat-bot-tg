@@ -15,6 +15,7 @@ public class PhaseContext {
     private final TgChat chat;
     private final List<TgInlinePoll> polls = new ArrayList<>();
     @Getter private boolean closed = false;
+    private boolean wasRandom = false;
 
     public void checkNotClose() {
         if (closed) {
@@ -49,5 +50,13 @@ public class PhaseContext {
 
     public TgChat getChat() {
         return chat;
+    }
+
+    public void randomFlag(boolean value) {
+        this.wasRandom = value;
+    }
+
+    public boolean randomFlag() {
+        return this.wasRandom;
     }
 }

@@ -74,7 +74,7 @@ public class ShopService {
     }
 
     public static String prc(int price) {
-        return format("  (-%s%s)", price, MONEY_BAG);
+        return format("  (%s%s)", price, MONEY_BAG);
     }
 
     private void buyLookPotionInChat(ChatEntity chat, TgUser user) {

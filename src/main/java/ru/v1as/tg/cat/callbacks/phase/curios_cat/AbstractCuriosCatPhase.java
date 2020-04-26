@@ -1,19 +1,19 @@
 package ru.v1as.tg.cat.callbacks.phase.curios_cat;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
-import static ru.v1as.tg.cat.EmojiConst.MONEY_BAG;
+import static ru.v1as.tg.cat.EmojiConst.DIE;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT1;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT2;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT3;
-import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT4;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.NOT_CAT;
-import static ru.v1as.tg.cat.service.CatEventService.CAT_REWARD;
+import static ru.v1as.tg.cat.jpa.entities.user.ChatUserParam.DIE_AMULET;
 import static ru.v1as.tg.cat.utils.TimeoutUtils.getMsForTextReading;
 
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
@@ -48,14 +48,35 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
 
     @Override
     protected void beforeOpen() {
-        final Integer userId = getPhaseContext().getUser().getId();
+        final CuriosCatContext ctx = getPhaseContext();
+        final Integer userId = ctx.getUser().getId();
+        final int amuletCharges =
+                paramResource.paramInt(ctx.getPublicChatId(), ctx.getUser().getId(), DIE_AMULET);
+        ctx.dieAmulet = amuletCharges > 0;
         this.catBotData.incrementPhase(userId);
     }
 
     @Override
     protected void beforeClose() {
-        final Integer userId = getPhaseContext().getUser().getId();
-        this.catBotData.decrementPhase(userId);
+        checkDieCharges();
+        catBotData.decrementPhase(getPhaseContext().getUser().getId());
+    }
+
+    private void checkDieCharges() {
+        final CuriosCatContext ctx = getPhaseContext();
+        if (ctx.dieAmulet) {
+            final Integer userId = ctx.getUser().getId();
+            final Boolean lastCharge =
+                    paramResource.increment(ctx.getPublicChatId(), userId, DIE_AMULET, -1).stream()
+                            .findFirst()
+                            .map(e -> e.getOldValue().equals("1"))
+                            .orElse(false);
+            if (lastCharge) {
+                message(
+                        "Кристаллические кости рассыпались у вас в руках, исчерпав свою магическую силу "
+                                + DIE);
+            }
+        }
     }
 
     @Override
@@ -87,8 +108,17 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
 
     @Override
     protected void message(String text) {
-        super.message(text);
+        super.message(addDieText(text));
         botClock.wait(getMsForTextReading(text.length()));
+    }
+
+    private String addDieText(String text) {
+        final CuriosCatContext phaseContext = getPhaseContext();
+        if (phaseContext.dieAmulet && phaseContext.randomFlag()) {
+            text = DIE + " " + text;
+            phaseContext.randomFlag(false);
+        }
+        return text;
     }
 
     @Override
@@ -97,30 +127,14 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
         botClock.wait(getMsForTextReading(text.length()));
     }
 
-    protected void catchUpCatAndClose(CatRequestVote result) {
+    protected void catchUpCatAndClose(@NonNull CatRequestVote result) {
         CuriosCatContext ctx = getPhaseContext();
         final TgUser user = ctx.getUser();
         final TgChat publicChat = ctx.getPublicChat();
         result =
                 catEventService.saveCuriosCatQuest(
                         user, publicChat, ctx.message, result, getName());
-        String message = "";
-        if (result == NOT_CAT) {
-            message = "Любопытный кот сбегает от игрока ";
-        } else if (result == CAT1) {
-            message = "Любопытный кот убегает к ";
-        } else if (result == CAT2) {
-            message = "Два кота засчитано игроку ";
-        } else if (result == CAT3) {
-            message = "Целых три кота засчитано игроку ";
-        } else if (result == CAT4) {
-            message = "Целых 4 кота засчитано игроку ";
-        }
-        String reward =
-                result.getAmount() > 0
-                        ? " (+" + result.getAmount() * CAT_REWARD + MONEY_BAG + ")"
-                        : "";
-        message(publicChat, message + user.getUsernameOrFullName() + reward);
+        message(publicChat, result.getMessage(user.getUsernameOrFullName()));
         close();
     }
 
@@ -138,6 +152,7 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
         private final TgUser user;
         private final Message message;
         private final Map<String, Object> values = new HashMap<>();
+        private boolean dieAmulet = false;
 
         CuriosCatContext(TgChat chat, TgChat publicChat, TgUser user, Message message) {
             super(chat, publicChat);

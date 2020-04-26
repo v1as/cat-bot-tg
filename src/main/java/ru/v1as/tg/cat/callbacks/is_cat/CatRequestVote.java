@@ -1,31 +1,40 @@
 package ru.v1as.tg.cat.callbacks.is_cat;
 
+import static ru.v1as.tg.cat.EmojiConst.MONEY_BAG;
+
 import java.util.Arrays;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 public enum CatRequestVote {
-    NOT_CAT(0, "crv0"),
-    CAT1(1, "crv1"),
-    CAT2(2, "crv2"),
-    CAT3(3, "crv3"),
-    CAT4(4, "crv4");
+    NOT_CAT(0, "crv0", "Любопытный Кот сбегает от игрока "),
+    CAT1(1, "crv1", "Любопытный Кот убегает к "),
+    CAT2(2, "crv2", "Два кота засчитано игроку "),
+    CAT3(3, "crv3", "Целых три кота засчитано игроку "),
+    CAT4(4, "crv4", "Целых 4 кота засчитано игроку ");
 
+    public static final int CAT_REWARD = 3;
     public static String PREFIX = "crv";
 
     private final int amount;
     private final String callback;
-
-    CatRequestVote(int cats, String callback) {
-        this.amount = cats;
-        this.callback = callback;
-    }
+    private final String message;
 
     public static CatRequestVote parse(String data) {
         return Arrays.stream(values())
                 .filter(v -> v.callback.equals(data))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public int reward() {
+        return amount * CAT_REWARD;
+    }
+
+    public String getMessage(String user) {
+        return message + user + (amount > 0 ? " (+" + amount * CAT_REWARD + MONEY_BAG + ")" : "");
     }
 
     public CatRequestVote increment() {

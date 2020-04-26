@@ -138,6 +138,13 @@ public class ChatParamResource {
     }
 
     public List<ChatUserParamChangeEvent> increment(
+            Long chat, Integer user, ChatUserParam param, int delta) {
+        final ChatEntity chatEntity = chatDao.findById(chat).get();
+        final UserEntity userEntity = userDao.findById(user).get();
+        return increment(chatEntity, userEntity, param, delta);
+    }
+
+    public List<ChatUserParamChangeEvent> increment(
             ChatEntity chat, UserEntity user, ChatUserParam param, int delta) {
         if (delta == 0) {
             return emptyList();

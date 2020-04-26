@@ -27,6 +27,11 @@ public class HuntingCatPhase extends AbstractCuriosCatPhase {
                     .removeMsg(true)
                     .onTimeout(this::longWaiting);
 
+    protected final PollTimeoutConfiguration FINISH_WAITING =
+            new PollTimeoutConfiguration(Duration.of(12, SECONDS))
+                    .removeMsg(true)
+                    .onTimeout(this::finishWaiting);
+
     @Override
     protected void open() {
         messages(
@@ -99,6 +104,7 @@ public class HuntingCatPhase extends AbstractCuriosCatPhase {
         poll("Что же дальше?")
                 .choice("Кот!", this::threeHunters)
                 .choice("Подойти поближе", this::noCat)
+                .timeout(FINISH_WAITING)
                 .send();
     }
 
@@ -110,5 +116,16 @@ public class HuntingCatPhase extends AbstractCuriosCatPhase {
                 "Птицы разлетелись, все три кота остались ни с чем.",
                 "Конечно, вы сосчитали их всех.");
         catchUpCatAndClose(CAT3);
+    }
+
+    private void finishWaiting() {
+        messages(
+                "Последний раз вы видели кота, когда он перебегал к кусту поближе к птицам.",
+                "Но вы ждёте слишком долго, а кот так и не появляется...",
+                "Ожидание затянулось, и вы решили подойти проверить тот куст.",
+                "Кота там нет.",
+                "Похоже, пока вы ожидали, кот внезапно потерял интерес к охоте и куда-то ушёл."
+                );
+        catchUpCatAndClose(NOT_CAT);
     }
 }

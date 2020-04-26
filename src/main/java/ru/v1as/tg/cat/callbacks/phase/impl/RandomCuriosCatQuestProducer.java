@@ -3,6 +3,7 @@ package ru.v1as.tg.cat.callbacks.phase.impl;
 import static java.lang.Math.min;
 import static java.util.stream.Collectors.toMap;
 import static org.springframework.util.StringUtils.isEmpty;
+import static ru.v1as.tg.cat.utils.LogUtils.logExceptions;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -87,7 +88,7 @@ public class RandomCuriosCatQuestProducer implements CuriosCatQuestProducer {
             TgUser user, TgChat chat, List<CatUserEvent> catEvents, Set<String> recentlyPlayed) {
         final Map<String, Long> questToAmount =
                 nextPhases.stream()
-                        .filter(p -> p.filter(user, chat))
+                        .filter(logExceptions(p -> p.filter(user, chat), false))
                         .filter(e -> !recentlyPlayed.contains(e.getName()))
                         .collect(toMap(AbstractCuriosCatPhase::getName, p -> 0L));
         final Set<String> quests = questToAmount.keySet();

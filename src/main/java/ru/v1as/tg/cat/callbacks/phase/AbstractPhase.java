@@ -12,6 +12,7 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.v1as.tg.cat.CatBotData;
 import ru.v1as.tg.cat.callbacks.TgCallbackProcessor;
+import ru.v1as.tg.cat.callbacks.phase.poll.ChooseContext;
 import ru.v1as.tg.cat.callbacks.phase.poll.TgInlinePoll;
 import ru.v1as.tg.cat.callbacks.phase.poll.UpdateWithChoiceTextBuilder;
 import ru.v1as.tg.cat.callbacks.phase.poll.interceptor.PhaseContextChoiceAroundInterceptor;
@@ -73,12 +74,17 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
         return new PhaseContextChoiceAroundInterceptor<>(phaseContext);
     }
 
-    protected <R> R random(RandomRequest<R> randomRequest) {
+    protected final <R> R random(RandomRequest<R> randomRequest) {
+        getPhaseContext().randomFlag(true);
         return randomChoice.get(randomRequest);
     }
 
     protected <R> R random(R... values) {
         return random(new RandomRequest<R>().addAll(values));
+    }
+
+    protected void randomWay(ChooseContext ctx, Consumer<ChooseContext>... ways) {
+        random(ways).accept(ctx);
     }
 
     protected <R> R random(Iterable<R> values) {
