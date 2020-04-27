@@ -33,7 +33,6 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import ru.v1as.tg.cat.callbacks.SimpleCallbackHandler;
 import ru.v1as.tg.cat.callbacks.TgCallBackHandler;
 import ru.v1as.tg.cat.callbacks.TgCallbackProcessor;
@@ -179,16 +178,7 @@ public class TgInlinePoll {
     }
 
     private void pollMessageFail(Throwable throwable) {
-        if (throwable instanceof TelegramApiRequestException) {
-            TelegramApiRequestException tEx = (TelegramApiRequestException) throwable;
-            log.error(
-                    String.format(
-                            "Poll error: message '%s' code '%s'",
-                            tEx.getApiResponse(), tEx.getErrorCode()),
-                    tEx);
-        } else {
-            log.error("Poll error", throwable);
-        }
+        log.error("Poll error", throwable);
         this.state = ERROR;
     }
 
