@@ -11,15 +11,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.v1as.tg.cat.AbstractCatBotTest;
 import ru.v1as.tg.cat.CaBotTestConfiguration;
+import ru.v1as.tg.cat.jpa.dao.ChatDetailsDao;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = CaBotTestConfiguration.class)
 public class CuriosCatRequestSchedulerTest extends AbstractCatBotTest {
 
     @Autowired CuriosCatRequestScheduler scheduler;
+    @Autowired ChatDetailsDao chatDetailsDao;
 
     @Before
     public void init() {
+        chatDetailsDao.findByChatId(inPublic.getId()).setEnabled(true);
         scheduler.init();
         bob.inPublic().sendCommand("/enable_polls");
         clearMethodsQueue();
