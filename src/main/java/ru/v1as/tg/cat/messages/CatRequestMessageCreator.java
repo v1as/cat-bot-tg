@@ -1,5 +1,7 @@
 package ru.v1as.tg.cat.messages;
 
+import static ru.v1as.tg.cat.messages.MessageHandler.MessageHandlerResult.SKIPPED;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -27,13 +29,13 @@ public class CatRequestMessageCreator implements MessageHandler {
     private final ChatDetailsDao chatDetailsDao;
 
     @Override
-    public void handle(Message msg, TgChat chat, TgUser user) {
+    public MessageHandlerResult handle(Message msg, TgChat chat, TgUser user) {
         if (isInvalidIncomeMessage(msg, chat)) {
-            return;
+            return SKIPPED;
         }
         final ChatDetailsEntity chatDetails = chatDetailsDao.findByChatId(chat.getId());
         if (!chatDetails.isCatPollEnabled()) {
-            return;
+            return SKIPPED;
         }
         CatChatData chatData = data.getChatData(chat);
         final Integer msgId = msg.getMessageId();
@@ -43,6 +45,7 @@ public class CatRequestMessageCreator implements MessageHandler {
         sender.executeAsync(
                 buildIsThatCatMessage(msg, chat, catRequest),
                 new IsCatPollCallback(chatData, catRequest));
+        return SKIPPED;
     }
 
     private boolean isInvalidIncomeMessage(Message message, TgChat chat) {

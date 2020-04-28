@@ -10,9 +10,14 @@ public interface MessageHandler {
     int MIN_PRIORITY = 1000;
     int TOP_PRIORITY = 100;
 
-    void handle(Message message, TgChat chat, TgUser user);
+    MessageHandlerResult handle(Message message, TgChat chat, TgUser user);
 
     default int priority() {
         return DEFAULT_PRIORITY;
+    }
+
+    enum MessageHandlerResult {
+        BREAK,
+        SKIPPED
     }
 }

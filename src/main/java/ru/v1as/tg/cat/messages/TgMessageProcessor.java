@@ -1,5 +1,7 @@
 package ru.v1as.tg.cat.messages;
 
+import static ru.v1as.tg.cat.messages.MessageHandler.MessageHandlerResult.BREAK;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,7 +27,9 @@ public class TgMessageProcessor {
     public void process(Message message, TgChat chat, TgUser user) {
         for (MessageHandler handler : handlers) {
             try {
-                handler.handle(message, chat, user);
+                if (BREAK.equals(handler.handle(message, chat, user))) {
+                    break;
+                }
             } catch (InterruptMessageProcessing ex) {
                 log.info("Message processing was interrupted by handler: {}", handler);
                 break;
