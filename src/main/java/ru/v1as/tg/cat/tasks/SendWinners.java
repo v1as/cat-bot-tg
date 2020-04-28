@@ -19,7 +19,7 @@ import ru.v1as.tg.cat.jpa.dao.ChatDetailsDao;
 import ru.v1as.tg.cat.jpa.entities.chat.ChatDetailsEntity;
 import ru.v1as.tg.cat.jpa.entities.chat.ChatEntity;
 import ru.v1as.tg.cat.model.LongProperty;
-import ru.v1as.tg.cat.service.ChatParamResource;
+import ru.v1as.tg.cat.service.AuthorService;
 import ru.v1as.tg.cat.service.ScoreDataService;
 import ru.v1as.tg.cat.tg.TgSender;
 
@@ -32,7 +32,7 @@ public class SendWinners {
     private final ChatDao chatDao;
     private final ChatDetailsDao chatDetailsDao;
     private final ScoreDataService scoreData;
-    private final ChatParamResource chatParam;
+    private final AuthorService authorService;
 
     @PostConstruct
     public void init() {
@@ -59,7 +59,9 @@ public class SendWinners {
                                 .getWinnersStream(chat.getId(), yesterday)
                                 .filter(LongProperty::isPositive)
                                 .toArray(LongProperty[]::new);
-                List<String> result = new MedalsListBuilder().getPlayersWithMedals(topPlayers);
+                final LongProperty[] authors = authorService.getAuthorsStream(chat.getId(), yesterday);
+                List<String> result =
+                        new MedalsListBuilder().getPlayersWithMedals(topPlayers, authors);
 
                 if (result.isEmpty()) {
                     continue;

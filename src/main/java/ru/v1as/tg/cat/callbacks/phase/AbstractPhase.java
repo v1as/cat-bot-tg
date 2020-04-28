@@ -109,6 +109,7 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
     public final void open(T phaseContext) {
         this.phaseContext.set(phaseContext);
         try {
+            log.info("Phase {} is opening...", this.getClass().getSimpleName());
             this.beforeOpen();
             this.open();
         } finally {
@@ -116,7 +117,7 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
         }
     }
 
-    protected void beforeOpen() {};
+    protected void beforeOpen() {}
 
     protected abstract void open();
 
@@ -127,7 +128,7 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
         this.phaseContext.get().close();
     }
 
-    protected void beforeClose() {};
+    protected void beforeClose() {}
 
     protected T getPhaseContext() {
         return this.phaseContext.get();

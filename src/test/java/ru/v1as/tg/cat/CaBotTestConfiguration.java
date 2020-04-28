@@ -1,5 +1,6 @@
 package ru.v1as.tg.cat;
 
+import java.util.Properties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -38,6 +39,11 @@ public class CaBotTestConfiguration {
     @Bean
     public CatBotData getDbData() {
         return new CatBotData();
+    }
+
+    @Bean
+    public Properties authors() {
+        return new Properties();
     }
 
     @Bean

@@ -58,7 +58,7 @@ public abstract class MainUpdateProcessor implements TgUpdateProcessor {
         }
     }
 
-    private void setupMdc(TgChat chat, TgUser user) {
+    public static void setupMdc(TgChat chat, TgUser user) {
         final String userDesc = format("[%s:%d", user.getUsernameOrFullName(), user.getId());
         final String chatDesc =
                 chat.isUserChat()

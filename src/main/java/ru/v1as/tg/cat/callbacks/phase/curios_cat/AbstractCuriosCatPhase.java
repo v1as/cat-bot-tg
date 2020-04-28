@@ -7,11 +7,13 @@ import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT2;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT3;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.NOT_CAT;
 import static ru.v1as.tg.cat.jpa.entities.user.ChatUserParam.DIE_AMULET;
+import static ru.v1as.tg.cat.tg.MainUpdateProcessor.setupMdc;
 import static ru.v1as.tg.cat.utils.TimeoutUtils.getMsForTextReading;
 
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 import lombok.Getter;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +62,20 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
     protected void beforeClose() {
         checkDieCharges();
         catBotData.decrementPhase(getPhaseContext().getUser().getId());
+    }
+
+    @Override
+    protected Runnable contextWrap(Runnable runnable) {
+        final CuriosCatContext ctx = getPhaseContext();
+        setupMdc(ctx.getPublicChat(), ctx.getUser());
+        return super.contextWrap(runnable);
+    }
+
+    @Override
+    protected <L> Consumer<L> contextWrap(Consumer<L> consumer) {
+        final CuriosCatContext ctx = getPhaseContext();
+        setupMdc(ctx.getPublicChat(), ctx.getUser());
+        return super.contextWrap(consumer);
     }
 
     private void checkDieCharges() {

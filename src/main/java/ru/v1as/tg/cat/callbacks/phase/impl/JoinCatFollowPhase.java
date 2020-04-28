@@ -1,5 +1,6 @@
 package ru.v1as.tg.cat.callbacks.phase.impl;
 
+import static java.lang.Math.min;
 import static java.time.LocalDateTime.now;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -115,10 +116,9 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
         if (recentlyCatsAmount == 0) {
             goToCat(data);
         } else {
-            botClock.schedule(
-                    contextWrap(() -> goToCat(data)),
-                    Math.min(2_000 + recentlyCatsAmount * 500, 10_000),
-                    MILLISECONDS);
+            final int delay = min(2_000 + recentlyCatsAmount * 500, 10_000);
+            log.info("Quest delay {}", delay);
+            botClock.schedule(contextWrap(() -> goToCat(data)), delay, MILLISECONDS);
         }
     }
 
