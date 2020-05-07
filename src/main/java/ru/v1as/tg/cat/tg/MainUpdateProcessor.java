@@ -5,11 +5,11 @@ import static java.util.Optional.ofNullable;
 import static ru.v1as.tg.cat.model.UpdateUtils.getChat;
 import static ru.v1as.tg.cat.model.UpdateUtils.getUser;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
+import org.slf4j.MDC.MDCCloseable;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -58,13 +58,18 @@ public abstract class MainUpdateProcessor implements TgUpdateProcessor {
         }
     }
 
-    public static void setupMdc(TgChat chat, TgUser user) {
-        final String userDesc = format("[%s:%d", user.getUsernameOrFullName(), user.getId());
+    public static MDCCloseable setupMdc(TgChat chat) {
         final String chatDesc =
                 chat.isUserChat()
                         ? ":private]"
                         : format(":%s:%d]", ofNullable(chat.getTitle()).orElse(""), chat.getId());
-        MDC.setContextMap(ImmutableMap.of("username", userDesc, "chat", chatDesc));
+        return MDC.putCloseable("chat", chatDesc);
+    }
+
+    public static void setupMdc(TgChat chat, TgUser user) {
+        final MDCCloseable mdc = setupMdc(chat);
+        final String userDesc = format("[%s:%d", user.getUsernameOrFullName(), user.getId());
+        MDC.putCloseable("username", userDesc);
     }
 
     protected abstract void onUpdateCommand(TgCommandRequest command, TgChat chat, TgUser user);

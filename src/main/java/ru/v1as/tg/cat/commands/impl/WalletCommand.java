@@ -34,6 +34,8 @@ public class WalletCommand extends AbstractCommand {
 
     @Override
     public void process(TgCommandRequest command, TgChat chat, TgUser user) {
+
+        // todo only for this chat
         final List<ChatEntity> chats = chatDao.findByUsersId(user.getId());
         final UserEntity userEntity = userDao.findById(user.getId()).get();
         final Map<ChatEntity, String> chatToMoney = new HashMap<>();

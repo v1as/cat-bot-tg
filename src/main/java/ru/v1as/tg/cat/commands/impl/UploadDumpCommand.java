@@ -3,7 +3,7 @@ package ru.v1as.tg.cat.commands.impl;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import ru.v1as.tg.cat.commands.TgCommandRequest;
-import ru.v1as.tg.cat.messages.DumpDocumentMessageHandler;
+import ru.v1as.tg.cat.messages.request.DumpDocumentMessageHandler;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.tg.TgSender;
@@ -23,9 +23,7 @@ public class UploadDumpCommand extends AbstractCommand {
 
     @Override
     public void process(TgCommandRequest command, TgChat chat, TgUser user) {
-        dumpDocumentMessageHandler.addRequest(
-                command.getMessage(),
-                () -> sender.execute(new SendMessage(chat.getId(), "Не дождался дамп файла.")));
+        dumpDocumentMessageHandler.addRequest(command.getMessage());
         sender.execute(new SendMessage(chat.getId(), "Теперь пришлите dump.sql файл"));
     }
 }

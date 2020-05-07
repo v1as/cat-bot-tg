@@ -1,4 +1,4 @@
-package ru.v1as.tg.cat.messages;
+package ru.v1as.tg.cat.messages.request;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,7 +29,7 @@ import ru.v1as.tg.cat.tg.TgSender;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class DumpDocumentMessageHandler extends RequestWithTimeoutCommandHandler {
+public class DumpDocumentMessageHandler extends SimpleRequestCommandHandler {
 
     private final TgSender sender;
     private final DumpService dumpService;
@@ -66,6 +66,13 @@ public class DumpDocumentMessageHandler extends RequestWithTimeoutCommandHandler
                 new SendMessage(
                         chat.getId(), "Файл загружен. Загружено юзеров " + userDao.count()));
         return true;
+    }
+
+    @Override
+    public MessageWaitingRequest<Object> addRequest(Message msg) {
+        final MessageWaitingRequest<Object> request = super.addRequest(msg);
+        request.setTimeout((d) -> sender.message(request.getChatId(), "Не дождался дамп файла."));
+        return request;
     }
 
     private File downloadFileFromInputStream(InputStream is) throws IOException {

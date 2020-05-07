@@ -22,6 +22,10 @@ public interface TgSender {
 
     <T extends Serializable, Method extends BotApiMethod<T>> T execute(Method method);
 
+    default Message message(Long chatId, String text) {
+        return execute(new SendMessage(chatId, text));
+    }
+
     default Message message(TgChat chat, String text) {
         return execute(new SendMessage(chat.getId(), text));
     }

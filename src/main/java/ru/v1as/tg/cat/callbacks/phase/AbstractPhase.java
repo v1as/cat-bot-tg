@@ -138,7 +138,7 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
         T ctx = checkNotNull(this.phaseContext.get());
         return t -> {
             phaseContext.set(ctx);
-            try {
+            try () {
                 consumer.accept(t);
             } finally {
                 phaseContext.remove();

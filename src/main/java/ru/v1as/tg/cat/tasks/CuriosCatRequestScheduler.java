@@ -1,12 +1,13 @@
 package ru.v1as.tg.cat.tasks;
 
+import static java.time.LocalDateTime.now;
+import static java.util.concurrent.TimeUnit.MINUTES;
 import static ru.v1as.tg.cat.service.ChatParam.CAT_BITE_LEVEL;
 
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,6 @@ public class CuriosCatRequestScheduler {
     private int delayRange = 60;
     private int delayMin = 30;
     private double chance = 0.2;
-    private TimeUnit timeUnit = TimeUnit.MINUTES;
     private final ChatParamResource paramResource;
 
     @PostConstruct
@@ -43,8 +43,11 @@ public class CuriosCatRequestScheduler {
 
     void run() {
         int minutes = random.nextInt(delayRange) + delayMin;
-        executorService.schedule(this::run, minutes, timeUnit);
-        log.info("Next curios cat scheduled in {} {}", minutes, timeUnit);
+        executorService.schedule(this::run, minutes, MINUTES);
+        log.info(
+                "Next curios cat scheduled in {} minutes at {}",
+                minutes,
+                now().plusMinutes(minutes));
         if (firstTime) {
             firstTime = false;
             return;
