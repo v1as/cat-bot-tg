@@ -15,6 +15,11 @@ public interface TgSender {
     <T extends Serializable, Method extends BotApiMethod<T>, Callback extends SentCallback<T>>
             void executeAsync(Method method, Callback callback);
 
+    default <T extends Serializable, Method extends BotApiMethod<T>>
+            void executeAsync(Method method) {
+        executeAsync(method, new LogSentCallback<>());
+    }
+
     default <T extends Serializable, Method extends BotApiMethod<T>> void executeAsyncPromise(
             Method method, Consumer<T> success, Consumer<Throwable> error) {
         executeAsync(method, new PromiseLogSentCallback<>(success, error));
