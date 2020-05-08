@@ -56,7 +56,7 @@ public class ShopService {
         }
         if (!chatParam.increment(chat, userEntity, CAT_BITE_LEVEL, 1).isEmpty()) {
             chatParam.increment(chat, userEntity, MONEY, -1 * CAT_BITE_PRICE);
-            sender.execute(
+            sender.executeAsync(
                     new SendMessage(
                             user.getChatId(), FISH + " Вы купили приманку" + prc(CAT_BITE_PRICE)));
             sender.message(
@@ -89,7 +89,7 @@ public class ShopService {
         }
         if (!chatParam.param(chat, userEntity, CONCENTRATION_POTION, "true").isEmpty()) {
             chatParam.increment(chat, userEntity, MONEY, -1 * CONCENTRATION_POTION_PRICE);
-            sender.execute(
+            sender.executeAsync(
                     new SendMessage(
                             user.getChatId(),
                             POTION
@@ -151,7 +151,7 @@ public class ShopService {
         }
         if (!chatParam.param(chat, userEntity, RABIES_MEDICINE, "true").isEmpty()) {
             chatParam.increment(chat, userEntity, MONEY, -1 * RABIES_MEDICINE_PRICE);
-            sender.execute(
+            sender.executeAsync(
                     new SendMessage(
                             user.getChatId(),
                             SYRINGE

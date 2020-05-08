@@ -63,7 +63,7 @@ public class UserDreamJoinPhase extends AbstractMultiUserPhase<UserDreamJoinPhas
         if (!ctx.isGuest(user) && !user.equals(ctx.getOwner())) {
             ctx.addGuest(user);
             toUpdateJoinMsg = true;
-            sender.execute(new SendMessage(callback.getUserId().toString(), "Вы ожидаете дрёму"));
+            sender.executeAsync(new SendMessage(callback.getUserId().toString(), "Вы ожидаете дрёму"));
         }
         if (ctx.getGuestAmounts() == ctx.getUsersAmount()) {
             toUpdateJoinMsg = false;

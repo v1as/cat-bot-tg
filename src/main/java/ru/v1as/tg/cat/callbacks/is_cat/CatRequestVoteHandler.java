@@ -66,24 +66,24 @@ public class CatRequestVoteHandler implements TgCallBackHandler<CatRequestVote> 
         final Integer msgId = msg.getMessageId();
         CatRequest req = data.getChatData(chat).getCatRequest(msgId);
         if (req == null || vote == null) {
-            sender.execute(clearButtons(msg));
+            sender.executeAsync(clearButtons(msg));
             return;
         }
         RequestAnswerResult voted = req.vote(user, vote);
         log.info("User just voted: {} for request {}", vote, msgId);
-        sender.execute(getVoteAnswerMsg(callbackQuery, voted));
+        sender.executeAsync(getVoteAnswerMsg(callbackQuery, voted));
         if (FINISHED.equals(voted)) {
-            sender.execute(clearButtons(msg));
+            sender.executeAsync(clearButtons(msg));
         } else if (CANCELED.equals(voted)) {
             log.info("Request for user is canceled.");
             final Integer messageId = req.getMessageId();
             final Long chatId = req.getChatId();
             catService.saveRealCatPoll(req);
-            sender.execute(new DeleteMessage(chatId, messageId));
+            sender.executeAsync(new DeleteMessage(chatId, messageId));
         } else if (VOTED.equals(voted) || CHANGED.equals(voted)) {
             if (req.isClosed()) {
                 saveFinishedPoll(vote, req);
-                sender.execute(
+                sender.executeAsync(
                         new EditMessageText()
                                 .setChatId(req.getChatId())
                                 .setMessageId(req.getMessageId())
@@ -92,7 +92,7 @@ public class CatRequestVoteHandler implements TgCallBackHandler<CatRequestVote> 
                 InlineKeyboardMarkup pollButtons = getCatPollButtons(req);
                 if (!req.getPollButtons().equals(pollButtons)) {
                     req.setPollButtons(pollButtons);
-                    sender.execute(getUpdateButtonsMsg(msg, pollButtons));
+                    sender.executeAsync(getUpdateButtonsMsg(msg, pollButtons));
                 }
             }
         }

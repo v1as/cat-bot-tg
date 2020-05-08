@@ -42,7 +42,7 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
     }
 
     protected void editMessageText(Message message, String newText) {
-        sender.execute(
+        sender.executeAsync(
                 new EditMessageText()
                         .setChatId(message.getChatId())
                         .setMessageId(message.getMessageId())
@@ -99,11 +99,11 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
 
     protected void message(String text) {
         PhaseContext phaseContext = this.phaseContext.get();
-        sender.execute(new SendMessage(phaseContext.getChatId(), text));
+        sender.executeAsync(new SendMessage(phaseContext.getChatId(), text));
     }
 
     protected void message(TgChat chat, String text) {
-        sender.execute(new SendMessage(chat.getId(), text));
+        sender.executeAsync(new SendMessage(chat.getId(), text));
     }
 
     public final void open(T phaseContext) {

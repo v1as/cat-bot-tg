@@ -205,7 +205,7 @@ public class TgInlinePoll {
                             this.close(timeoutConfiguration.removeMsg());
 
                             if (!isEmpty(timeoutConfiguration.message())) {
-                                sender.execute(
+                                sender.executeAsync(
                                         new SendMessage(chatId, timeoutConfiguration.message()));
                             }
 
@@ -258,14 +258,14 @@ public class TgInlinePoll {
         if (state.equals(SENT) || state.equals(UPDATED)) {
             state = CLOSED;
             if (shouldRemove) {
-                sender.execute(deleteMsg(message));
+                sender.executeAsync(deleteMsg(message));
             } else {
                 String newText =
                         closeOnTextBuilder.build(text, choose != null ? choose.getText() : null);
                 if (!Objects.equals(newText, text)) {
-                    sender.execute(editMessageText(message, newText));
+                    sender.executeAsync(editMessageText(message, newText));
                 } else {
-                    sender.execute(clearButtons(message));
+                    sender.executeAsync(clearButtons(message));
                 }
             }
         }
@@ -275,7 +275,7 @@ public class TgInlinePoll {
         clearChoices();
         if (state.equals(SENT) || state.equals(UPDATED)) {
             state = CANCELED;
-            sender.execute(deleteMsg(message));
+            sender.executeAsync(deleteMsg(message));
         } else if (state.equals(CREATED)) {
             state = CANCELED;
         }
