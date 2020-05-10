@@ -14,6 +14,7 @@ public abstract class TgTestObject {
         Chat res = new Chat();
         setField(res, "id", chatId);
         if (isPublic) {
+            setField(res, "title", "Public test chat");
             setField(res, "type", "supergroup");
         } else {
             setField(res, "type", "private");
