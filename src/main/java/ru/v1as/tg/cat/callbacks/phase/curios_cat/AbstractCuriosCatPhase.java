@@ -18,8 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 import ru.v1as.tg.cat.callbacks.phase.AbstractPublicChatPhase;
+import ru.v1as.tg.cat.callbacks.phase.PersonalPublicChatPhaseContext;
 import ru.v1as.tg.cat.callbacks.phase.PollTimeoutConfiguration;
-import ru.v1as.tg.cat.callbacks.phase.PublicChatPhaseContext;
 import ru.v1as.tg.cat.callbacks.phase.curios_cat.AbstractCuriosCatPhase.CuriosCatContext;
 import ru.v1as.tg.cat.callbacks.phase.poll.PollChoice;
 import ru.v1as.tg.cat.callbacks.phase.poll.TgInlinePoll;
@@ -147,16 +147,15 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
     }
 
     @Getter
-    public static class CuriosCatContext extends PublicChatPhaseContext {
+    public static class CuriosCatContext extends PersonalPublicChatPhaseContext {
 
-        private final TgUser user;
+
         private final Message message;
         private final Map<String, Object> values = new HashMap<>();
         private boolean dieAmulet = false;
 
         CuriosCatContext(TgChat chat, TgChat publicChat, TgUser user, Message message) {
-            super(chat, publicChat);
-            this.user = user;
+            super(chat, user, publicChat);
             this.message = message;
         }
 
@@ -181,8 +180,5 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
             return val;
         }
 
-        public TgUser getUser() {
-            return user;
-        }
     }
 }

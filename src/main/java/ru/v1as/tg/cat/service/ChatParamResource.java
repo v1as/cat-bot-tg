@@ -89,8 +89,10 @@ public class ChatParamResource {
     public List<ChatUserParamChangeEvent> param(
             Long chat, Integer user, ChatUserParam param, @NonNull Object newValue) {
         String value = newValue.toString();
-        final ChatEntity chatEntity = chatDao.findById(chat).orElseThrow(NoSuchEntityException::new);
-        final UserEntity userEntity = userDao.findById(user).orElseThrow(NoSuchEntityException::new);
+        final ChatEntity chatEntity =
+                chatDao.findById(chat).orElseThrow(NoSuchEntityException::new);
+        final UserEntity userEntity =
+                userDao.findById(user).orElseThrow(NoSuchEntityException::new);
         final ChatUserParamValue paramValue =
                 this.userParamDao
                         .findByChatIdAndUserIdAndParam(chat, user, param)
@@ -102,7 +104,7 @@ public class ChatParamResource {
             return emptyList();
         }
         paramValue.setValue(value);
-        log.info("User set param {} = {}", param, newValue);
+        log.info("User {} in chat {} set param {} = {}", userEntity, chatEntity, param, newValue);
         final ChatUserParamChangeEvent event =
                 new ChatUserParamChangeEvent(chatEntity, userEntity, param, oldValue, value);
         userParamDao.save(paramValue);
@@ -129,7 +131,13 @@ public class ChatParamResource {
             value.setValue(newValue);
             final ChatParamChangeEvent event =
                     new ChatParamChangeEvent(chat, user, param, oldValue, value.getValue());
-            log.info("User set param {}: '{}'->'{}'", param, oldValue, newValue);
+            log.info(
+                    "User {} in chat {} set param {}: '{}'->'{}'",
+                    user,
+                    chat,
+                    param,
+                    oldValue,
+                    newValue);
             paramDao.save(value);
             eventDao.save(event);
             return singletonList(event);
@@ -140,8 +148,10 @@ public class ChatParamResource {
 
     public List<ChatUserParamChangeEvent> increment(
             Long chat, Integer user, ChatUserParam param, int delta) {
-        final ChatEntity chatEntity = chatDao.findById(chat).orElseThrow(NoSuchEntityException::new);
-        final UserEntity userEntity = userDao.findById(user).orElseThrow(NoSuchEntityException::new);
+        final ChatEntity chatEntity =
+                chatDao.findById(chat).orElseThrow(NoSuchEntityException::new);
+        final UserEntity userEntity =
+                userDao.findById(user).orElseThrow(NoSuchEntityException::new);
         return increment(chatEntity, userEntity, param, delta);
     }
 
@@ -163,7 +173,7 @@ public class ChatParamResource {
             value.setValue(newValue);
             final ChatUserParamChangeEvent event =
                     new ChatUserParamChangeEvent(chat, user, param, oldValue, value.getValue());
-            log.info("User set param {}: '{}'->'{}'", param, oldValue, newValue);
+            log.info("User {} in chat {} set param {}: '{}'->'{}'", user, chat, param, oldValue, newValue);
             eventDao.save(event);
             userParamDao.save(value);
             return singletonList(event);
@@ -176,7 +186,8 @@ public class ChatParamResource {
         final Optional<ChatParamValue> paramValueOptional =
                 paramDao.findByChatIdAndParam(chat.getId(), param);
         final String adminUserName = conf.getAdminUserNames().iterator().next();
-        UserEntity admin = userDao.findByUserName(adminUserName).orElseThrow(NoSuchEntityException::new);;
+        UserEntity admin =
+                userDao.findByUserName(adminUserName).orElseThrow(NoSuchEntityException::new);
         if (paramValueOptional.isPresent()) {
             final ChatParamValue paramValue = paramValueOptional.get();
             final String oldValue = paramValue.getValue();
@@ -195,7 +206,8 @@ public class ChatParamResource {
         final Optional<ChatUserParamValue> paramValueOptional =
                 userParamDao.findByChatIdAndUserIdAndParam(chat.getId(), user.getId(), param);
         final String adminUserName = conf.getAdminUserNames().iterator().next();
-        UserEntity admin = userDao.findByUserName(adminUserName).orElseThrow(NoSuchEntityException::new);
+        UserEntity admin =
+                userDao.findByUserName(adminUserName).orElseThrow(NoSuchEntityException::new);
         if (paramValueOptional.isPresent()) {
             final ChatUserParamValue paramValue = paramValueOptional.get();
             final String oldValue = paramValue.getValue();

@@ -12,15 +12,19 @@ public abstract class AbstractChoiceAroundInterceptor implements ChoiceAroundInt
 
     @Override
     @SneakyThrows
-    public void around(ChooseContext ctx, Consumer<ChooseContext> method) {
+    public final void around(ChooseContext ctx, Consumer<ChooseContext> method) {
         try {
             before(ctx);
-            method.accept(ctx);
+            onAround(ctx, method);
         } catch (Exception ex) {
             onError(ctx, ex);
         } finally {
             after(ctx);
         }
+    }
+
+    protected void onAround(ChooseContext ctx, Consumer<ChooseContext> method) {
+        method.accept(ctx);
     }
 
     protected void onError(ChooseContext ctx, Exception ex) throws Exception {

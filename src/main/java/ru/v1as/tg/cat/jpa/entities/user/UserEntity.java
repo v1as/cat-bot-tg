@@ -64,4 +64,8 @@ public class UserEntity implements TgUser {
         }
         return changed;
     }
+    @Override
+    public String toString() {
+        return String.format("Usr[%s:%s]", id, getUsernameOrFullName());
+    }
 }

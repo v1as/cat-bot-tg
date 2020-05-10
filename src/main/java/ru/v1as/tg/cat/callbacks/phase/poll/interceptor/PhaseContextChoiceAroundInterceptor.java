@@ -1,9 +1,12 @@
 package ru.v1as.tg.cat.callbacks.phase.poll.interceptor;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static ru.v1as.tg.cat.tg.MdcTgContext.fromPhaseContext;
 
+import java.util.function.Consumer;
 import ru.v1as.tg.cat.callbacks.phase.PhaseContext;
 import ru.v1as.tg.cat.callbacks.phase.poll.ChooseContext;
+import ru.v1as.tg.cat.tg.MdcTgContext;
 
 public class PhaseContextChoiceAroundInterceptor<T extends PhaseContext>
         extends AbstractChoiceAroundInterceptor {
@@ -32,6 +35,13 @@ public class PhaseContextChoiceAroundInterceptor<T extends PhaseContext>
         if (phaseContextThreadLocal.get() == null) {
             phaseContextThreadLocal.set(phaseContext);
             threadLocalWasSet.set(true);
+        }
+    }
+
+    @Override
+    public void onAround(ChooseContext ctx, Consumer<ChooseContext> method) {
+        try (final MdcTgContext ignored = fromPhaseContext(phaseContext)) {
+            method.accept(ctx);
         }
     }
 }

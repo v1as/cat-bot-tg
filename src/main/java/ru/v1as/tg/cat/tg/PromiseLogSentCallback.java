@@ -1,5 +1,7 @@
 package ru.v1as.tg.cat.tg;
 
+import static ru.v1as.tg.cat.tg.MdcTgContext.fromCurrentMdc;
+
 import java.io.Serializable;
 import java.util.function.Consumer;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
@@ -11,8 +13,9 @@ public class PromiseLogSentCallback<T extends Serializable> extends LogSentCallb
     private final Consumer<Throwable> error;
 
     public PromiseLogSentCallback(Consumer<T> success, Consumer<Throwable> error) {
-        this.success = success;
-        this.error = error;
+        final MdcTgContext mdc = fromCurrentMdc();
+        this.success = mdc.wrap(success);
+        this.error = mdc.wrap(error);
     }
 
     @Override

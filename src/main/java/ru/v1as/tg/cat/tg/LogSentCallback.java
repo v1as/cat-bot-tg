@@ -9,18 +9,30 @@ import org.telegram.telegrambots.meta.updateshandlers.SentCallback;
 @Slf4j
 public class LogSentCallback<T extends Serializable> implements SentCallback<T> {
 
+    protected final MdcTgContext mdcTgContext;
+
+    public LogSentCallback() {
+        mdcTgContext = MdcTgContext.fromCurrentMdc();
+    }
+
     @Override
     public void onResult(BotApiMethod<T> method, T response) {
-        log.debug("Success callback :{}", response);
+        try (final MdcTgContext ignored = mdcTgContext.apply()) {
+            log.debug("Success callback :{}", response);
+        }
     }
 
     @Override
     public void onError(BotApiMethod<T> method, TelegramApiRequestException apiException) {
-        log.warn("Error callback.", apiException);
+        try (final MdcTgContext ignored = mdcTgContext.apply()) {
+            log.warn("Error callback.", apiException);
+        }
     }
 
     @Override
     public void onException(BotApiMethod<T> method, Exception exception) {
-        log.error("Exception callback.", exception);
+        try (final MdcTgContext ignored = mdcTgContext.apply()) {
+            log.error("Exception callback.", exception);
+        }
     }
 }
