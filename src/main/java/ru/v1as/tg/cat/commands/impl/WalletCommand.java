@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import ru.v1as.tg.cat.commands.TgCommandRequest;
 import ru.v1as.tg.cat.jpa.dao.ChatDao;
+import ru.v1as.tg.cat.jpa.dao.NoSuchEntityException;
 import ru.v1as.tg.cat.jpa.dao.UserDao;
 import ru.v1as.tg.cat.jpa.entities.chat.ChatEntity;
 import ru.v1as.tg.cat.jpa.entities.user.ChatUserParam;
@@ -33,13 +34,31 @@ public class WalletCommand extends AbstractCommand {
     }
 
     @Override
-    public void process(TgCommandRequest command, TgChat chat, TgUser user) {
+    public void process(TgCommandRequest command, TgChat chat, TgUser tgUser) {
+        final UserEntity user =
+                userDao.findById(tgUser.getId()).orElseThrow(NoSuchEntityException::new);
+        final String message =
+                chat.isUserChat() ? getPrivateChatMessage(user) : getPublicChatMessage(chat, user);
+        if (!isEmpty(message)) {
+            sender.message(chat, message);
+        }
+    }
+
+    private String getPublicChatMessage(TgChat chat, UserEntity user) {
+        final ChatEntity chatEntity =
+                chatDao.findById(chat.getId()).orElseThrow(NoSuchEntityException::new);
+        final UserEntity userEntity =
+                userDao.findById(user.getId()).orElseThrow(NoSuchEntityException::new);
+        final String money = paramResource.param(chatEntity, userEntity, ChatUserParam.MONEY);
+        return money + " " + MONEY_BAG;
+    }
+
+    private String getPrivateChatMessage(UserEntity user) {
         final List<ChatEntity> chats = chatDao.findByUsersId(user.getId());
-        final UserEntity userEntity = userDao.findById(user.getId()).get();
         final Map<ChatEntity, String> chatToMoney = new HashMap<>();
 
         for (ChatEntity chatEntity : chats) {
-            final String money = paramResource.param(chatEntity, userEntity, ChatUserParam.MONEY);
+            final String money = paramResource.param(chatEntity, user, ChatUserParam.MONEY);
             chatToMoney.put(chatEntity, money);
         }
         final String message;
@@ -57,9 +76,7 @@ public class WalletCommand extends AbstractCommand {
                                                     e.getKey().getTitle(), e.getValue(), MONEY_BAG))
                             .collect(Collectors.joining("\n"));
         }
-        if (!isEmpty(message)) {
-            sender.message(chat, message);
-        }
+        return message;
     }
 
     @Override
