@@ -26,11 +26,6 @@ public class TestBotClock implements BotClock {
     private AtomicLong ids = new AtomicLong();
 
     @Override
-    public void wait(int milliseconds) {
-        // nothing to do here
-    }
-
-    @Override
     public void schedule(Runnable runnable, long delay, TimeUnit unit) {
         final long id = ids.incrementAndGet();
         synchronized (tasks) {

@@ -6,7 +6,6 @@ import static ru.v1as.tg.cat.utils.LogUtils.logExceptions;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import lombok.SneakyThrows;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -15,12 +14,6 @@ import org.springframework.stereotype.Component;
 public class SimpleThreadSleepClock implements BotClock {
 
     private final ScheduledExecutorService executor = new ScheduledThreadPoolExecutor(4);
-
-    @Override
-    @SneakyThrows
-    public void wait(int milliseconds) {
-        Thread.sleep(milliseconds);
-    }
 
     @Override
     public void schedule(Runnable task, long amount, TimeUnit minutes) {

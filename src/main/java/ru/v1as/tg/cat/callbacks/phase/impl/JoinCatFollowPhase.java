@@ -115,9 +115,15 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
         if (recentlyCatsAmount == 0) {
             goToCat(data);
         } else {
+            final int odds = Math.min(2_000 + recentlyCatsAmount * 500, 10_000);
+            log.info("Waiting user odds {} ms", odds);
             botClock.schedule(
-                    contextWrap(() -> goToCat(data)),
-                    Math.min(2_000 + recentlyCatsAmount * 500, 10_000),
+                    contextWrap(
+                            () -> {
+                                log.info("Odds are finished.");
+                                goToCat(data);
+                            }),
+                    odds,
                     MILLISECONDS);
         }
     }
