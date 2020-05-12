@@ -137,7 +137,7 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
         private final Map<String, Object> values = new HashMap<>();
         private boolean dieAmulet = false;
 
-        CuriosCatContext(TgChat chat, TgChat publicChat, TgUser user, Message message) {
+        public CuriosCatContext(TgChat chat, TgChat publicChat, TgUser user, Message message) {
             super(chat, user, publicChat);
             this.message = message;
         }
@@ -157,9 +157,13 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
         }
 
         public Integer increment(String name) {
+            return increment(name, 1);
+        }
+
+        public Integer increment(String name, int delta) {
             checkNotClose();
             Integer val = (Integer) values.computeIfAbsent(name, n -> 0);
-            set(name, ++val);
+            set(name, val + delta);
             return val;
         }
     }
