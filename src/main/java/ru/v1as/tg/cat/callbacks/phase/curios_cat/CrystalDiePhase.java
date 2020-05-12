@@ -123,7 +123,7 @@ public class CrystalDiePhase extends AbstractCuriosCatPhase {
     private void die(ChooseContext choice) {
         messages(
                 "Вы остановились чтобы разглядеть находку.",
-                "Это оказался игральные кости, сделанные из материала похожего на стекло. " + DIE,
+                "Это оказались игральные кости, сделанные из материала, похожего на стекло. " + DIE,
                 "Пожалуй, вы заберёте их себе.");
 
         final TgChat publicChat = getPhaseContext().getPublicChat();

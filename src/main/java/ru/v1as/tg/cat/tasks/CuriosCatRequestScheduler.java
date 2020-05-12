@@ -7,13 +7,15 @@ import java.util.Random;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.v1as.tg.cat.callbacks.phase.impl.JoinCatFollowPhase;
-import ru.v1as.tg.cat.jpa.dao.ChatDao;
+import ru.v1as.tg.cat.jpa.dao.ChatDetailsDao;
+import ru.v1as.tg.cat.jpa.entities.chat.ChatDetailsEntity;
 import ru.v1as.tg.cat.jpa.entities.chat.ChatEntity;
 import ru.v1as.tg.cat.service.ChatParamResource;
 
@@ -24,7 +26,7 @@ import ru.v1as.tg.cat.service.ChatParamResource;
 public class CuriosCatRequestScheduler {
 
     private final JoinCatFollowPhase joinCatFollowPhase;
-    private final ChatDao chatDao;
+    private final ChatDetailsDao chatDetailsDao;
     private final Random random = new Random();
     private ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(1);
     private boolean firstTime = true;
@@ -48,7 +50,11 @@ public class CuriosCatRequestScheduler {
             return;
         }
 
-        final List<ChatEntity> chats = chatDao.findAll();
+        final List<ChatEntity> chats =
+                chatDetailsDao.findAll().stream()
+                        .filter(ChatDetailsEntity::isEnabled)
+                        .map(ChatDetailsEntity::getChat)
+                        .collect(Collectors.toList());
         int chatSent = 0;
         for (ChatEntity chat : chats) {
             try {

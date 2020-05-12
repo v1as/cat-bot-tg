@@ -1,5 +1,8 @@
 package ru.v1as.tg.cat.service.clock;
 
+import static ru.v1as.tg.cat.tg.MdcTgContext.fromCurrentMdc;
+import static ru.v1as.tg.cat.utils.LogUtils.logExceptions;
+
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Optional;
@@ -23,14 +26,10 @@ public class TestBotClock implements BotClock {
     private AtomicLong ids = new AtomicLong();
 
     @Override
-    public void wait(int milliseconds) {
-        // nothing to do here
-    }
-
-    @Override
     public void schedule(Runnable runnable, long delay, TimeUnit unit) {
         final long id = ids.incrementAndGet();
         synchronized (tasks) {
+            runnable = fromCurrentMdc().wrap(logExceptions(runnable));
             final Task task = new Task(id, runnable, unit.toNanos(delay));
             tasks.add(task);
             log.debug("Scheduled task {} in {} {}", task, delay, unit);

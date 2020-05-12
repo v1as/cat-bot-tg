@@ -2,6 +2,7 @@ package ru.v1as.tg.cat.callbacks.phase.impl;
 
 import static java.time.LocalDateTime.now;
 import static java.time.temporal.ChronoUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static ru.v1as.tg.cat.EmojiConst.CAT;
 
 import com.google.common.collect.ImmutableList;
@@ -114,7 +115,16 @@ public class JoinCatFollowPhase extends AbstractPhase<Context> {
         if (recentlyCatsAmount == 0) {
             goToCat(data);
         } else {
-            botClock.schedule(contextWrap(() -> goToCat(data)), 2, TimeUnit.SECONDS);
+            final int odds = Math.min(2_000 + recentlyCatsAmount * 500, 10_000);
+            log.info("Waiting user odds {} ms", odds);
+            botClock.schedule(
+                    contextWrap(
+                            () -> {
+                                log.info("Odds are finished.");
+                                goToCat(data);
+                            }),
+                    odds,
+                    MILLISECONDS);
         }
     }
 

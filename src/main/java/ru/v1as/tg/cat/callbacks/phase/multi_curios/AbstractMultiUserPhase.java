@@ -1,7 +1,6 @@
 package ru.v1as.tg.cat.callbacks.phase.multi_curios;
 
 import static java.util.Collections.singletonList;
-import static ru.v1as.tg.cat.utils.TimeoutUtils.getMsForTextReading;
 
 import java.util.Collection;
 import java.util.List;
@@ -14,12 +13,6 @@ import ru.v1as.tg.cat.model.TgUser;
 
 public abstract class AbstractMultiUserPhase<T extends MultiUserPhaseContext>
         extends AbstractPublicChatPhase<T> {
-
-    @Override
-    protected void message(String text) {
-        super.message(getPhaseContext().getPublicChat(), text);
-        botClock.wait(getMsForTextReading(text.length()));
-    }
 
     @Override
     protected TgInlinePoll poll(String text) {
@@ -36,7 +29,6 @@ public abstract class AbstractMultiUserPhase<T extends MultiUserPhaseContext>
             for (TgUser user : users) {
                 message(user, message);
             }
-            botClock.wait(getMsForTextReading(message.length()));
         }
     }
 
@@ -46,8 +38,6 @@ public abstract class AbstractMultiUserPhase<T extends MultiUserPhaseContext>
 
     public void everyoneMessage(Function<TgUser, String> message) {
         getUsers().forEach(u -> message(u, message.apply(u)));
-        final int msgLen = message.apply(getUsers().get(0)).length();
-        botClock.wait(getMsForTextReading(msgLen));
     }
 
     public List<TgUser> getUsers() {

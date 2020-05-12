@@ -76,7 +76,7 @@ public class FindWayToTheShopPhase extends AbstractCuriosCatPhase {
                     String.format(
                             "Игрок %s нашел путь к магазину  " + SHOP_BAG,
                             user.getUsernameOrFullName()));
-            sender.execute(
+            sender.executeAsync(
                     new SendMessage(user.getChatId(), "Вы нашли путь к магазину! " + SHOP_BAG)
                             .setReplyMarkup(replyKeyboardMarkup(GO_TO_THE_CITY)));
             message("Выглянув через витрину, вы замечаете как Кот следует по своим делам.");

@@ -1,6 +1,7 @@
 package ru.v1as.tg.cat.service;
 
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT1;
+import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT_REWARD;
 import static ru.v1as.tg.cat.jpa.entities.events.CatEventType.CURIOS_CAT;
 import static ru.v1as.tg.cat.jpa.entities.events.CatEventType.REAL;
 import static ru.v1as.tg.cat.jpa.entities.user.ChatUserParam.CONCENTRATION_POTION;
@@ -63,7 +64,7 @@ public class CatEventService {
                 new CatUserEvent(chat, owner, voteMessage.getMessageId(), CURIOS_CAT, cats);
         event.setQuestName(quest);
         userEventDao.save(event);
-        params.increment(chat, owner, MONEY, CatRequestVote.CAT_REWARD * cats.getAmount());
+        params.increment(chat, owner, MONEY, CAT_REWARD * cats.getAmount());
         return cats;
     }
 
@@ -71,7 +72,9 @@ public class CatEventService {
         List<UserEvent> events = new ArrayList<>();
         final ChatEntity chat = chatDao.getOne(req.getChatId());
         final UserEntity owner = userDao.getOne(req.getOwner().getId());
-        final CatRequestVote cats = concentration(chat, owner, req.getResult());
+        final int catAmount = req.getResult().getAmount();
+        final CatRequestVote cats =
+                catAmount > 0 ? concentration(chat, owner, req.getResult()) : req.getResult();
         final CatUserEvent event = new CatUserEvent(chat, owner, req.getMessageId(), REAL, cats);
         events.add(event);
         if (cats.getAmount() > 0) {
@@ -82,7 +85,7 @@ public class CatEventService {
                 events.add(voteEvent);
                 params.increment(chat, voter, MONEY, VOTE_REWARD);
             }
-            params.increment(chat, owner, MONEY, CatRequestVote.CAT_REWARD * cats.getAmount());
+            params.increment(chat, owner, MONEY, CAT_REWARD * cats.getAmount());
         }
         userEventDao.saveAll(events);
     }

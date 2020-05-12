@@ -33,7 +33,6 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import ru.v1as.tg.cat.callbacks.SimpleCallbackHandler;
 import ru.v1as.tg.cat.callbacks.TgCallBackHandler;
 import ru.v1as.tg.cat.callbacks.TgCallbackProcessor;
@@ -179,16 +178,7 @@ public class TgInlinePoll {
     }
 
     private void pollMessageFail(Throwable throwable) {
-        if (throwable instanceof TelegramApiRequestException) {
-            TelegramApiRequestException tEx = (TelegramApiRequestException) throwable;
-            log.error(
-                    String.format(
-                            "Poll error: message '%s' code '%s'",
-                            tEx.getApiResponse(), tEx.getErrorCode()),
-                    tEx);
-        } else {
-            log.error("Poll error", throwable);
-        }
+        log.error("Poll error", throwable);
         this.state = ERROR;
     }
 
@@ -215,7 +205,7 @@ public class TgInlinePoll {
                             this.close(timeoutConfiguration.removeMsg());
 
                             if (!isEmpty(timeoutConfiguration.message())) {
-                                sender.execute(
+                                sender.executeAsync(
                                         new SendMessage(chatId, timeoutConfiguration.message()));
                             }
 
@@ -268,14 +258,14 @@ public class TgInlinePoll {
         if (state.equals(SENT) || state.equals(UPDATED)) {
             state = CLOSED;
             if (shouldRemove) {
-                sender.execute(deleteMsg(message));
+                sender.executeAsync(deleteMsg(message));
             } else {
                 String newText =
                         closeOnTextBuilder.build(text, choose != null ? choose.getText() : null);
                 if (!Objects.equals(newText, text)) {
-                    sender.execute(editMessageText(message, newText));
+                    sender.executeAsync(editMessageText(message, newText));
                 } else {
-                    sender.execute(clearButtons(message));
+                    sender.executeAsync(clearButtons(message));
                 }
             }
         }
@@ -285,7 +275,7 @@ public class TgInlinePoll {
         clearChoices();
         if (state.equals(SENT) || state.equals(UPDATED)) {
             state = CANCELED;
-            sender.execute(deleteMsg(message));
+            sender.executeAsync(deleteMsg(message));
         } else if (state.equals(CREATED)) {
             state = CANCELED;
         }

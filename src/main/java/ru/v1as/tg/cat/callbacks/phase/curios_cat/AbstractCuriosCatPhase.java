@@ -7,7 +7,6 @@ import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT2;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT3;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.NOT_CAT;
 import static ru.v1as.tg.cat.jpa.entities.user.ChatUserParam.DIE_AMULET;
-import static ru.v1as.tg.cat.utils.TimeoutUtils.getMsForTextReading;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -18,13 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 import ru.v1as.tg.cat.callbacks.phase.AbstractPublicChatPhase;
+import ru.v1as.tg.cat.callbacks.phase.PersonalPublicChatPhaseContext;
 import ru.v1as.tg.cat.callbacks.phase.PollTimeoutConfiguration;
-import ru.v1as.tg.cat.callbacks.phase.PublicChatPhaseContext;
 import ru.v1as.tg.cat.callbacks.phase.curios_cat.AbstractCuriosCatPhase.CuriosCatContext;
-import ru.v1as.tg.cat.callbacks.phase.poll.PollChoice;
 import ru.v1as.tg.cat.callbacks.phase.poll.TgInlinePoll;
 import ru.v1as.tg.cat.callbacks.phase.poll.interceptor.PhaseContextChoiceAroundInterceptor;
-import ru.v1as.tg.cat.callbacks.phase.poll.interceptor.TimeoutPhaseContextChoiceAroundInterceptor;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.model.random.RandomRequest;
@@ -87,29 +84,17 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
     @Override
     protected PhaseContextChoiceAroundInterceptor<CuriosCatContext> getChoiceAroundInterceptor(
             TgInlinePoll poll, ThreadLocal<CuriosCatContext> phaseContext) {
-        int pollTextLength = getTextLength(poll);
-        int afterPollTimeoutMs = getMsForTextReading(pollTextLength);
-        return new TimeoutPhaseContextChoiceAroundInterceptor<>(
-                phaseContext, botClock, afterPollTimeoutMs);
-    }
-
-    protected int getTextLength(TgInlinePoll poll) {
-        int messageLen = poll.text().length();
-        int choicesLen =
-                poll.getChoices().stream().map(PollChoice::getText).mapToInt(String::length).sum();
-        return messageLen + choicesLen;
+        return new PhaseContextChoiceAroundInterceptor<>(phaseContext);
     }
 
     @Override
     protected void message(TgUser user, String text) {
         super.message(user, text);
-        botClock.wait(getMsForTextReading(text.length()));
     }
 
     @Override
     protected void message(String text) {
         super.message(addDieText(text));
-        botClock.wait(getMsForTextReading(text.length()));
     }
 
     private String addDieText(String text) {
@@ -119,12 +104,6 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
             phaseContext.randomFlag(false);
         }
         return text;
-    }
-
-    @Override
-    protected void message(TgChat chat, String text) {
-        super.message(chat, text);
-        botClock.wait(getMsForTextReading(text.length()));
     }
 
     protected void catchUpCatAndClose(@NonNull CatRequestVote result) {
@@ -147,16 +126,15 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
     }
 
     @Getter
-    public static class CuriosCatContext extends PublicChatPhaseContext {
+    public static class CuriosCatContext extends PersonalPublicChatPhaseContext {
 
-        private final TgUser user;
+
         private final Message message;
         private final Map<String, Object> values = new HashMap<>();
         private boolean dieAmulet = false;
 
         CuriosCatContext(TgChat chat, TgChat publicChat, TgUser user, Message message) {
-            super(chat, publicChat);
-            this.user = user;
+            super(chat, user, publicChat);
             this.message = message;
         }
 
@@ -181,8 +159,5 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
             return val;
         }
 
-        public TgUser getUser() {
-            return user;
-        }
     }
 }
