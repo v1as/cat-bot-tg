@@ -1,10 +1,12 @@
 package ru.v1as.tg.cat;
 
+import java.time.Duration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import ru.v1as.tg.cat.callbacks.TgCallbackProcessor;
 import ru.v1as.tg.cat.commands.TgCommandProcessorByName;
 import ru.v1as.tg.cat.config.JpaConfiguration;
@@ -17,6 +19,7 @@ import ru.v1as.tg.cat.service.clock.BotClock;
 import ru.v1as.tg.cat.service.clock.TestBotClock;
 import ru.v1as.tg.cat.tg.TgSender;
 
+@Profile("test")
 @Configuration
 @ComponentScan({
     "ru.v1as.tg.cat.messages",
@@ -48,6 +51,11 @@ public class CaBotTestConfiguration {
             TgMessageProcessor messageProcessor) {
         return new CatBot(
                 updateBeforeHandler, callbackProcessor, commandProcessor, messageProcessor);
+    }
+
+    @Bean
+    public ChatReadingDelay chatReadingDelay() {
+        return (chatId, length) -> Duration.ofMillis(0);
     }
 
     @Bean

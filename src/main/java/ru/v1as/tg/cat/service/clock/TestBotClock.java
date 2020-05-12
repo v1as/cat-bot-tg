@@ -16,6 +16,7 @@ import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import ru.v1as.tg.cat.utils.LogUtils;
 
 @Slf4j
 @Component
@@ -27,6 +28,11 @@ public class TestBotClock implements BotClock {
 
     @Override
     public void schedule(Runnable runnable, long delay, TimeUnit unit) {
+        if (delay == 0L) {
+            log.debug("Immediately executing");
+            LogUtils.logExceptions(runnable).run();
+            return;
+        }
         final long id = ids.incrementAndGet();
         synchronized (tasks) {
             runnable = fromCurrentMdc().wrap(logExceptions(runnable));
