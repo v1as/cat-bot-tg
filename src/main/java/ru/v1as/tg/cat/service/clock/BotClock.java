@@ -7,10 +7,10 @@ import java.util.concurrent.TimeUnit;
 
 public interface BotClock {
 
-    void schedule(Runnable o, long amount, TimeUnit minutes);
+    void schedule(Runnable task, long amount, TimeUnit minutes);
 
-    default void schedule(Runnable o, Duration duration) {
-        schedule(o, duration.toNanos(), NANOSECONDS);
+    default void schedule(Runnable task, Duration duration) {
+        schedule(task, duration.toNanos(), NANOSECONDS);
     }
 
 }

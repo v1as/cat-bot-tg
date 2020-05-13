@@ -15,6 +15,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import ru.v1as.tg.cat.ChatReadingDelay;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 import ru.v1as.tg.cat.callbacks.phase.AbstractPublicChatPhase;
 import ru.v1as.tg.cat.callbacks.phase.PersonalPublicChatPhaseContext;
@@ -33,6 +34,7 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
             new RandomRequest<CatRequestVote>().add(CAT1, 60).add(CAT2, 30).add(CAT3, 10);
 
     @Autowired protected CatEventService catEventService;
+    @Autowired protected ChatReadingDelay readingDelay;
 
     protected final PollTimeoutConfiguration TIMEOUT_LEAVE_CAT =
             new PollTimeoutConfiguration(Duration.of(30, SECONDS))
@@ -106,14 +108,17 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
         return text;
     }
 
-    protected void catchUpCatAndClose(@NonNull CatRequestVote result) {
+    protected void catchUpCatAndClose(@NonNull CatRequestVote innerResult) {
         CuriosCatContext ctx = getPhaseContext();
         final TgUser user = ctx.getUser();
         final TgChat publicChat = ctx.getPublicChat();
-        result =
+        final CatRequestVote result =
                 catEventService.saveCuriosCatQuest(
-                        user, publicChat, ctx.message, result, getName());
-        message(publicChat, result.getMessage(user.getUsernameOrFullName()));
+                        user, publicChat, ctx.message, innerResult, getName());
+        final Duration readingDelay = this.readingDelay.getReadingDelay(user.getChatId());
+        botClock.schedule(
+                () -> message(publicChat, result.getMessage(user.getUsernameOrFullName())),
+                readingDelay);
         close();
     }
 
@@ -128,12 +133,11 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
     @Getter
     public static class CuriosCatContext extends PersonalPublicChatPhaseContext {
 
-
         private final Message message;
         private final Map<String, Object> values = new HashMap<>();
         private boolean dieAmulet = false;
 
-        CuriosCatContext(TgChat chat, TgChat publicChat, TgUser user, Message message) {
+        public CuriosCatContext(TgChat chat, TgChat publicChat, TgUser user, Message message) {
             super(chat, user, publicChat);
             this.message = message;
         }
@@ -153,11 +157,14 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
         }
 
         public Integer increment(String name) {
-            checkNotClose();
-            Integer val = (Integer) values.computeIfAbsent(name, n -> 0);
-            set(name, ++val);
-            return val;
+            return increment(name, 1);
         }
 
+        public Integer increment(String name, int delta) {
+            checkNotClose();
+            Integer val = (Integer) values.computeIfAbsent(name, n -> 0);
+            set(name, val + delta);
+            return val;
+        }
     }
 }

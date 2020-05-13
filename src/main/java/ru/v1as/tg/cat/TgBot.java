@@ -30,7 +30,7 @@ import ru.v1as.tg.cat.tg.TgUpdateProcessor;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class TgBot extends TelegramLongPollingBot implements TgSender {
+public class TgBot extends TelegramLongPollingBot implements TgSender, ChatReadingDelay {
 
     private static final int MIN_READING_TIMEOUT_MS = 1500;
     private static final int SYMBOL_TIMEOUT_MS = 70;
@@ -75,8 +75,13 @@ public class TgBot extends TelegramLongPollingBot implements TgSender {
 
     private Duration getAndIncreaseReadingDelay(SendMessage message) {
         final long chatId = Long.parseLong(message.getChatId());
-        final int ms =
-                Math.max(MIN_READING_TIMEOUT_MS, message.getText().length() * SYMBOL_TIMEOUT_MS);
+        final int length = message.getText().length();
+        return getAndIncreaseReadingDelay(chatId, length);
+    }
+
+    @Override
+    public Duration getAndIncreaseReadingDelay(Long chatId, int textLength) {
+        final int ms = Math.max(MIN_READING_TIMEOUT_MS, textLength * SYMBOL_TIMEOUT_MS);
         final LocalDateTime readingFinished =
                 readingFinishedMap.computeIfAbsent(chatId, id -> now());
         long delay = Duration.between(now(), readingFinished).toMillis();

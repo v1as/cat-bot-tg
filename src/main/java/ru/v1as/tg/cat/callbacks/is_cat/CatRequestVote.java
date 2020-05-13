@@ -42,4 +42,20 @@ public enum CatRequestVote {
         final int length = values().length;
         return values()[index + 1 == length ? length - 1 : index + 1];
     }
+
+    public static CatRequestVote fromAmount(int amount) {
+        if (amount == 0) {
+            return NOT_CAT;
+        } else if (amount == 1) {
+            return CAT1;
+        } else if (amount == 2) {
+            return CAT2;
+        } else if (amount == 3) {
+            return CAT3;
+        } else if (amount == 4) {
+            return CAT4;
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
 }
