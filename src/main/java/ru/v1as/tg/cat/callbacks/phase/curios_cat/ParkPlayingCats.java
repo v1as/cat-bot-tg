@@ -13,6 +13,9 @@ import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 import ru.v1as.tg.cat.callbacks.phase.PollTimeoutConfiguration;
 import ru.v1as.tg.cat.callbacks.phase.poll.ChooseContext;
 
+/*
+ * author: AnnaTemnaya
+ * */
 @Component
 public class ParkPlayingCats extends AbstractCuriosCatPhase {
 

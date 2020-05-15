@@ -12,6 +12,9 @@ import org.springframework.stereotype.Component;
 import ru.v1as.tg.cat.callbacks.phase.PollTimeoutConfiguration;
 import ru.v1as.tg.cat.callbacks.phase.poll.ChooseContext;
 
+/*
+ * author: AnnaTemnaya
+ * */
 @Component
 public class DogWalkingPhase extends AbstractCuriosCatPhase {
 
