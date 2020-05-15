@@ -8,14 +8,16 @@ import org.springframework.stereotype.Component;
 import ru.v1as.tg.cat.callbacks.phase.poll.ChooseContext;
 
 /*
-* author: Portenato
-* */
+ * author: Portenato
+ * */
 @Component
 public class IsolationOrWindowPhase extends AbstractCuriosCatPhase {
+    public static final String ISOLATION_AWARE = "[☣️ Будьте осторожны в данном квесте действует режим самозоляции]";
 
     @Override
     protected void open() {
         messages(
+                ISOLATION_AWARE,
                 "На улице сегодня отличная погода: светит солнце и на деревьях пробивается молодая листва",
                 "Вы смотрите в окно и наслаждаетесь чудесным днем");
         poll("Может пора прогуляться?")

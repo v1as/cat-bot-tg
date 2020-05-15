@@ -19,4 +19,7 @@ public class EmojiConst {
     public static final String POTION = "\uD83E\uDDEA";
     public static final String SYRINGE = "\uD83D\uDC89";
     public static final String DIE = "\uD83C\uDFB2";
+    public static final String BOX = "\uD83D\uDCE6";
+    public static final String FOUNTAIN = "⛲";
+    public static final String PARK = "\uD83C\uDFDE";
 }
