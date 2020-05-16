@@ -18,21 +18,21 @@ public class LogSentCallback<T extends Serializable> implements SentCallback<T> 
     @Override
     public void onResult(BotApiMethod<T> method, T response) {
         try (final MdcTgContext ignored = mdcTgContext.apply()) {
-            log.debug("Success callback :{}", response);
+            log.debug("Success callback '{}' for method '{}'", response, method);
         }
     }
 
     @Override
     public void onError(BotApiMethod<T> method, TelegramApiRequestException apiException) {
         try (final MdcTgContext ignored = mdcTgContext.apply()) {
-            log.warn("Error callback.", apiException);
+            log.warn("Error callback." + method, apiException);
         }
     }
 
     @Override
     public void onException(BotApiMethod<T> method, Exception exception) {
         try (final MdcTgContext ignored = mdcTgContext.apply()) {
-            log.error("Exception callback.", exception);
+            log.error("Exception callback." + method, exception);
         }
     }
 }

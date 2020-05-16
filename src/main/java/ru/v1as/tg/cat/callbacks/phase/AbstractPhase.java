@@ -79,6 +79,10 @@ public abstract class AbstractPhase<T extends PhaseContext> implements Phase<T> 
         return randomChoice.get(randomRequest);
     }
 
+    protected boolean randomBool() {
+        return random(new RandomRequest<Boolean>().add(Boolean.TRUE).add(Boolean.FALSE));
+    }
+
     protected <R> R random(R... values) {
         return random(new RandomRequest<R>().addAll(values));
     }

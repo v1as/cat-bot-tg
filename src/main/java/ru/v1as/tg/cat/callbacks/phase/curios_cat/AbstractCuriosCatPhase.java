@@ -32,6 +32,12 @@ public abstract class AbstractCuriosCatPhase extends AbstractPublicChatPhase<Cur
 
     protected static final RandomRequest<CatRequestVote> RANDOM_REQUEST_CAT_1_2_3 =
             new RandomRequest<CatRequestVote>().add(CAT1, 60).add(CAT2, 30).add(CAT3, 10);
+    protected static final RandomRequest<CatRequestVote> RANDOM_REQUEST_CAT_0_1_2_3 =
+            new RandomRequest<CatRequestVote>()
+                    .add(NOT_CAT, 10)
+                    .add(CAT1, 60)
+                    .add(CAT2, 30)
+                    .add(CAT3, 10);
 
     @Autowired protected CatEventService catEventService;
     @Autowired protected ChatReadingDelay readingDelay;

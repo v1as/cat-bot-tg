@@ -2,6 +2,7 @@ package ru.v1as.tg.cat.callbacks.phase.curios_cat;
 
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT1;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.NOT_CAT;
+import static ru.v1as.tg.cat.callbacks.phase.curios_cat.IsolationOrWindowPhase.ISOLATION_AWARE;
 
 import java.util.function.Consumer;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ public class IsolationShopOrParkPhase extends AbstractCuriosCatPhase {
     @Override
     protected void open() {
         messages(
+                ISOLATION_AWARE,
                 "Просидев дома 9 дней, вы решили по-быстрому сбегать в магазин за хлебом и чипсиками",
                 "Щурясь от солнца, осторожно оглядываетесь",
                 "Кошачий хвост скрылся за углом дома, но в магазин вам идти по прямой");

@@ -6,11 +6,11 @@ public interface RandomChoice {
 
     <T> T get(RandomRequest<T> request);
 
-    default <T> T random(Iterable<T> quests) {
-        return get(new RandomRequest<T>().addAll(quests));
+    default <T> T random(Iterable<T> values) {
+        return get(new RandomRequest<T>().addAll(values));
     }
 
-    default <T> T random(T... quests) {
-        return get(new RandomRequest<T>().addAll(quests));
+    default <T> T random(T... values) {
+        return get(new RandomRequest<T>().addAll(values));
     }
 }

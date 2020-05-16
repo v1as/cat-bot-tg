@@ -19,4 +19,14 @@ public class EmojiConst {
     public static final String POTION = "\uD83E\uDDEA";
     public static final String SYRINGE = "\uD83D\uDC89";
     public static final String DIE = "\uD83C\uDFB2";
+    public static final String BOX = "\uD83D\uDCE6";
+    public static final String FOUNTAIN = "⛲";
+    public static final String PARK = "\uD83C\uDFDE";
+    public static final String GLASSES = "\uD83D\uDC53";
+    public static final String NIGHT_CITY = "\uD83C\uDF03";
+    public static final String LIGHT_BULB = "\uD83D\uDCA1";
+    public static final String EYES = "\uD83D\uDC40";
+    public static final String ATHLETIC_SHOE = "\uD83D\uDC5F";
+    public static final String GHOST = "\uD83D\uDC7B";
+    public static final String RAISED_HAND = "✋";
 }
