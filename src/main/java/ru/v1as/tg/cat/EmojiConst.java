@@ -1,5 +1,10 @@
 package ru.v1as.tg.cat;
 
+import static lombok.AccessLevel.PRIVATE;
+
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = PRIVATE)
 public class EmojiConst {
 
     public static final String CAT = "\uD83D\uDC08";
@@ -29,4 +34,12 @@ public class EmojiConst {
     public static final String ATHLETIC_SHOE = "\uD83D\uDC5F";
     public static final String GHOST = "\uD83D\uDC7B";
     public static final String RAISED_HAND = "✋";
+    public static final String HI_HAND = "\uD83D\uDC4B";
+    public static final String NO_EYES_MONKEY = "\uD83D\uDE48";
+    public static final String OFFICE = "\uD83C\uDFE2";
+    public static final String STADIUM = "\uD83C\uDFDF";
+    public static final String PHOTO_WITH_LIGHT = "\uD83D\uDCF8";
+    public static final String CAR = "\uD83D\uDE97";
+    public static final String DOG = "\uD83E\uDDAE";
+    public static final String POKER_FACE = "\uD83D\uDE10";
 }

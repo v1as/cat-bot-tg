@@ -1,7 +1,11 @@
 package ru.v1as.tg.cat.callbacks.phase.curios_cat;
 
 import static java.lang.Math.max;
+import static ru.v1as.tg.cat.EmojiConst.CAR;
 import static ru.v1as.tg.cat.EmojiConst.CAT;
+import static ru.v1as.tg.cat.EmojiConst.DOG;
+import static ru.v1as.tg.cat.EmojiConst.OFFICE;
+import static ru.v1as.tg.cat.EmojiConst.POKER_FACE;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT1;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT2;
 import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.NOT_CAT;
@@ -28,7 +32,7 @@ public class DogWalkingPhase extends AbstractCuriosCatPhase {
                     + " или же через пустырь во дворы пятиэтажек.");
         poll("Куда пойдём?")
                 .choice("К лесу \uD83C\uDF32", this::forest)
-                .choice("К пятиэтажкам \uD83C\uDFE2", this::house5)
+                .choice("К пятиэтажкам " + OFFICE, this::house5)
                 .send();
     }
 
@@ -38,8 +42,8 @@ public class DogWalkingPhase extends AbstractCuriosCatPhase {
                 "Но ни у лоточков с их едой, ни на привычном их месте нет ни одного Кота.");
 
         poll("Куда дальше?")
-                .choice("Во дворы \uD83C\uDFE2", this::yard)
-                .choice("Вдоль гаражей \uD83D\uDE97", this::garage)
+                .choice("Во дворы " + OFFICE, this::yard)
+                .choice("Вдоль гаражей " + CAR, this::garage)
                 .send();
     }
 
@@ -99,8 +103,8 @@ public class DogWalkingPhase extends AbstractCuriosCatPhase {
                 "Ваша собака замечает Котов впереди раньше вас и дёргает поводок.");
 
         poll("Что делаем?")
-                .choice("Окрикнуть пса \uD83E\uDDAE", this::shoutDog)
-                .choice("Молча дёрнуть поводок \uD83D\uDE10", this::silenceControlDog)
+                .choice("Окрикнуть пса " + DOG, this::shoutDog)
+                .choice("Молча дёрнуть поводок " + POKER_FACE, this::silenceControlDog)
                 .send();
     }
 
