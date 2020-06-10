@@ -1,5 +1,6 @@
 package ru.v1as.tg.cat.callbacks.phase.curios_cat;
 
+import java.time.LocalDateTime;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -8,8 +9,6 @@ import org.springframework.context.annotation.Import;
 import ru.v1as.tg.cat.callbacks.phase.curios_cat.AbstractCuriosCatPhase.CuriosCatContext;
 import ru.v1as.tg.cat.callbacks.phase.multi_curios.RegattaDreamPhaseTest.CuriosConfiguration;
 import ru.v1as.tg.cat.tg.TestUserChat;
-
-import java.time.LocalDateTime;
 
 @Import(CuriosConfiguration.class)
 public class DayAndNightPhaseTest extends AbstractCuriosCatPhaseTest {
@@ -32,7 +31,7 @@ public class DayAndNightPhaseTest extends AbstractCuriosCatPhaseTest {
         chat.getEditMessage();
 
         chat.getSendMessage().assertContainText("Следуя за котом");
-        chat.getSendMessage().assertContainText("Вы неспеша движетесь");
+        chat.getSendMessage().assertContainText("Вы не спеша движетесь");
         chat.getSendMessage().assertContainText("Кот прибавил шаг");
         chat.getSendMessage().assertContainText("Куст достаточно густой");
         chat.getSendMessage().assertContainText("Спустя мгновение");
@@ -68,7 +67,7 @@ public class DayAndNightPhaseTest extends AbstractCuriosCatPhaseTest {
         chat.getEditMessage();
 
         chat.getSendMessage().assertContainText("Следуя за котом");
-        chat.getSendMessage().assertContainText("Вы неспеша движетесь");
+        chat.getSendMessage().assertContainText("Вы не спеша движетесь");
         chat.getSendMessage().assertContainText("Кот прибавил шаг");
         chat.getSendMessage().assertContainText("Куст достаточно густой");
         chat.getSendMessage().assertContainText("Спустя мгновение");

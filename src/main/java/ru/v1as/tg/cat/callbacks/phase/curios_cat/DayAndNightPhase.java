@@ -1,13 +1,12 @@
 package ru.v1as.tg.cat.callbacks.phase.curios_cat;
 
 import com.google.common.collect.ImmutableList;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.springframework.stereotype.Component;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 import ru.v1as.tg.cat.callbacks.phase.poll.ChooseContext;
 import ru.v1as.tg.cat.model.random.RandomRequest;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 /*
    author: AshaOwl
@@ -51,10 +50,10 @@ public class DayAndNightPhase extends AbstractCuriosCatPhase {
     private void dayStory(ChooseContext ctx) {
         messages(
                 "Следуя за котом, вы попадаете в парк.",
-                "Вы неспеша движетесь по тропинке, смотрите по сторонам, слушаете пение птиц.",
+                "Вы не спеша движетесь по тропинке, смотрите по сторонам, слушаете пение птиц.",
                 "Кот прибавил шаг и устремился к кусту у края дороги.",
                 "Куст достаточно густой, чтобы полностью скрыть кота, когда тот завернул за него.",
-                "Спустя мгновение, кот появляется снова.",
+                "Спустя мгновение кот появляется снова.",
                 "Вы видите его напряжённую спину, он пятится и не сводит глаз с куста...",
                 "Из куста выходит ещё один кот!",
                 "Коты шипят друг на друга, кружат и готовятся к драке.",

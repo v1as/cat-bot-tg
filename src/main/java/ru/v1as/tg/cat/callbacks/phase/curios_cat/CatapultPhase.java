@@ -32,15 +32,15 @@ public class CatapultPhase extends AbstractCuriosCatPhase {
 
     private void pullBack(ChooseContext chooseContext) {
         messages(
-                "Решено, нужно просто привязать веревку к дереву, и нагнуть березку с помощью автомобиля",
+                "Решено, нужно просто привязать веревку к дереву и нагнуть березку с помощью автомобиля",
                 "А там кот спрыгнет или вы его снимете");
         randomWay(chooseContext, this::pullBackFail, this::pullBackSuccess);
     }
 
     private void pullBackSuccess(ChooseContext chooseContext) {
         messages(
-                "Вы четко следуете плану без каких-либо произшествий.",
-                "Кот спрыгивает с ветки и паническим мяуканьем убегает в кусты.");
+                "Вы четко следуете плану без каких-либо происшествий.",
+                "Кот спрыгивает с ветки с паническим мяуканьем убегает в кусты.");
         catchUpCatAndClose(CAT1);
     }
 

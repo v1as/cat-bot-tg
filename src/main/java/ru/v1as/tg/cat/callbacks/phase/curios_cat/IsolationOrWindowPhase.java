@@ -12,7 +12,7 @@ import ru.v1as.tg.cat.callbacks.phase.poll.ChooseContext;
  * */
 @Component
 public class IsolationOrWindowPhase extends AbstractCuriosCatPhase {
-    public static final String ISOLATION_AWARE = "[☣️ Будьте осторожны в данном квесте действует режим самозоляции]";
+    public static final String ISOLATION_AWARE = "[☣️ Будьте осторожны, в данном квесте действует режим самоизоляции]";
 
     @Override
     protected void open() {

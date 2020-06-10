@@ -1,14 +1,13 @@
 package ru.v1as.tg.cat.callbacks.phase.curios_cat;
 
+import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT1;
+
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import org.springframework.stereotype.Component;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 import ru.v1as.tg.cat.callbacks.phase.poll.ChooseContext;
 import ru.v1as.tg.cat.model.random.RandomRequest;
-
-import java.util.List;
-
-import static ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote.CAT1;
 
 /*
    author: AshaOwl
@@ -66,7 +65,7 @@ public class MoreCatsPhase extends AbstractCuriosCatPhase {
         );
         getPhaseContext().set(CATS_COUNTER, 0);
         messages(
-                "Тем временем небо хмурится, возможно скоро будет дождь.",
+                "Тем временем небо хмурится, возможно, скоро будет дождь.",
                 "При такой погоде все коты могут попрятаться, и вы никого не найдёте."
         );
         poll("Как много котов вы ожидаете встретить в этом дворе?")
