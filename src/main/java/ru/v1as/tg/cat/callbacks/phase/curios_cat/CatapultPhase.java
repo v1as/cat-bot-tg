@@ -40,7 +40,7 @@ public class CatapultPhase extends AbstractCuriosCatPhase {
     private void pullBackSuccess(ChooseContext chooseContext) {
         messages(
                 "Вы четко следуете плану без каких-либо происшествий.",
-                "Кот спрыгивает с ветки с паническим мяуканьем убегает в кусты.");
+                "Кот спрыгивает с ветки и с паническим мяуканьем убегает в кусты.");
         catchUpCatAndClose(CAT1);
     }
 

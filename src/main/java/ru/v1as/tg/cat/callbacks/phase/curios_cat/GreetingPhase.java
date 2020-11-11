@@ -52,7 +52,7 @@ public class GreetingPhase extends AbstractCuriosCatPhase {
     }
 
     private void yard(ChooseContext chooseContext) {
-        poll("Спустя десятиминутной прогулки вы замечаете кота в окне.")
+        poll("Спустя десять минут прогулки вы замечаете кота в окне.")
                 .choice("Подойти поближе и сфотографировать " + PHOTO_WITH_LIGHT, this::photo)
                 .choice("Кот! " + CAT, this::cat)
                 .send();
@@ -69,14 +69,14 @@ public class GreetingPhase extends AbstractCuriosCatPhase {
         } else {
             messages(
                     "Вы начинаете приближаться к цели,но тут рядом с котом в окне появляется его хозяйка.",
-                    "Вы хватаете телефон, быстро сфотографировав кота убегаете дальше.");
+                    "Вы хватаете телефон, быстро сфотографировав, кота убегаете дальше.");
             catchUpCatAndClose(CAT1);
         }
     }
 
     private void cat(ChooseContext chooseContext) {
         messages(
-                "Выкрикнул кот, вы испугали окружающих и котёнка, который лежал рядом с мамой на окне.",
+                "Выкрикнув кот, вы испугали окружающих и котёнка, который лежал рядом с мамой на окне.",
                 "Ваш крик заставил его поднять голову. Похоже вы счастливчик.");
         catchUpCatAndClose(CAT3);
     }

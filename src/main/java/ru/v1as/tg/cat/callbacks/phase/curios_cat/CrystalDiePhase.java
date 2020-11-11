@@ -37,7 +37,7 @@ public class CrystalDiePhase extends AbstractCuriosCatPhase {
     private void notTea(ChooseContext chooseContext) {
         messages(
                 "Не сумев подавить разочарование, продавец скрывается, что-то недовольно бурча под нос.",
-                "Рассматривая подсыхающую грязь на своих ногах вы раздумываете о своих дальнейших планах.");
+                "Рассматривая подсыхающую грязь на своих ногах, вы раздумываете о своих дальнейших планах.");
         cat();
     }
 
@@ -63,7 +63,7 @@ public class CrystalDiePhase extends AbstractCuriosCatPhase {
         messages(
                 "С одного из близлежащих домов вы слышите шум, словно кто-то стукнул по пустому железному чайнику.");
         poll("Пытаясь найти источник звука, вы натыкаетесь взглядом на Любопытно Кота,"
-                        + " который ждет пока вы его обнаружите на одном из дождевых желобов.")
+                        + " который ждёт, пока вы его обнаружите на одном из дождевых желобов.")
                 .choice("Подойти", this::come)
                 .send();
     }
@@ -89,7 +89,7 @@ public class CrystalDiePhase extends AbstractCuriosCatPhase {
 
     private void roof(ChooseContext chooseContext) {
         message(
-                "Пока вы карабкались на верх, Любопытный Кот убежал слишком далеко, и вам его теперь не нагнать.");
+                "Пока вы карабкались наверх, Любопытный Кот убежал слишком далеко, и вам его теперь не нагнать.");
         randomWay(chooseContext, this::gingerCat, this::nothing);
     }
 
@@ -122,7 +122,7 @@ public class CrystalDiePhase extends AbstractCuriosCatPhase {
 
     private void die(ChooseContext choice) {
         messages(
-                "Вы остановились чтобы разглядеть находку.",
+                "Вы остановились, чтобы разглядеть находку.",
                 "Это оказались игральные кости, сделанные из материала, похожего на стекло. " + DIE,
                 "Пожалуй, вы заберёте их себе.");
 

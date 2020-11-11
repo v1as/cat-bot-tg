@@ -35,7 +35,7 @@ import ru.v1as.tg.cat.tg.TgSender;
 public class ShopService {
 
     public static final int CAT_BITE_PRICE = 10;
-    public static final int CONCENTRATION_POTION_PRICE = 20;
+    public static final int CONCENTRATION_POTION_PRICE = 30;
     public static final int RABIES_MEDICINE_PRICE = 2;
     private final ChatDao chatDao;
     private final UserDao userDao;
@@ -57,13 +57,13 @@ public class ShopService {
         if (!chatParam.increment(chat, userEntity, CAT_BITE_LEVEL, 1).isEmpty()) {
             chatParam.increment(chat, userEntity, MONEY, -1 * CAT_BITE_PRICE);
             sender.executeAsync(
-                    new SendMessage(
-                            user.getChatId(), FISH + " Вы купили приманку" + prc(CAT_BITE_PRICE)));
+                new SendMessage(
+                    user.getChatId(), FISH + " Вы купили приманку" + prc(CAT_BITE_PRICE)));
             sender.message(
-                    chat,
-                    format(
-                            "Игрок %s купил приманку для Любопытного Кота " + FISH,
-                            user.getUsernameOrFullName()));
+                chat,
+                format(
+                    "Игрок %s купил приманку для Любопытного Кота " + FISH,
+                    user.getUsernameOrFullName()));
         } else {
             sender.message(user, "Максимальное количество приманок куплено, попробуйте завтра");
         }
@@ -90,16 +90,16 @@ public class ShopService {
         if (!chatParam.param(chat, userEntity, CONCENTRATION_POTION, "true").isEmpty()) {
             chatParam.increment(chat, userEntity, MONEY, -1 * CONCENTRATION_POTION_PRICE);
             sender.executeAsync(
-                    new SendMessage(
-                            user.getChatId(),
-                            POTION
-                                    + "Вы купили зелье концентрации "
-                                    + prc(CONCENTRATION_POTION_PRICE)));
+                new SendMessage(
+                    user.getChatId(),
+                    POTION
+                        + "Вы купили зелье концентрации "
+                        + prc(CONCENTRATION_POTION_PRICE)));
             sender.message(
-                    chat,
-                    format(
-                            "Игрок %s купил зелье концентрации %s",
-                            user.getUsernameOrFullName(), POTION));
+                chat,
+                format(
+                    "Игрок %s купил зелье концентрации %s",
+                    user.getUsernameOrFullName(), POTION));
         } else {
             sender.message(user, "Вы не можете купить зелье, пока его действие не прекратится");
         }
@@ -125,15 +125,15 @@ public class ShopService {
         } else {
             final TgInlinePoll poll = pollFactory.poll(tgChat.getId(), "Выберите чат");
             chats.forEach(
-                    chat ->
-                            poll.choice(
-                                    chat.getTitle(),
-                                    ctx -> {
-                                        if (checkShopWay(chat, user)) {
-                                            return;
-                                        }
-                                        chatChooser.accept(chat);
-                                    }));
+                chat ->
+                    poll.choice(
+                        chat.getTitle(),
+                        ctx -> {
+                            if (checkShopWay(chat, user)) {
+                                return;
+                            }
+                            chatChooser.accept(chat);
+                        }));
             poll.send();
         }
     }
@@ -152,11 +152,11 @@ public class ShopService {
         if (!chatParam.param(chat, userEntity, RABIES_MEDICINE, "true").isEmpty()) {
             chatParam.increment(chat, userEntity, MONEY, -1 * RABIES_MEDICINE_PRICE);
             sender.executeAsync(
-                    new SendMessage(
-                            user.getChatId(),
-                            SYRINGE
-                                    + "Вы купили лекарство от бешенства "
-                                    + prc(RABIES_MEDICINE_PRICE)));
+                new SendMessage(
+                    user.getChatId(),
+                    SYRINGE
+                        + "Вы купили лекарство от бешенства "
+                        + prc(RABIES_MEDICINE_PRICE)));
         } else {
             sender.message(user, "У вас уже есть лекарство от бешенства, зачем вам еще одно?");
         }

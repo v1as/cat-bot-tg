@@ -91,6 +91,6 @@ public class ShopServiceTest extends AbstractCatBotTest {
 
         assertTrue(
                 paramResource.paramBool(inPublic.getId(), bob.getUserId(), CONCENTRATION_POTION));
-        assertEquals(40, paramResource.paramInt(inPublic.getId(), bob.getUserId(), MONEY));
+        assertEquals(30, paramResource.paramInt(inPublic.getId(), bob.getUserId(), MONEY));
     }
 }

@@ -96,7 +96,7 @@ public class YouFollowCuriosCatPhase extends AbstractCuriosCatPhase {
     private void goToTheForest(ChooseContext chooseContext) {
         messages(
                 "Сохраняя порядок, вы впереди, кот сзади, вы заходите в лес.",
-                "Похоже кот тут нечастый гость.",
+                "Похоже, кот тут нечастый гость.",
                 "Его пушистая голова любопытно вертится из стороны в сторону.",
                 "В этот раз вам удалось удивить кота, а сейчас ему пора по делам.");
         catchUpCatAndClose(CAT1);

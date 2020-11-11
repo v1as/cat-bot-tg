@@ -27,7 +27,7 @@ public class HungryCatPhase extends AbstractCuriosCatPhase {
     private void catchTheCat(ChooseContext chooseContext) {
         messages(
                 "Кот смотрит на вас взглядом, полным вселенской скорби.",
-                "Но вы не поддаётесь, и получаете свой заслуженный балл.");
+                "Но вы не поддаётесь и получаете свой заслуженный балл.");
         catchUpCatAndClose(CAT1);
     }
 

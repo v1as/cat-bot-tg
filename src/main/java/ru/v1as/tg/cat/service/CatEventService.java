@@ -72,9 +72,7 @@ public class CatEventService {
         List<UserEvent> events = new ArrayList<>();
         final ChatEntity chat = chatDao.getOne(req.getChatId());
         final UserEntity owner = userDao.getOne(req.getOwner().getId());
-        final int catAmount = req.getResult().getAmount();
-        final CatRequestVote cats =
-                catAmount > 0 ? concentration(chat, owner, req.getResult()) : req.getResult();
+        final CatRequestVote cats = req.getResult();
         final CatUserEvent event = new CatUserEvent(chat, owner, req.getMessageId(), REAL, cats);
         events.add(event);
         if (cats.getAmount() > 0) {
