@@ -7,16 +7,16 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import ru.v1as.tg.cat.commands.TgCommandRequest;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
-import ru.v1as.tg.cat.service.init.DumpService;
+import ru.v1as.tg.cat.service.init.ZipDumpService;
 import ru.v1as.tg.cat.tg.TgSender;
 
 @Component
 public class SqlDatabaseDumpCommandHandler extends AbstractCommand {
 
-    private final DumpService dumpService;
+    private final ZipDumpService dumpService;
     private final TgSender sender;
 
-    public SqlDatabaseDumpCommandHandler(DumpService dumpService, TgSender sender) {
+    public SqlDatabaseDumpCommandHandler(ZipDumpService dumpService, TgSender sender) {
         super(cfg().onlyPrivateChat(true).onlyBotAdmins(true).commandName("database_dump"));
         this.dumpService = dumpService;
         this.sender = sender;

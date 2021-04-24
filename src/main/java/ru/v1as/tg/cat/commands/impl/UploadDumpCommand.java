@@ -25,14 +25,14 @@ import ru.v1as.tg.cat.messages.request.RequestMessageHandler;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.service.BotConfiguration;
-import ru.v1as.tg.cat.service.init.DumpService;
+import ru.v1as.tg.cat.service.init.ZipDumpService;
 import ru.v1as.tg.cat.tg.TgSender;
 
 @Slf4j
 @Component
 public class UploadDumpCommand extends AbstractCommand {
 
-    private final DumpService dumpService;
+    private final ZipDumpService dumpService;
     private final UserDao userDao;
     private final BotConfiguration conf;
     private final RequestMessageHandler requestMessageHandler;
@@ -42,7 +42,7 @@ public class UploadDumpCommand extends AbstractCommand {
     public UploadDumpCommand(
             RequestMessageHandler requestMessageHandler,
             TgSender sender,
-            DumpService dumpService,
+            ZipDumpService dumpService,
             UserDao userDao,
             BotConfiguration conf,
             @Lazy UploadDumpCommand self) {
@@ -57,14 +57,14 @@ public class UploadDumpCommand extends AbstractCommand {
 
     @Override
     public void process(TgCommandRequest command, TgChat chat, TgUser user) {
-        sender.message(chat, "Теперь пришлите dump.sql файл");
+        sender.message(chat, "Теперь пришлите dump.sql.zip файл");
         requestMessageHandler.addRequest(
                 new MessageRequest(command.getMessage())
                         .filter(
                                 m -> {
                                     final Document document = m.getDocument();
                                     return null != document
-                                            && document.getFileName().endsWith(".sql");
+                                            && document.getFileName().endsWith(".sql.zip");
                                 })
                         .onResponse(m -> self.onResponse(m, chat, user))
                         .onTimeout(() -> sender.message(chat, "Не дождался дамп файла.")));
