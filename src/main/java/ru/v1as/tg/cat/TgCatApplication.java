@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
+import ru.v1as.tg.cat.utils.LogUtils;
 
 @Slf4j
 @ComponentScan
@@ -23,6 +24,7 @@ public class TgCatApplication implements ApplicationListener<ApplicationStartedE
     @Autowired private TgBot tgBot;
 
     public static void main(String[] args) {
+        Thread.setDefaultUncaughtExceptionHandler(LogUtils.getDefaultUncaughtExceptionHandler());
         ApiContextInitializer.init();
         SpringApplication.run(TgCatApplication.class, args);
     }

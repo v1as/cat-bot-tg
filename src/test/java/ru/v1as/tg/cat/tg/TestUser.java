@@ -31,6 +31,10 @@ public class TestUser {
         return new TestUserPublicChat(publicChat, privateChat, user);
     }
 
+    public TestUserChat inPublic(TestChat publicChat) {
+        return new TestUserPublicChat(publicChat, privateChat, user);
+    }
+
     public TestUserChat inPrivate() {
         return new TestUserChat(privateChat, user);
     }

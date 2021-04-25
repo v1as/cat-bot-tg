@@ -22,45 +22,45 @@ public class ShopServiceTest extends AbstractCatBotTest {
     @Test
     public void has_no_shop_access_test() {
         buyCatBite();
-        bob.inPrivate().getSendMessageToSend().assertText("У вас нет доступа к магазину");
+        mary.inPrivate().getSendMessageToSend().assertText("У вас нет доступа к магазину");
     }
 
     @Test
     public void not_enough_money_test() {
 
-        paramResource.param(inPublic.getId(), bob.getUserId(), WAY_TO_SHOP, true);
+        paramResource.param(inPublic.getId(), mary.getUserId(), WAY_TO_SHOP, true);
 
         buyCatBite();
 
-        bob.inPrivate().getSendMessageToSend().assertText("У вас недостаточно денег.");
+        mary.inPrivate().getSendMessageToSend().assertText("У вас недостаточно денег.");
     }
 
     @Test
     public void buy_cat_bite_test() {
 
-        paramResource.param(inPublic.getId(), bob.getUserId(), WAY_TO_SHOP, true);
-        paramResource.param(inPublic.getId(), bob.getUserId(), MONEY, 60);
+        paramResource.param(inPublic.getId(), mary.getUserId(), WAY_TO_SHOP, true);
+        paramResource.param(inPublic.getId(), mary.getUserId(), MONEY, 60);
 
         for (int i = 1; i <= 5; i++) {
             buyCatBite();
 
-            bob.inPrivate().getSendMessageToSend().assertContainText("Вы купили приманку");
-            bob.inPublic()
+            mary.inPrivate().getSendMessageToSend().assertContainText("Вы купили приманку");
+            mary.inPublic()
                     .getSendMessageToSend()
-                    .assertContainText("Игрок @bob купил приманку для Любопытного Кота");
+                    .assertContainText("Игрок @mary купил приманку для Любопытного Кота");
             assertEquals(i, paramResource.paramInt(inPublic.getId(), CAT_BITE_LEVEL));
         }
         buyCatBite();
-        bob.inPrivate()
+        mary.inPrivate()
                 .getSendMessageToSend()
                 .assertText("Максимальное количество приманок куплено, попробуйте завтра");
 
         assertEquals(5, paramResource.paramInt(inPublic.getId(), CAT_BITE_LEVEL));
-        assertEquals(10, paramResource.paramInt(inPublic.getId(), bob.getUserId(), MONEY));
+        assertEquals(10, paramResource.paramInt(inPublic.getId(), mary.getUserId(), MONEY));
     }
 
     private TestUserChat buyCatBite() {
-        final TestUserChat chat = bob.inPrivate();
+        final TestUserChat chat = mary.inPrivate();
         chat.sendTextMessage(GO_TO_THE_CITY);
         chat.getSendMessageToSend().assertText("Куда пойдём?").findButtonToSend("Магазин").send();
         chat.getSendMessageToSend()
@@ -73,12 +73,12 @@ public class ShopServiceTest extends AbstractCatBotTest {
     @Test
     public void buy_concentration_potion() {
         assertFalse(
-                paramResource.paramBool(inPublic.getId(), bob.getUserId(), CONCENTRATION_POTION));
+                paramResource.paramBool(inPublic.getId(), mary.getUserId(), CONCENTRATION_POTION));
 
-        paramResource.param(inPublic.getId(), bob.getUserId(), WAY_TO_SHOP, true);
-        paramResource.param(inPublic.getId(), bob.getUserId(), MONEY, 60);
+        paramResource.param(inPublic.getId(), mary.getUserId(), WAY_TO_SHOP, true);
+        paramResource.param(inPublic.getId(), mary.getUserId(), MONEY, 60);
 
-        final TestUserChat chat = bob.inPrivate();
+        final TestUserChat chat = mary.inPrivate();
         chat.sendTextMessage(GO_TO_THE_CITY);
         chat.getSendMessageToSend().assertText("Куда пойдём?").findButtonToSend("Магазин").send();
         chat.getSendMessageToSend()
@@ -87,10 +87,10 @@ public class ShopServiceTest extends AbstractCatBotTest {
                 .send();
 
         chat.getSendMessage().assertContainText("Вы купили зелье концентрации");
-        inPublic.getSendMessage().assertContainText("Игрок @bob купил зелье концентрации");
+        inPublic.getSendMessage().assertContainText("Игрок @mary купил зелье концентрации");
 
         assertTrue(
-                paramResource.paramBool(inPublic.getId(), bob.getUserId(), CONCENTRATION_POTION));
-        assertEquals(30, paramResource.paramInt(inPublic.getId(), bob.getUserId(), MONEY));
+                paramResource.paramBool(inPublic.getId(), mary.getUserId(), CONCENTRATION_POTION));
+        assertEquals(30, paramResource.paramInt(inPublic.getId(), mary.getUserId(), MONEY));
     }
 }

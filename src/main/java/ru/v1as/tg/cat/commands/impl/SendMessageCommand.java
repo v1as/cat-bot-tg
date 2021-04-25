@@ -1,8 +1,14 @@
 package ru.v1as.tg.cat.commands.impl;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.springframework.util.StringUtils.isEmpty;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import ru.v1as.tg.cat.callbacks.phase.poll.TgInlinePoll;
 import ru.v1as.tg.cat.commands.TgCommandRequest;
@@ -14,6 +20,7 @@ import ru.v1as.tg.cat.messages.request.RequestMessageHandler;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
 import ru.v1as.tg.cat.service.TgInlinePollFactory;
+import ru.v1as.tg.cat.service.clock.BotClock;
 
 @Component
 public class SendMessageCommand extends AbstractCommand {
@@ -21,10 +28,14 @@ public class SendMessageCommand extends AbstractCommand {
     private final TgInlinePollFactory pollFactory;
     private final ChatDao chatDao;
     private final RequestMessageHandler requestMsg;
+    private final BotClock botClock;
     public static final String COMMAND_NAME = "send";
 
     public SendMessageCommand(
-            ChatDao chatDao, RequestMessageHandler requestMsg, TgInlinePollFactory pollFactory) {
+            ChatDao chatDao,
+            RequestMessageHandler requestMsg,
+            TgInlinePollFactory pollFactory,
+            BotClock botClock) {
         super(
                 new ConfigurationBuilder()
                         .onlyPrivateChat(true)
@@ -33,50 +44,85 @@ public class SendMessageCommand extends AbstractCommand {
         this.chatDao = chatDao;
         this.requestMsg = requestMsg;
         this.pollFactory = pollFactory;
+        this.botClock = botClock;
     }
 
     @Override
     protected void process(TgCommandRequest command, TgChat tgChat, TgUser user) {
-        try {
-            final long chatId = Long.parseLong(command.getFirstArgument());
-            final Optional<ChatEntity> chat = chatDao.findById(chatId);
-            if (chat.isPresent()) {
-                sender.message(
-                        tgChat,
-                        "Какое сообщение вы хотите отравить в чат '" + chat.get().getTitle() + "'?");
-                requestMsg.addRequest(
-                        new MessageRequest(command.getMessage())
-                                .filter(m -> !isEmpty(m.getText()))
-                                .onResponse(
-                                        m -> this.pollSendMessage(tgChat, chat.get(), m.getText()))
-                                .onTimeout(
-                                        () -> sender.message(tgChat, "Превышен лимит ожидания")));
-            } else {
-                sender.message(tgChat, "Чат с таким id не найден");
+
+        String destination = command.getFirstArgument();
+        List<ChatEntity> chats = emptyList();
+        String chatTitle = "NONE";
+        if ("all".equalsIgnoreCase(destination)) {
+            chats =
+                    chatDao.findAll().stream()
+                            .filter(ChatEntity::updatedRecently)
+                            .collect(Collectors.toList());
+            chatTitle = "ALL:" + chats.size();
+        } else {
+            try {
+                final long chatId = Long.parseLong(destination);
+                final Optional<ChatEntity> chat = chatDao.findById(chatId);
+                if (chat.isPresent()) {
+                    chats = singletonList(chat.get());
+                    chatTitle = chat.get().getTitle();
+                } else {
+                    sender.message(tgChat, "Чат с таким id не найден");
+                }
+            } catch (NumberFormatException e) {
+                sender.message(tgChat, "Не смог распарсить id чата (первый аргумент)");
             }
-        } catch (NumberFormatException e) {
-            sender.message(tgChat, "Не смог распарсить id чата (первый аргумент)");
         }
+        if (chats.isEmpty()) {
+            return;
+        }
+        sender.message(tgChat, "Какое сообщение вы хотите отравить в чат '%s'?", chatTitle);
+        List<ChatEntity> finalChats = chats;
+        requestMsg.addRequest(
+                new MessageRequest(command.getMessage())
+                        .filter(m -> !isEmpty(m.getText()))
+                        .onResponse(m -> this.pollSendMessage(tgChat, finalChats, m.getText()))
+                        .onTimeout(() -> sender.message(tgChat, "Превышен лимит ожидания")));
     }
 
-    private void pollSendMessage(TgChat fromChat, ChatEntity toChat, String message) {
+    private void pollSendMessage(TgChat fromChat, List<ChatEntity> toChats, String message) {
+        String title =
+                toChats.size() == 1 ? toChats.get(0).getTitle() : "ALL:"+ toChats.size();
         final TgInlinePoll poll =
                 pollFactory
                         .poll(
                                 fromChat.getId(),
-                                "Вы хотите отправить следующее сообщение в чат '"
-                                        + toChat.getTitle()
-                                        + "'?\n"
-                                        + message)
+                                "Вы хотите отправить следующее сообщение в чат '%s'?\n\n%s",
+                                title,
+                                message)
                         .choice(
                                 "Да",
                                 c -> {
-                                    sender.message(toChat, message);
-                                    sender.message(fromChat, "Сообщение отправлено");
+                                    AtomicInteger sent = new AtomicInteger();
+                                    for (int i = 0; i < toChats.size(); i++) {
+                                        ChatEntity toChat = toChats.get(i);
+                                        botClock.schedule(
+                                                sendMessageTask(message, sent, toChat), i, SECONDS);
+                                    }
+                                    botClock.schedule(
+                                            notificationTask(fromChat, sent),
+                                            toChats.size(),
+                                            SECONDS);
                                 });
-        poll.choice(
-                        "Нет",
-                        c -> sender.message(fromChat, "Сообщение не отправлено"))
-                .send();
+        poll.choice("Нет", c -> sender.message(fromChat, "Сообщение не отправлено")).send();
+    }
+
+    private Runnable sendMessageTask(String message, AtomicInteger sent, ChatEntity chat) {
+        return () -> {
+            sender.message(chat, message);
+            sent.incrementAndGet();
+        };
+    }
+
+    private Runnable notificationTask(TgChat chat, AtomicInteger sent) {
+        return () -> {
+            String msg = String.format("Сообщений в чаты отправлено %s", sent.get());
+            sender.message(chat, msg);
+        };
     }
 }

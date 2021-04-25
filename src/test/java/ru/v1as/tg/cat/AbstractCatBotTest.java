@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static ru.v1as.tg.cat.model.TgChatWrapper.wrap;
 
 import java.util.Collection;
+import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,8 +25,10 @@ public abstract class AbstractCatBotTest extends TgBotTest {
     public void before() {
         super.before();
         catBotData.clear();
-        bob.inPrivate().sendTextMessage("init");
-        bob.inPublic().sendTextMessage("init");
+        Stream.of(bob, mary).forEach(u -> u.inPrivate().sendTextMessage("init"));
+        Stream.of(bob, mary).forEach(u -> u.inPublic().sendTextMessage("init"));
+        bob.inPublic(inAnotherPublic).sendTextMessage("init");
+
         clearMethodsQueue();
     }
 

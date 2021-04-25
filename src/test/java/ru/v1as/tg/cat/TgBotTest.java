@@ -19,6 +19,7 @@ public abstract class TgBotTest {
     @Autowired protected TestBotClock clock;
 
     protected TestChat inPublic;
+    protected TestChat inAnotherPublic;
 
     protected TestUser bob;
     protected TestUser mary;
@@ -29,6 +30,7 @@ public abstract class TgBotTest {
     @Before
     public void before() {
         inPublic = TestChat.publicTestChat(sender, updateProcessor, 100L);
+        inAnotherPublic = TestChat.publicTestChat(sender, updateProcessor, 101L);
         bob = new TestUser(1, "bob", inPublic);
         mary = new TestUser(2, "mary", inPublic);
         jho = new TestUser(3, "jho", inPublic);
@@ -36,6 +38,7 @@ public abstract class TgBotTest {
         bot = new TestBot(5, "bot", inPublic);
 
         sender.registerChat(inPublic);
+        sender.registerChat(inAnotherPublic);
         sender.registerChat(bob.getPrivateChat());
         sender.registerChat(mary.getPrivateChat());
         sender.registerChat(jho.getPrivateChat());

@@ -28,4 +28,8 @@ public class TgInlinePollFactory {
         poll.timeout(new PollTimeoutConfiguration(ofMinutes(1)));
         return poll;
     }
+
+    public TgInlinePoll poll(Long chatId, String format, String... args) {
+        return poll(chatId, String.format(format, args));
+    }
 }

@@ -1,5 +1,6 @@
 package ru.v1as.tg.cat.utils;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.function.Predicate;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -26,5 +27,9 @@ public class LogUtils {
                 return defaultValue;
             }
         };
+    }
+
+    public static UncaughtExceptionHandler getDefaultUncaughtExceptionHandler() {
+        return (t, e) -> log.error("Uncaught exception in thread" + t.getName(), e);
     }
 }

@@ -15,8 +15,8 @@ public interface TgSender {
     <T extends Serializable, Method extends BotApiMethod<T>, Callback extends SentCallback<T>>
             void executeAsync(Method method, Callback callback);
 
-    default <T extends Serializable, Method extends BotApiMethod<T>>
-            void executeAsync(Method method) {
+    default <T extends Serializable, Method extends BotApiMethod<T>> void executeAsync(
+            Method method) {
         executeAsync(method, new LogSentCallback<>());
     }
 
@@ -29,6 +29,11 @@ public interface TgSender {
 
     default Message message(TgChat chat, String text) {
         return execute(new SendMessage(chat.getId(), text));
+    }
+
+    default Message message(TgChat chat, String formatMessage, String... args) {
+        String formattedMsg = String.format(formatMessage, args);
+        return execute(new SendMessage(chat.getId(), formattedMsg));
     }
 
     default Message message(TgUser user, String text) {

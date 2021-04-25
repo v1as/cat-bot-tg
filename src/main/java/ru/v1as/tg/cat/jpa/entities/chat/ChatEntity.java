@@ -69,4 +69,9 @@ public class ChatEntity implements TgChat {
     public String toString() {
         return String.format("Chat[%s:%s:%s]", id, title, updated);
     }
+
+    public boolean updatedRecently() {
+        return updated!=null && updated.isAfter(LocalDateTime.now().minusDays(2));
+    }
+
 }

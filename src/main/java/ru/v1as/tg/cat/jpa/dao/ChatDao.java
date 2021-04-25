@@ -6,4 +6,7 @@ import ru.v1as.tg.cat.jpa.entities.chat.ChatEntity;
 
 public interface ChatDao extends JpaRepository<ChatEntity, Long> {
     List<ChatEntity> findByUsersId(Integer id);
+
+    @Override
+    <S extends ChatEntity> S save(S s);
 }
