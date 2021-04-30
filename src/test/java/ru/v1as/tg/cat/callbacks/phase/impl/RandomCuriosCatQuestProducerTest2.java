@@ -54,7 +54,7 @@ public class RandomCuriosCatQuestProducerTest2 {
                                         new TestPhase("questX"),
                                         new TestPhase("questZ")),
                                 getCatUserEventDaoMock(
-                                        "questY", "questY", "questZ", "questX", "questX"),
+                                        "questY", "questY", "questX", "questX"),
                                 new SimpleRandomChoicer(),
                                 new JustOneCatPhase())
                         .get(tgUser(0), new TestTgChat(false, 0));

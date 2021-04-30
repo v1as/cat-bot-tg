@@ -133,7 +133,7 @@ public class TgInlinePoll {
             this.sent = new Sent(this.text, getChoices());
             sender.executeAsyncPromise(message, this::pollMessageSent, this::pollMessageFail);
             log.info("Poll '{}' send to chat '{}'", text + choices, chatId);
-        } else if (SENT.equals(state)) {
+        } else if (SENT.equals(state) || UPDATED.equals(state)) {
             EditMessageText editMessage =
                     new EditMessageText()
                             .setMessageId(this.message.getMessageId())

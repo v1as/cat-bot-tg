@@ -10,8 +10,11 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.v1as.tg.cat.callbacks.is_cat.CatRequestVote;
 import ru.v1as.tg.cat.model.CatRequest;
+import ru.v1as.tg.cat.service.ChatParam;
+import ru.v1as.tg.cat.service.ChatParamResource;
 import ru.v1as.tg.cat.tg.TestUserChat;
 import ru.v1as.tg.cat.utils.AssertCallback;
 import ru.v1as.tg.cat.utils.AssertSendMessageToSend;
@@ -19,11 +22,12 @@ import ru.v1as.tg.cat.utils.AssertSendMessageToSend;
 @Slf4j
 public class CatBotTest extends AbstractCatBotTest {
 
+    @Autowired ChatParamResource chatParamResource;
+
     @Before
     @SneakyThrows
     public void init() {
-        bob.inPublic().sendCommand("/enable_polls");
-        clearMethodsQueue();
+        chatParamResource.param(inPublic.getId(), bob.getUserId(), ChatParam.PICTURE_POLL_ENABLED, true);
     }
 
     @Test

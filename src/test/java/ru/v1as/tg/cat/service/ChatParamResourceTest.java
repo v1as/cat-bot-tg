@@ -1,8 +1,11 @@
 package ru.v1as.tg.cat.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static ru.v1as.tg.cat.jpa.entities.user.ChatUserParam.MONEY;
 import static ru.v1as.tg.cat.service.ChatParam.CAT_BITE_LEVEL;
+import static ru.v1as.tg.cat.service.ChatParam.PUBLIC_NEWS_ENABLED;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,5 +61,17 @@ public class ChatParamResourceTest extends AbstractCatBotTest {
 
         chatParamResource.increment(chat, bob, CAT_BITE_LEVEL, -5);
         assertEquals("0", chatParamResource.param(chatId, CAT_BITE_LEVEL));
+
+        chatParamResource.param(chat.getId(), bob.getId(), PUBLIC_NEWS_ENABLED, true);
+        assertTrue(chatParamResource.paramBool(chatId, PUBLIC_NEWS_ENABLED));
+
+        chatParamResource.param(chat.getId(), bob.getId(), PUBLIC_NEWS_ENABLED, false);
+        assertFalse(chatParamResource.paramBool(chatId, PUBLIC_NEWS_ENABLED));
+
+        assertTrue(
+                chatParamResource
+                        .param(chat.getId(), bob.getId(), PUBLIC_NEWS_ENABLED, false)
+                        .isEmpty());
+        assertFalse(chatParamResource.paramBool(chatId, PUBLIC_NEWS_ENABLED));
     }
 }

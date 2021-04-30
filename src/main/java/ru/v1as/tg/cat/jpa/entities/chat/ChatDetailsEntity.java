@@ -21,9 +21,6 @@ public class ChatDetailsEntity {
     private ChatEntity chat;
 
     @Column(nullable = false)
-    private boolean isCatPollEnabled;
-
-    @Column(nullable = false)
     private Integer membersAmount;
 
     @Column(nullable = false, columnDefinition = "boolean default true")

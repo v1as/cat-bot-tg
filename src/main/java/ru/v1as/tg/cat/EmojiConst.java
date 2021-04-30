@@ -42,4 +42,6 @@ public class EmojiConst {
     public static final String CAR = "\uD83D\uDE97";
     public static final String DOG = "\uD83E\uDDAE";
     public static final String POKER_FACE = "\uD83D\uDE10";
+    public static final String RED_CIRCLE = "\uD83D\uDD34";
+    public static final String GREEN_CIRCLE = "\uD83D\uDFE2";
 }

@@ -7,7 +7,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ChatParam {
     PICTURE_POLL_ENABLED("false", null),
-    CAT_BITE_LEVEL("0", 5);
+    CAT_BITE_LEVEL("0", 5),
+    PUBLIC_NEWS_ENABLED("true", null);
 
     private String defaultValue;
     private Integer maxValue;

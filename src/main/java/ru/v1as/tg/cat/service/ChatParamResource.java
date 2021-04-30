@@ -45,6 +45,10 @@ public class ChatParamResource {
         return Boolean.parseBoolean(param(chatId, userId, param));
     }
 
+    public boolean paramBool(Long chatId, ChatParam param) {
+        return Boolean.parseBoolean(param(chatId, param));
+    }
+
     public int paramInt(ChatEntity chat, ChatParam param) {
         return paramInt(chat.getId(), param);
     }
@@ -112,6 +116,30 @@ public class ChatParamResource {
         return singletonList(event);
     }
 
+    public List<ChatParamChangeEvent> param(
+            Long chat, Integer user, ChatParam param, @NonNull Object newValue) {
+        String value = newValue.toString();
+        final ChatEntity chatEntity =
+                chatDao.findById(chat).orElseThrow(NoSuchEntityException::new);
+        final UserEntity userEntity =
+                userDao.findById(user).orElseThrow(NoSuchEntityException::new);
+        final ChatParamValue paramValue =
+                this.paramDao
+                        .findByChatIdAndParam(chat, param)
+                        .orElse(new ChatParamValue(param, chatEntity, param.getDefaultValue()));
+        String oldValue = paramValue.getValue();
+        if (Objects.equals(oldValue, value)) {
+            return emptyList();
+        }
+        paramValue.setValue(value);
+        log.info("User {} in chat {} set param {} = {}", userEntity, chatEntity, param, newValue);
+        final ChatParamChangeEvent event =
+                new ChatParamChangeEvent(chatEntity, userEntity, param, oldValue, value);
+        paramDao.save(paramValue);
+        eventDao.save(event);
+        return singletonList(event);
+    }
+
     public List<ChatParamChangeEvent> increment(
             ChatEntity chat, UserEntity user, ChatParam param, int delta) {
         if (delta == 0) {
@@ -128,22 +156,9 @@ public class ChatParamResource {
         String oldValue = value.getValue();
         int newValue = Integer.parseInt(oldValue) + delta;
         if (param.inRange(newValue)) {
-            value.setValue(newValue);
-            final ChatParamChangeEvent event =
-                    new ChatParamChangeEvent(chat, user, param, oldValue, value.getValue());
-            log.info(
-                    "User {} in chat {} set param {}: '{}'->'{}'",
-                    user,
-                    chat,
-                    param,
-                    oldValue,
-                    newValue);
-            paramDao.save(value);
-            eventDao.save(event);
-            return singletonList(event);
-        } else {
-            return emptyList();
+            return param(chat.getId(), user.getId(), param, newValue);
         }
+        return emptyList();
     }
 
     public List<ChatUserParamChangeEvent> increment(

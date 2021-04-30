@@ -14,11 +14,14 @@ import ru.v1as.tg.cat.callbacks.phase.poll.TgInlinePoll;
 import ru.v1as.tg.cat.commands.TgCommandRequest;
 import ru.v1as.tg.cat.commands.impl.AbstractCommand.Configuration.ConfigurationBuilder;
 import ru.v1as.tg.cat.jpa.dao.ChatDao;
+import ru.v1as.tg.cat.jpa.dao.UserDao;
 import ru.v1as.tg.cat.jpa.entities.chat.ChatEntity;
+import ru.v1as.tg.cat.jpa.entities.user.UserEntity;
 import ru.v1as.tg.cat.messages.request.MessageRequest;
 import ru.v1as.tg.cat.messages.request.RequestMessageHandler;
 import ru.v1as.tg.cat.model.TgChat;
 import ru.v1as.tg.cat.model.TgUser;
+import ru.v1as.tg.cat.model.TgUserChat;
 import ru.v1as.tg.cat.service.TgInlinePollFactory;
 import ru.v1as.tg.cat.service.clock.BotClock;
 
@@ -27,6 +30,7 @@ public class SendMessageCommand extends AbstractCommand {
 
     private final TgInlinePollFactory pollFactory;
     private final ChatDao chatDao;
+    private final UserDao userDao;
     private final RequestMessageHandler requestMsg;
     private final BotClock botClock;
     public static final String COMMAND_NAME = "send";
@@ -35,6 +39,7 @@ public class SendMessageCommand extends AbstractCommand {
             ChatDao chatDao,
             RequestMessageHandler requestMsg,
             TgInlinePollFactory pollFactory,
+            UserDao userDao,
             BotClock botClock) {
         super(
                 new ConfigurationBuilder()
@@ -44,6 +49,7 @@ public class SendMessageCommand extends AbstractCommand {
         this.chatDao = chatDao;
         this.requestMsg = requestMsg;
         this.pollFactory = pollFactory;
+        this.userDao = userDao;
         this.botClock = botClock;
     }
 
@@ -51,7 +57,7 @@ public class SendMessageCommand extends AbstractCommand {
     protected void process(TgCommandRequest command, TgChat tgChat, TgUser user) {
 
         String destination = command.getFirstArgument();
-        List<ChatEntity> chats = emptyList();
+        List<TgChat> chats = emptyList();
         String chatTitle = "NONE";
         if ("all".equalsIgnoreCase(destination)) {
             chats =
@@ -67,7 +73,13 @@ public class SendMessageCommand extends AbstractCommand {
                     chats = singletonList(chat.get());
                     chatTitle = chat.get().getTitle();
                 } else {
-                    sender.message(tgChat, "Чат с таким id не найден");
+                    Optional<UserEntity> userChat = userDao.findById(((Long) chatId).intValue());
+                    if (userChat.isPresent()) {
+                        chatTitle = userChat.get().toString();
+                        chats = singletonList(new TgUserChat(userChat.get()));
+                    } else {
+                        sender.message(tgChat, "Чат с таким id не найден");
+                    }
                 }
             } catch (NumberFormatException e) {
                 sender.message(tgChat, "Не смог распарсить id чата (первый аргумент)");
@@ -77,7 +89,7 @@ public class SendMessageCommand extends AbstractCommand {
             return;
         }
         sender.message(tgChat, "Какое сообщение вы хотите отравить в чат '%s'?", chatTitle);
-        List<ChatEntity> finalChats = chats;
+        List<TgChat> finalChats = chats;
         requestMsg.addRequest(
                 new MessageRequest(command.getMessage())
                         .filter(m -> !isEmpty(m.getText()))
@@ -85,9 +97,8 @@ public class SendMessageCommand extends AbstractCommand {
                         .onTimeout(() -> sender.message(tgChat, "Превышен лимит ожидания")));
     }
 
-    private void pollSendMessage(TgChat fromChat, List<ChatEntity> toChats, String message) {
-        String title =
-                toChats.size() == 1 ? toChats.get(0).getTitle() : "ALL:"+ toChats.size();
+    private void pollSendMessage(TgChat fromChat, List<TgChat> toChats, String message) {
+        String title = toChats.size() == 1 ? toChats.get(0).getTitle() : "ALL:" + toChats.size();
         final TgInlinePoll poll =
                 pollFactory
                         .poll(
@@ -100,7 +111,7 @@ public class SendMessageCommand extends AbstractCommand {
                                 c -> {
                                     AtomicInteger sent = new AtomicInteger();
                                     for (int i = 0; i < toChats.size(); i++) {
-                                        ChatEntity toChat = toChats.get(i);
+                                        TgChat toChat = toChats.get(i);
                                         botClock.schedule(
                                                 sendMessageTask(message, sent, toChat), i, SECONDS);
                                     }
@@ -112,7 +123,7 @@ public class SendMessageCommand extends AbstractCommand {
         poll.choice("Нет", c -> sender.message(fromChat, "Сообщение не отправлено")).send();
     }
 
-    private Runnable sendMessageTask(String message, AtomicInteger sent, ChatEntity chat) {
+    private Runnable sendMessageTask(String message, AtomicInteger sent, TgChat chat) {
         return () -> {
             sender.message(chat, message);
             sent.incrementAndGet();

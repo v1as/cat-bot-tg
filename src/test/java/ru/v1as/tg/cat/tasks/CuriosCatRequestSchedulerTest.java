@@ -12,6 +12,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import ru.v1as.tg.cat.AbstractCatBotTest;
 import ru.v1as.tg.cat.CaBotTestConfiguration;
 import ru.v1as.tg.cat.jpa.dao.ChatDetailsDao;
+import ru.v1as.tg.cat.service.ChatParam;
+import ru.v1as.tg.cat.service.ChatParamResource;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = CaBotTestConfiguration.class)
@@ -19,12 +21,13 @@ public class CuriosCatRequestSchedulerTest extends AbstractCatBotTest {
 
     @Autowired CuriosCatRequestScheduler scheduler;
     @Autowired ChatDetailsDao chatDetailsDao;
+    @Autowired ChatParamResource chatParamResource;
 
     @Before
     public void init() {
         chatDetailsDao.findByChatId(inPublic.getId()).setEnabled(true);
         scheduler.init();
-        bob.inPublic().sendCommand("/enable_polls");
+        chatParamResource.param(inPublic.getId(), bob.getUserId(), ChatParam.PICTURE_POLL_ENABLED, true);
         clearMethodsQueue();
     }
 

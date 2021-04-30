@@ -15,7 +15,7 @@ public class TgUserChat implements TgChat {
 
     @Override
     public String getTitle() {
-        return null;
+        return user.toString();
     }
 
     @Override
