@@ -35,6 +35,11 @@ public class ChatConfigCommand extends AbstractCommand {
     }
 
     @Override
+    public String getCommandDescription() {
+        return "Настройка поведения бота в чате.";
+    }
+
+    @Override
     protected void process(TgCommandRequest command, TgChat chat, TgUser user) {
         List<ChatEntity> chats =
                 chatDao.findByUsersId(user.getId()).stream()
