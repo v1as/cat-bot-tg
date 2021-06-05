@@ -22,6 +22,10 @@ public class AssertSendMessage extends AbstractAssertMessage {
         return this;
     }
 
+    public void assertReplyTo(Integer pollMessageId) {
+        assertEquals(pollMessageId, sendMessage.getReplyToMessageId());
+    }
+
     public AssertSendMessage assertContainText(String value) {
         final String assertMessage =
                 String.format(
@@ -40,7 +44,7 @@ public class AssertSendMessage extends AbstractAssertMessage {
     }
 
     @Override
-    protected Integer getMessageId() {
+    public Integer getMessageId() {
         return message.getMessageId();
     }
 

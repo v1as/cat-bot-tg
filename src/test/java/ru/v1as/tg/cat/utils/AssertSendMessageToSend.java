@@ -58,7 +58,7 @@ public class AssertSendMessageToSend extends AbstractAssertMessageToSend {
     }
 
     @Override
-    protected Integer getMessageId() {
+    public Integer getMessageId() {
         return message.getMessageId();
     }
 }
